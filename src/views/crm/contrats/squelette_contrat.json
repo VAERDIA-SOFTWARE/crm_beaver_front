@@ -1,0 +1,432 @@
+{
+    "0": {
+        "id": "0",
+        "title": "",
+        "active": "1",
+        "style": "",
+        "tag": "",
+        "hasLists": "0",
+        "ordre": "1",
+        "fields": {
+            "0": {
+                "title": "",
+                "id": "0",
+                "tag": "div",
+                "style-title": "",
+                "style": "border:1px solid black;margin-top:20%;",
+                "active": "0",
+                "type": "text",
+                "data": "<div style=\"border:1px solid black;margin-top:20%;\"><p align=\"center\" style=\"font-size: 30px; line-height:1.5em;\"><strong>Contrat cadre pour la réalisation d’une mission de contrôle</strong></p><p align=\"center\"><strong><u></u></strong></p><p align=\"center\" style=\"font-size: 23px; line-height:1.5em;padding:12px\">Contrôles des chantiers dont le cahier des charges est basé sur les fiches d’opérations standardisées<br> d’Économies d’Énergie</p></div><div style=\"border:1px solid black;margin-top:20%;width:40%;padding:10px;margin-left:auto;margin-right:auto\"><p align=\"center\" style=\"line-height:1.5em;\"> <p> Date : {contrat_date_debut_formatted} </p> <p> N° de contrat : {contrat_reference} </p></p></div>"
+            }
+        }
+    },
+    "1": {
+        "id": "1",
+        "title": "1. LES PARTIES",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;page-break-before:always",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "2",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "div",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": "<p>Le présent contrat est conclu entre les entités citées ci-dessous :</p><p>{societe_intitule}</p><p>{societe_adresse}</p><p>{societe_code_postal}</p><p>{societe_matricule_fisacale}</p><p><em><u>Ci-après dénommée R.S</u></em></p><p>{contrat_user_name}</p><p>{contrat_user_ville}</p><p>{contrat_user_identifient_fiscal}</p><p>Représentée par :</p><p>{contrat_user_interlocuteur}</p><p>{contrat_user_interlocuteur_adresse}</p><p>{contrat_user_interlocuteur_fiscal}</p><p><em><u></u></em></p><p><em><u>Ci-après dénommée le client</u></em></p>"
+            }
+        }
+    },
+    "2": {
+        "id": "2",
+        "title": "2. OBJET DU CONTRAT",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "3",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p> Ce contrat a pour objet de définir les conditions spécifiques selon lesquelles <strong>{societe_intitule}</strong> s’engage à fournir au client les prestations de service définies ci-après.</p>"
+            }
+        }
+    },
+    "3": {
+        "id": "3",
+        "title": "3. MISSIONS DE CONTROLE DEMANDEES",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "1",
+        "ordre": "4",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": "  <p> Merci de renseigner les opérations pour lesquelles vous souhaitez une mission d’inspection : </p>"
+            },
+            "1": {
+                "id": "1",
+                "title": "",
+                "tag": "table",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "articles",
+                "data": {}
+            }
+        }
+    },
+    "4": {
+        "id": "4",
+        "title": "4. DESCRIPTION DE L’INTERVENTION",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "5",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": "<p> Réalisation d’un contrôle de bonne mise en œuvre des travaux dans le cadre des opérations standardisées. </p><p> <strong> Les travaux doivent être réalisés selon les normes en vigueur par un prestataire qualifié « RGE » dans le cadre des opérations standardisées.  </strong> </p>"
+            }
+        }
+    },
+    "5": {
+        "id": "5",
+        "title": "5. MODALITES D’EXECUTION",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "6",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "div",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p>\n        L’envoie des sites à contrôler se fera par mail à l’adresse suivante : <a\n            href=\"mailto:{societe_mail}\">{societe_mail}</a>\n        , par le biais d’un tableau Excel.\n    </p>\n    <p>\n        Cet envoi vaut une commande officielle de la part du client, précédé en\n        amont, par un contrat signé de la part du client ainsi que de Maison Beaver\n        CONTROLE.\n    </p>\n    <p>\n        Le modèle de tableau Excel est joint au présent contrat en ANNEXE 2, nommé\n        « SUIVI COMMANDE ».\n    </p>\n    <p>\n        Dès réception du contrat signé par le Client et de l’ensemble des documents\n        nécessaires, un rendez-vous est fixé avec l’accompagnateur.\n    </p>\n    <p>\n        L’achèvement des travaux est indispensable pour toutes les fiches\n        standardisées.\n    </p>\n    <p>\n        La réalisation du contrôle est accomplie selon le procédé suivant :\n    </p>\n    <span style=\"display:block; margin: 0; padding: 0;\">\n        <span style=\"font-size: 30px; margin: 0; padding: 0;margin-top:-15px;padding-top:-15px\">. </span> Examen visuel de la preuve de réalisation de l’opération mentionnée dans\n        la mission\n    </span>\n    <span style=\"display:block; margin: 0; padding: 0;margin-top:-15px;padding-top:-15px\">\n        <span style=\"font-size: 30px; margin: 0; padding: 0;margin-top:-15px;padding-top:-15px\">. </span> Contrôle du respect des conditions pour la délivrance des certificats\n    </span>\n   <p>\n        Chaque contrôle fera l’objet d’un rapport de contrôle.\n    </p>\n\n    <p style=\" page-break-before:always\">\n        <strong>\n            <u>\n                <br />\n                ECHANTILLONAGE :\n            </u>\n        </strong>\n    </p>\n    <p>\n        Échantillonnage lorsque celui-ci est demandé par la réglementation, dans le\n        cadre de contrôles\n    </p>\n    <p>\n        réglementaires ou demandé par le client dans le cadre de contrôles\n        volontaires, concernant les commandes d'un lot effectué via Excel (annexe\n        2) :\n    </p>\n    <p>\n        {societe_intitule} procède à un échantillonnage aléatoire des sites,\n        conformément à la\n    </p>\n    <p>\n        réglementation .Un pourcentage d'opérations satisfaisantes est également\n        exigé\n    </p>\n    <p align=\"left\">\n        {societe_intitule}, se doit de prendre une marge d’inspection, afin d’obtenir\n        un taux de rapport satisfaisant de 70 % (imposé par la réglementation), sur\n        un lot complet, pour une même fiche , tout en prenant en considération les\n        retours de rapports non satisfaisants, ainsi que les indisponibilités ou\n        les non réponses des bénéficiaires. {societe_intitule}, préconise un taux de\n        marge de 2 sur la totalité du lot .\n    </p>\n    <p align=\"left\">\n        Exemple : Sur un lot de 105 opérations sur les lieux de l’opération,\n        composé de :\n    </p>\n    <p align=\"left\">\n        - 105 opérations en BAR EN 101 (avec un taux min de contrôles satisfaisants\n        10%)\n    </p>\n    <p align=\"left\">\n        afin d’obtenir un maximum de chance d’atteindre les 70 % de taux de\n        satisfaction (minimum) imposée par la réglementation (ou du moins, ne pas\n        dépasser les 30% de rapports « non satisfaisants » :\n    </p>\n    <p align=\"left\">\n        {societe_intitule} effectuera un échantillonnage et l’inspection de :\n    </p>\n    <p align=\"left\">\n        - {pourcentage} % du lot des 105 opérations en BAR EN 101 (ce qui représente un\n        échantillonnage et contrôle de 21 opérations)\n    </p>\n    <p>\n        {societe_intitule} n’est pas responsable, si le taux de conformité des\n        chantiers n’est pas atteint. De ce fait, le client est parfaitement informé\n        et accepte expressément de payer tous les contrôles réalisés par Maison Beaver\n        CONTROLE.\n    </p><p> <strong> Les travaux doivent être réalisés selon les normes en vigueur par un prestataire qualifié « RGE » dans le cadre des opérations standardisées.  </strong> </p>"
+            }
+        }
+    },
+    "6": {
+        "id": "6",
+        "title": "6. SITE D’INTERVENTION",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "7",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p> L’adresse d’intervention est communiquée par le client via un envoi mail , dans le tableau Excel ( ANNEXE 2 ) joint au présent contrat . </p>"
+            }
+        }
+    },
+    "7": {
+        "id": "7",
+
+        "title": "7. CONDITIONS PARTICULIERES",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;page-break-before:always",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "8",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "div",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p> <strong><u>L’accompagnateur :</u></strong> </p> <p> Le client est chargé de communiquer les coordonnées de l’accompagnateur par écrit (mail ou courrier) à <strong>{societe_intitule},</strong> dès la signature du contrat. </p> <p> <strong><u>Accessibilité : </u></strong> </p> <p> L’accessibilité aux équipements faisant l’objet de la mission est assuré par l’accompagnateur. </p> <p> <strong><u>La mission :</u></strong> </p> <p> La mission confiée à <strong>{societe_intitule}</strong> se limite strictement aux prestations, périmètre et objets définis dans le présent contrat. </p> <p> La présente mission a pour objet principal l’établissement d’un constat via la réalisation d’un rapport de contrôle. Cette mission ne peut être assimilée à une prestation partielle de maîtrise d’œuvre (dans le cadre de projets de réhabilitation) au sens strict du décret d’application du 29/11/1993 relatif à la loi MOP du 12/07/1985. </p> <p style=\"color:#2F5496\"> <a name=\"_Toc32414892\">Textes réglementaires de référence</a> </p> <p style=\"padding: 0\"> <strong><span style=\"font-size: 30px\">. </span> Code de l’énergie (Article L. 222-2-1)</strong> </p> <p style=\"padding: 0\"> <strong><span style=\"font-size: 30px\">. </span>Arrêté du 22 décembre 2014 modifié</strong> définissant les opérations standardisées d'économies d'énergie </p> <p style=\"padding: 0\"> <strong><span style=\"font-size: 30px\">. </span>Arrêté du 29 décembre 2014 modifié</strong> relatif aux modalités d'application du dispositif des certificats d'économies d'énergie. </p> <p style=\"padding: 0\"> <strong><span style=\"font-size: 30px\">. </span>Arrêté du 28 septembre 2021 </strong>relatif aux contrôles dans le cadre du dispositif des certificats d’économies d’énergie </p> <p> <strong><u></u></strong> </p> <p> <strong> <u> Les obligations du client à communiquer préalablement à l’intervention : </u> </strong> </p> <p> *Le client est chargé de mettre à disposition de <strong>{societe_intitule}</strong> l’ensemble des documents et des moyens matériels nécessaires au bon déroulement de la mission. </p> <p> *Le client devra communiquer à <strong>{societe_intitule}</strong> les éléments techniques ainsi que les documentations relatives aux isolants ou aux équipements installées (références, nature, épaisseur, conductivité thermique). </p> <p> *Le client est chargé de transmettre à <strong>{societe_intitule}</strong> le devis signé par le bénéficiaire ainsi que la facture des travaux. </p> <p> *Le client est également dans l’obligation de communiquer à <strong>{societe_intitule}</strong> la date de fin des travaux. </p>"
+            }
+        }
+    },
+    "8": {
+        "id": "8",
+
+        "title": "8. ORGANISATION ET PLANNING",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "9",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": "  <p> Le planning et l’organisation de l’intervention s’effectuent à la réception du présent document signé. </p>"
+            }
+        }
+    },
+    "9": {
+        "id": "9",
+
+        "title": "9. CONDITIONS FINANCIERES",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "10",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p> L’ensemble des conditions tarifaires , est joint au présent contrat nommé « ANNEXE 1 GRILLE TARIFAIRE INSPECTION » si toutefois une prestation, que ENDESA souhaite faire inspecter, n’est pas mentionné dans cette grille, ENDESA se doit de faire la demande par écrit à Maison Beaver CONTOLE, afin que celle-ci soit ajoutée via un avenant au présent contrat . </p>"
+            }
+        }
+    },
+    "10": {
+        "id": "10",
+        "title": "10. MODALITES DE PAIEMENT",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;page-break-before:always;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "11",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p> Les sommes facturées au titre du présent contrat, conformément aux tarifs définis (chapitre 9), </p> <p> *Les montants sont exprimés hors taxes (HT). <strong></strong> </p> <p> *Le client devra donc régler les sommes dues majorées de la taxe sur la valeur ajoutée (TVA) et de toute autre taxe en vigueur au jour de la facturation. </p> <p> *Toute facture est payable à réception à compter de l’émission de la facture. </p> <p> *Le règlement de la facture peut être effectué : </p> <p> *Par virement bancaire </p> <p align=\"left\"> Conformément au décret du 2 novembre 2012 et à la loi n° 2012-387 du 22 mars 2012, il sera appliqué une indemnité forfaitaire de retard de 40 € pour le recouvrement des créances de retard. </p> "
+            }
+        }
+    },
+    "11": {
+        "id": "11",
+        "title": "11. ADRESSE DE FACTURATION",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "12",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": "<p> ENDESA ENERGIA </p> <p> 60 rue Ribeira de loira </p> <p> 99134 MADRID </p> <p> SIRET : 49959055200018 </p> <p> Mail : </p> <p> <em> (Si les coordonnées ci-dessus ne correspondent pas, merci de bien vouloir rayer et compléter) </em> </p>"
+            }
+        }
+    },
+    "12": {
+        "id": "12",
+        "title": "12. COMMUNICATION DES RAPPORTS",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "13",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "p",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p> <strong>{societe_intitule}</strong> s’engage à mettre disposition l’ensemble des rapports de contrôle via un envoi pdf ou par voie postale. </p>"
+            }
+        }
+    },
+    "13": {
+        "id": "13",
+        "title": "13. CONDITIONS DE VALIDITE DU CONTRAT",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "14",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "div",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": "<p> Cette proposition de contrat est valable 6 mois à compter de la date de signature par <strong>{societe_intitule}</strong>. </p> <p> Le client est chargé de retourner à <strong>{societe_intitule}</strong> deux exemplaires signés et cachetés du présent contrat, suite à la réception du présent contrat <strong>{societe_intitule}</strong> appose sa signature dans un délais de de 5 jours et adresse au client un exemplaire original qui lui est destiné. </p> <p> Toute modification des termes et des conditions de la proposition doit faire l’objet d’un accord entre les parties, qui sera formalisé dans le présent contrat. </p> "
+            }
+        }
+    },
+    "14": {
+        "id": "14",
+
+        "title": "14. CONFIDENTIALITE DU CONTRAT",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;page-break-before:always;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "15",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "div",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": " <p> Le client s’interdit de transférer ou céder tout ou partie des droits ou obligations qu’il tient du présent contrat ou de substituer un tiers dans l’exécution de leurs obligations, sans le consentement préalable et écrit des autres membres. </p> <p> Le client, par sa signature, reconnaît avoir pris connaissance du contrat de contrôle et déclare accepter les termes et les conditions, ainsi que les conditions générales du chapitre 15. </p>"
+            },
+            "1": {
+                "id": "1",
+                "title": "",
+                "tag": "td",
+                "style-title": "",
+                "style": "width: 100%;border: 1px solid black;",
+                "active": "1",
+                "type": "text",
+                "data": " <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\" style=\"width: 100%;page-break-before:always;\"> <tbody> <tr> <td style=\"width: 50%\" valign=\"top\"> <div style=\"padding:10px;height:500px;\"> <p> Pour <strong>{societe_intitule}</strong> </p> <p> {societe_ville} </p> <p> Le {date} . </p> <p> Nom, Prénom et qualité du signataire : </p> <p> {societe_interlocuteur_societe} - Président </p> <p> <span >Signature et cachet : </span> </p> </div> </td> <td style=\"width: 50%\" valign=\"top\"> <div style=\"padding:10px\"> <p> Pour le client </p> <p> {contrat_user_name} </p> <p> Le {date} . </p> <p> Nom, Prénom et qualité du signataire : </p> <p> Signature et cachet : </p> </div> </td> </tr> </tbody> </table>"
+            }
+        }
+    },
+    "15": {
+        "id": "15",
+        "title": "ANNEXE 1 GRILLE TARIFAIRE INSPECTION",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;padding:10px;page-break-before:always;",
+        "tag": "h3",
+        "hasLists": "1",
+        "ordre": "16",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "div",
+                "style-title": "color:#5B9BD5;",
+                "style": "",
+                "active": "1",
+                "type": "operations",
+                "data": {}
+            }
+        }
+    },
+    "16": {
+        "id": "16",
+        "title": "ANNEXE 2 SUIVI COMMANDE INSPECTION",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;padding:10px;page-break-before:always;",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "16",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "div",
+                "style-title": "",
+                "style": "",
+                "active": "1",
+                "type": "text",
+                "data": "<p> Le tableau Excel est joint au présent contrat, voici un exemple : </p>"
+            },
+            "1": {
+                "id": "1",
+                "title": "",
+                "tag": "img",
+                "style-title": "",
+                "style": "width:100%;height:150Px",
+                "active": "1",
+                "type": "image",
+                "data": " <img style=\"width:100%;height:200Px\" src=\"{url}\" />",
+                "src": "storage/images/excel.png"
+            }
+        }
+    },
+    "17": {
+        "id": "17",
+        "title": "15. CONDITIONS GENERALES",
+        "active": "1",
+        "style": "background-color:rgb(174, 173, 173);text-align:center;padding:10px;padding:10px;page-break-before:always",
+        "tag": "h3",
+        "hasLists": "0",
+        "ordre": "17",
+
+        "fields": {
+            "0": {
+                "id": "0",
+                "title": "",
+                "tag": "td",
+                "style-title": "",
+                "style": "width: 100%;font-size:9px",
+                "active": "1",
+                "type": "text",
+                "data": "<table border=\"0\" style=\"font-size:9px;\"> <tbody> <tr> <td style=\"width:45%\" valign=\"top\"> <p> <strong> ARTICLE 1 - CHAMP D’APPLICATION</strong> </p> <p> Les présentes conditions générales définissent les conditions générales d'intervention et de vente de Maison Beaver. </p> <p> Des conditions particulières et éventuellement des annexes techniques, jointes à l’offre ou au contrat, viennent compléter le présent document. </p> <p> En cas de conflit, contradiction ou incompatibilité entre les conditions générales et les conditions particulières, les conditions particulières prévaudront sur les conditions générales sur ces seuls points de divergence. </p> <p> Les missions {societe_intitule} sont définies dans les offres ou contrats conclus avec le client, dont les présentes conditions générales font partie intégrante. </p> <p> <strong>ARTICLE 2 - OBLIGATIONS DU CLIENT</strong> </p> <p> {societe_intitule} intervient à la demande du client. Dans le cas d’une demande de vérification, {societe_intitule} propose une programmation de ou des visites en adressant un avis d’intervention. </p> <p> Il appartient au client de prendre toutes dispositions en vue du bon déroulement de l’intervention {societe_intitule} et notamment : </p> <p> · En matière d’hygiène et sécurité, le client doit se conformer à la réglementation en vigueur, notamment celle relative à l’intervention d’une entreprise extérieure </p> <p> · Nommer une personne qualifiée (disposant également des habilitations requises, en tant que de besoin) pour accompagner l’intervenant {societe_intitule} à la demande de celle-ci </p> <p> · Assurer la direction des opérations nécessaires à l’intervention et conduire les installations </p> <p> · Fournir les moyens d’accès aux équipements et installations objets de l’intervention </p> <p> · Fournir tous les documents techniques relatifs aux installations objets de la mission </p> <p> · Respecter les prescriptions particulières indiquées dans les annexes de l’offre </p> <p> · D’une manière générale, procurer les facilités suffisantes permettant à l’intervenant {societe_intitule} d’accomplir efficacement son intervention, sans perdre de temps et dans les conditions normales de sécurité </p> <p> Sauf mention contraire, le rapport est envoyé sous la forme d'un fichier PDF par courrier électronique. Le client reconnaît la validité et la force probante de ce fichier. Toutes les précautions devront être prises par le Client pour que ce courrier puisse être reçu dans de bonnes conditions (avertissement en cas de changement de destinataire ou d'adresse, antispam...). </p> <p> Le client n’ayant pas reçu un rapport dans un délai de 10 jours après la date convenue, doit en faire la réclamation à {societe_intitule}, par tout moyen apportant la preuve de cette réclamation. En l’absence d’une telle réclamation, le client est réputé avoir reçu le rapport. De manière générale, {societe_intitule} a vocation à exécuter elle-même les interventions qui lui sont confiées. {societe_intitule} ne fait pas appel à la sous-traitance. </p> </td> <td style=\"width:3%\"></td> <td style=\"width:45%\" valign=\"top\"> <p> <strong> ARTICLE 6 - DELAI DE PAIEMENT – PENALITES DE RETARD </strong> </p> <p> Les factures sont payables dans les délais prévus par la loi sans escompte selon l’échéancier prévu dans l’offre. </p> <p> Sauf stipulation contraire, les factures sont payables dans un délai de 30 jours date de facture. </p> <p> <strong>ARTICLE 7 – CONFIDENTIALITE</strong> </p> <p> {societe_intitule} assure la confidentialité des informations relatives aux installations inspectées, aux documents communiqués ou aux entreprises concernées. Aucune information n’est rendue publique, sauf dans le cadre d‘obligations légales. </p> <p> Aucun document concernant une mission ne peut être diffusé à des tiers sans autorisation écrite et préalable du client. Les données du client recueillies par Maison Beaver font l’objet de traitements informatiques destinés à la gestion de la clientèle. Le client bénéficie d’un droit d’interrogation, d’accès, de rectification et d’opposition au traitement des données le concernant. </p> <p> Le Client n’est pas avisé des informations mises à disposition d’une tierce partie autorisée : audits internes, évaluations d’accréditations du Maison Beaver, supervisions réalisées par un prestataire externe. Toutes les personnes, prestataires de services ou salariés, impliquées dans le processus de contrôle sont tenus par un engagement de confidentialité professionnelle. </p> <p> <strong>ARTICLE 8 - LIMITES – RESPONSABILITES</strong> </p> <p> · {societe_intitule} agit en qualité de prestataire de services assujetti à une obligation de moyens. </p> <p> · {societe_intitule} exerce ses prestations en référence aux données techniques et scientifiques existantes au moment de ses interventions. </p> <p> · Pour toute intervention, le client doit faire accompagner en permanence le personnel {societe_intitule} par une personne qualifiée qui lui fournira tout renseignement utile pour remplir en sécurité ladite mission. </p> <p> · Les intervenants {societe_intitule} ne peuvent procéder eux-mêmes à aucun montage ou démontage. </p> <p> · Sauf stipulation contraire dans les conditions particulières, il n’appartient pas à {societe_intitule} de s’assurer que ses constats, informations ou avis sont suivis d’effet. </p> <p> · {societe_intitule} intervient sur les installations qui lui sont présentées par le client et sa responsabilité ne peut donc être engagée en cas de vérifications qui ne porteraient pas sur l’ensemble de l’installation. </p> <p> <strong>ARTICLE 9 – RESILIATION</strong> </p> <p> En cas de défaut d’exécution par l’une ou l’autre des parties, de l’une de ses obligations, chacune des parties se réserve le droit de mettre un terme aux prestations en cours, sans indemnités, dans un délai d’1 mois après l’envoi de la mise en demeure par lettre recommandée avec AR demeurée infructueuse, et ce, sans préjudice de tous dommages intérêts auxquels {societe_intitule} pourrait prétendre. Dans ce cas, les prestations seront payables par le client dans un délai de 30 jours, étant entendu que toute visite effectuée sera due. </p> </td> </tr> </tbody> </table> <table border=\"0\" style=\"font-size:9px;\"> <tbody> <tr> <td style=\"width:45%\" valign=\"top\"> <p> <strong>ARTICLE - 3 PRIX ET FACTURATION</strong> </p> <p> Sauf conditions particulières expresses, les prix s’entendent hors taxes, en euros, et sont soit : </p> <p> · Ceux correspondant aux barèmes en vigueur à la date de la prestation </p> <p> · Ceux négociés entre les parties dans le cadre d’un devis accepté, pour chaque prestation. Ils sont établis en fonction des éléments fournis par le client et figurant sur une proposition soumise à son acceptation. </p> <p> Tout aléa dans l’exécution de la mission du fait du client entrainant une augmentation de la durée de la mission fera l’objet d’une facturation complémentaire de 350 €HT par demi-journée. Toute annulation d’intervention moins de 3 jours avant la date prévue, à la demande ou du fait du client ou du bénéficiaire, donnera lieu à une facturation de 100 €HT. Dans le cas d’une absence du bénéficiaire le jour du contrôle empêchant la réalisation de celui-ci, 100% de la prestation restera dû. </p> <p> Si le client demande une modification ultérieure du contenu de la prestation, il en avisera {societe_intitule} par écrit. Tout changement de nature à modifier de façon sensible la durée et la teneur des prestations {societe_intitule}, y compris au cours de la première intervention, fera l’objet d’un réajustement de prix. </p> <p> <strong> ARTICLE 4 – PROPRIETE INTELLECTUELLE ET INDUSTRIELLE </strong> </p> <p> Toute utilisation de la marque ou du logo {societe_intitule} est interdite sauf accord express, écrit et préalable. </p> <p> Les clients {societe_intitule} ne sont pas autorisés à utiliser la marque Maison Beaver. </p> <p> <strong>ARTICLE 5 - REVISION DE PRIX</strong> </p> <p> Pour les contrats renouvelables par tacite reconduction, la révision de prix sera faite au 1<sup>er</sup> janvier de chaque année. </p> </td> <td style=\"width:3%\"></td> <td style=\"width:45%\" valign=\"top\"> <p> <strong>ARTICLE 10 - ASSURANCES</strong> </p> <p> {societe_intitule} a souscrit une police d’assurance couvrant sa responsabilité civile. Sur demande du client, une attestation peut lui être adressée. </p> <p> Le client doit se garantir contre les risques qu’il ferait encourir aux intervenants {societe_intitule} et les incidents ou accidents dont la responsabilité lui incomberait. </p> <p> <strong>ARTICLE 11 - FORCE MAJEURE</strong> </p> <p> Les parties conviennent qu’en cas de force majeure leurs responsabilités respectives pour inexécution partielle ou totale de l’une quelconque de leurs obligations au titre du contrat, ne pourront être recherchées. </p> <p> A cette fin, elles conviennent de considérer comme constituant un cas de force majeure, outre les cas traditionnellement admis par la jurisprudence, la grève et l’inaccessibilité au site du client due à une grève ou à des conditions météorologiques exceptionnelles. </p> <p> <strong>ARTICLE 12 - JURIDICTION</strong> </p> <p> Les présentes conditions générales sont soumises au droit Français. </p> <p> Toute contestation entre les parties, tout litige qui pourrait survenir, relèvent de la compétence exclusive du tribunal de commerce du siège social de l’entité Maison Beaver. </p> <p> <strong> ARTICLE 13 – PROCEDURES DE RECOURS DES CLIENTS SUITE A LA REALISATION DES MISSIONS DE CONTROLE </strong> </p> <p> Lorsque que le client fait état par écrit d’une réclamation ou de son désaccord sur les observations ou les conclusions formulées dans un rapport de contrôle, {societe_intitule} traitera la réclamation ou l’appel conformément à la procédure interne PROC QUAL 04 «<span style=\"color:red\"> Procédure de Gestion des Appels et des réclamations</span> ». Cette procédure peut être communique à toutes les parties intéressées sur simple demande écrite. </p> </td> </tr> </tbody> </table>"
+            }
+        }
+    }
+}
