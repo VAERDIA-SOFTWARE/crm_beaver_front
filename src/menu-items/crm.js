@@ -23,12 +23,27 @@ const Crm = {
       breadcrumbs: false
     },
     {
-      id: 'lot-chantiers',
+      id: 'lot-leads',
       title: 'Leads',
-      type: 'item',
-      url: '/lot-chantier/list',
+      type: 'collapse',
       icon: PostAddOutlinedIcon,
-      breadcrumbs: false
+      breadcrumbs: false,
+      children: [
+        {
+          id: 'chantiers',
+          title: 'Lot-Leads',
+          type: 'item',
+          url: '/lot-leads/list',
+          breadcrumbs: false
+        },
+        {
+          id: 'leads',
+          title: 'Nouveau Leads',
+          type: 'item',
+          url: '/leads/create',
+          breadcrumbs: false
+        }
+      ]
     },
     {
       id: 'clients-group',
@@ -45,48 +60,15 @@ const Crm = {
           url: '/chantiers/list',
           breadcrumbs: false
         },
-        // {
-        //   id: 'clients',
-        //   title: 'Clients',
-        //   type: 'item',
-        //   url: '/clients/list',
-        //   breadcrumbs: false
-        // },
         {
           id: 'contrats',
           title: 'Contrats',
           type: 'item',
-          // icon: icons.IconBasket,
           url: '/contrats/list',
           breadcrumbs: false
         }
       ]
     },
-    // {
-    //   id: 'chantiers-group',
-    //   title: 'Clients',
-    //   type: 'collapse',
-    //   url: '/chantiers/list',
-    //   icon: FoundationOutlinedIcon,
-    //   breadcrumbs: false,
-    //   children: [
-    //     {
-    //       id: 'chantiers',
-    //       title: 'Client',
-    //       type: 'item',
-    //       url: '/chantiers/list',
-    //       breadcrumbs: false
-    //     }
-    //     // {
-    //     //   id: 'lot-chantiers',
-    //     //   title: 'Leads',
-    //     //   type: 'item',
-    //     //   url: '/lot-chantier/list',
-    //     //   breadcrumbs: false
-    //     // }
-    //   ]
-    // },
-
     {
       id: 'techniciens-group',
       title: 'Collaborateurs',
@@ -115,13 +97,6 @@ const Crm = {
           type: 'item',
           url: '/techniciens/list',
           breadcrumbs: false
-        },
-        {
-          id: 'calendrier',
-          title: 'Calendrier',
-          type: 'item',
-          url: '/inspections/calendar',
-          breadcrumbs: false
         }
       ]
     },
@@ -147,14 +122,14 @@ const Crm = {
           type: 'item',
           url: '/inspections/list',
           breadcrumbs: false
+        },
+        {
+          id: 'calendrier',
+          title: 'Calendrier',
+          type: 'item',
+          url: '/inspections/calendar',
+          breadcrumbs: false
         }
-        // {
-        //   id: 'rapports',
-        //   title: 'Rapports',
-        //   type: 'item',
-        //   url: '/inspections/rapports',
-        //   breadcrumbs: false
-        // }
       ]
     },
 

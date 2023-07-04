@@ -16,8 +16,8 @@ let menuItems = { items: [] };
 if (process.env.NODE_ENV !== 'development') {
   menuItems.items = [Crm];
 } else {
-  // menuItems.items = [Crm, dashboard, application, widget, forms, elements, pages, utilities, support, other];
-  menuItems.items = [Crm];
+  menuItems.items = [Crm, dashboard, application, widget, forms, elements, pages, utilities, support, other];
+  // menuItems.items = [Crm];
 }
 
 // menuItems = {

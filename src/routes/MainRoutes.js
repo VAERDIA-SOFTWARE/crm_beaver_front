@@ -79,6 +79,16 @@ const AppCrmLotChantierDetails = Loadable(lazy(() => import('views/crm/lot-chant
 const AppCrmLotChantierChangePercentage = Loadable(lazy(() => import('views/crm/lot-chantier/ChangePercentage')));
 const AppCrmLotChantierCreate = Loadable(lazy(() => import('views/crm/lot-chantier/CreatePage')));
 
+const AppCrmLotLeadsList = Loadable(lazy(() => import('views/crm/lot-leads/index')));
+const AppCrmLotLeadsDetails = Loadable(lazy(() => import('views/crm/lot-leads/DetailsPage')));
+const AppCrmLotLeadsChangePercentage = Loadable(lazy(() => import('views/crm/lot-leads/ChangePercentage')));
+const AppCrmLotLeadsCreate = Loadable(lazy(() => import('views/crm/lot-leads/CreatePage')));
+
+const AppCrmLeadDetails = Loadable(lazy(() => import('views/crm/leads/list/DetailsPage')));
+const AppCrmLeadUpdate = Loadable(lazy(() => import('views/crm/leads/list/UpdatePage')));
+const AppCrmLeadCreate = Loadable(lazy(() => import('views/crm/leads/list/CreatePage')));
+const AppCrmLeadsList = Loadable(lazy(() => import('views/crm/leads/list/index')));
+
 const AppCrmCommandesList = Loadable(lazy(() => import('views/crm/commandes/index')));
 const AppCrmCommandesDetails = Loadable(lazy(() => import('views/crm/commandes/DetailsPage')));
 
@@ -725,6 +735,39 @@ const MainRoutes = {
     {
       path: '/lot-chantier/create',
       element: <AppCrmLotChantierCreate />
+    },
+    // BEAVER CRM
+    {
+      path: '/lot-leads/list',
+      element: <AppCrmLotLeadsList />
+    },
+    {
+      path: '/lot-leads/:lotLeadsId/details',
+      element: <AppCrmLotLeadsDetails />
+    },
+    {
+      path: '/lot-leads/:lotLeadsId/change-percentage',
+      element: <AppCrmLotLeadsChangePercentage />
+    },
+    {
+      path: '/lot-leads/create',
+      element: <AppCrmLotLeadsCreate />
+    },
+    {
+      path: '/leads/list',
+      element: <AppCrmLeadsList />
+    },
+    {
+      path: '/leads/create',
+      element: <AppCrmLeadCreate />
+    },
+    {
+      path: '/leads/:contratId/details',
+      element: <AppCrmLeadDetails />
+    },
+    {
+      path: '/leads/:contratId/update',
+      element: <AppCrmLeadUpdate />
     },
     {
       path: '/commandes/list',

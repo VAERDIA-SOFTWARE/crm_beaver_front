@@ -20,8 +20,6 @@ import {
   Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import ContentPasteRoundedIcon from '@mui/icons-material/ContentPasteRounded';
-import ContentPasteOffRoundedIcon from '@mui/icons-material/ContentPasteOffRounded';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
@@ -36,16 +34,15 @@ import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
-  GridToolbarExport,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { useCreateLotChantiersExcel, useDeleteLot, useGetLotChantiers } from 'services/lot-chantiers.service';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useAuth from 'hooks/useAuth';
 import { useGetSettingsPreferences } from 'services/settings.service';
+import { useDeleteLot, useGetLotLeads } from 'services/lot-leads.service';
 
-const LotChantierList = ({ title, userId, disableTopBar, goBackLink = '/lot-chantier/list', clientId = null }) => {
+const LotChantierList = ({ title, userId, disableTopBar, goBackLink = '/lot-leads/list', clientId = null }) => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
@@ -64,7 +61,7 @@ const LotChantierList = ({ title, userId, disableTopBar, goBackLink = '/lot-chan
                 color="primary"
                 size="small"
                 onClick={() =>
-                  navigate(`/lot-chantier/create`, {
+                  navigate(`/lot-leads/create`, {
                     state: {
                       goBackLink: goBackLink
                     }
@@ -112,7 +109,7 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/lot-chantier/${params?.row?.id}/details`);
+          navigate(`/lot-leads/${params?.row?.id}/details`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
@@ -135,7 +132,7 @@ function EditCell({ params }) {
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: '{{ righ }}t'
+              horizontal: 'right'
             }}
           >
             <MenuItem>
@@ -189,7 +186,7 @@ function TableDataGrid({
   paginated
 }) {
   const theme = useTheme();
-  const getLotChantiersQuery = useGetLotChantiers({ searchFilter, userId, page, validated });
+  const getLotsLeadsQuery = useGetLotLeads({ searchFilter, userId, page, validated });
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
@@ -198,32 +195,30 @@ function TableDataGrid({
       headerName: 'Référence Lot',
 
       sortable: false,
-      filterable: false
+      filterable: false,
+      width: 130
     },
     {
       field: 'created_at',
       headerName: "Date d'import",
-
       sortable: false,
       filterable: false,
-      minWidth: 100,
-      flex: 1
+      width: 150
     },
     {
-      field: 'nombre_chantiers',
+      field: 'nombre_leads',
       headerName: 'Nombre des Leads',
       sortable: false,
       filterable: false,
-      minWidth: 100,
-      flex: 1
+      width: 150
     },
     {
-      field: 'completed_inspections_progress',
+      field: 'percentage_clients_on_lot',
       headerName: 'Transfert en Client',
 
       sortable: false,
       filterable: false,
-      minWidth: 100,
+      width: 100,
       flex: 1,
       renderCell: (params) => {
         return (
@@ -232,7 +227,7 @@ function TableDataGrid({
               <BorderLinearProgress
                 variant="determinate"
                 color="primary"
-                value={params?.row?.completed_inspections_progress}
+                value={params?.row?.percentage_clients_on_lot}
                 sx={{
                   backgroundColor: '#bbf7d0',
                   [`& .${linearProgressClasses.bar}`]: {
@@ -243,7 +238,7 @@ function TableDataGrid({
               />
             </Grid>
             <Grid item>
-              <Typography variant="h6">{Math.round(params?.row?.completed_inspections_progress)}%</Typography>
+              <Typography variant="h6">{Math.round(params?.row?.percentage_clients_on_lot)}%</Typography>
             </Grid>
           </Grid>
         );
@@ -306,15 +301,15 @@ function TableDataGrid({
         components={{
           Toolbar: () => <CustomToolbar page={page} searchFilter={searchFilter} userId={userId} paginated={paginated} /> || GridToolbar
         }}
-        rows={getLotChantiersQuery.data?.data || []}
+        rows={getLotsLeadsQuery.data || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
         onPageSizeChange={(e) => console.log(e)}
         checkboxSelection={false}
         disableSelectionOnClick={true}
-        rowCount={getLotChantiersQuery.data?.total || 0}
-        loading={getLotChantiersQuery.isLoading || getLotChantiersQuery.isFetching}
+        rowCount={getLotsLeadsQuery.data?.total || 0}
+        loading={getLotsLeadsQuery.isLoading || getLotsLeadsQuery.isFetching}
         paginationMode="server"
         filterMode="server"
         onFilterModelChange={(e) => {
@@ -346,7 +341,7 @@ function CustomToolbar({ searchFilter, page, userId, paginated }) {
           <Button
             LinkComponent={'a'}
             target="_blank"
-            href={`${process.env.REACT_APP_API_URL}lot-chantiers/export-excel?${paginated ? `paginated=${paginated}&` : ''}${
+            href={`${process.env.REACT_APP_API_URL}lot-leads/export-excel?${paginated ? `paginated=${paginated}&` : ''}${
               searchFilter ? `search=${searchFilter}&` : ''
             }${userId ? `userId=${userId}&` : ''}`}
           >
