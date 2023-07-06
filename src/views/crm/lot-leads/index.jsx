@@ -14,8 +14,6 @@ import {
   linearProgressClasses,
   Menu,
   MenuItem,
-  Tab,
-  Tabs,
   Tooltip,
   Typography
 } from '@mui/material';
@@ -38,7 +36,6 @@ import {
 } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-import useAuth from 'hooks/useAuth';
 import { useGetSettingsPreferences } from 'services/settings.service';
 import { useDeleteLot, useGetLotLeads } from 'services/lot-leads.service';
 
@@ -206,7 +203,7 @@ function TableDataGrid({
       width: 150
     },
     {
-      field: 'nombre_leads',
+      field: 'nombre_all_clients',
       headerName: 'Nombre des Leads',
       sortable: false,
       filterable: false,

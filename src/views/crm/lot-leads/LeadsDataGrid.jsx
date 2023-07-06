@@ -1,5 +1,5 @@
 import { AssignmentTurnedInOutlined, PendingActionsOutlined } from '@mui/icons-material';
-import { Fab, Grid, IconButton, Tooltip } from '@mui/material';
+import { Fab, Grid, IconButton, TextField, Tooltip } from '@mui/material';
 import { Box } from '@mui/system';
 import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
@@ -79,10 +79,19 @@ const columns = [
     width: 160
   },
   {
+    field: 'societe',
+    headerName: 'Société',
+    sortable: false,
+    width: 160
+  },
+  {
     field: 'category',
     headerName: 'catégorie',
     sortable: false,
-    width: 160
+    width: 160,
+    renderCell: (params) => {
+      return <>{params?.row?.category?.intitule}</>;
+    }
   },
   {
     field: 'phone_number',
@@ -109,229 +118,10 @@ const columns = [
   }
 ];
 
-const rows = [
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  },
-  {
-    id: 1,
-    status: 'Active',
-    reference: 'ABC12345',
-    fullname: 'John Doe',
-    adresse: '123 Main St',
-    zip_code: '12345',
-    category: 'Category 1',
-    phone_number: '555-123-4567',
-    email: 'johndoe@example.com'
-  },
-  {
-    id: 2,
-    status: 'Inactive',
-    reference: 'DEF67890',
-    fullname: 'Jane Smith',
-    adresse: '456 Elm St',
-    zip_code: '67890',
-    category: 'Category 2',
-    phone_number: '555-987-6543',
-    email: 'janesmith@example.com'
-  }
-];
 function LeadsDataGrid(leadsData) {
+  console.log('====================================');
+  console.log(leadsData.leadsData);
+  console.log('====================================');
   const navigate = useNavigate();
   return (
     <MainCard
@@ -367,7 +157,7 @@ function LeadsDataGrid(leadsData) {
               quickFilterProps: { debounceMs: 300 }
             }
           }}
-          rows={leadsData || rows}
+          rows={leadsData.leadsData}
           columns={columns}
           initialState={{
             pagination: {

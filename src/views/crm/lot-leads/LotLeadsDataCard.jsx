@@ -7,101 +7,56 @@ export default function LotLeadsDataCard({ clientData, title }) {
   return (
     <MainCard title={title || 'Informations du client'}>
       <Grid container spacing={gridSpacing}>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={6}>
           <Stack spacing={2}>
             <Typography variant="h4">Informations générales</Typography>
             <Stack spacing={0}>
-              {/* <Typography variant="h6" sx={{ mb: 1 }}>
-                Credit Card
-              </Typography> */}
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Référence :</Typography>
-                <Typography variant="body2">{clientData?.reference}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Intitulé :</Typography>
-                <Typography variant="body2">{clientData?.name}</Typography>
-              </Stack>
-              {clientData?.identifient_fiscal && (
+              {clientData?.reference && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Identifiant Fiscal :</Typography>
-                  <Typography variant="body2">{clientData?.identifient_fiscal}</Typography>
+                  <Typography variant="subtitle1">Référence :</Typography>
+                  <Typography variant="body2">{clientData?.reference}</Typography>
                 </Stack>
               )}
-              {clientData?.identifient_tva && (
+              {clientData?.nombre_leads && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Identifiant TVA :</Typography>
-                  <Typography variant="body2">{clientData?.identifient_tva}</Typography>
+                  <Typography variant="subtitle1">Nombre de Leads :</Typography>
+                  <Typography variant="body2">{clientData?.nombre_leads}</Typography>
                 </Stack>
               )}
-              {clientData?.interlocuteur && (
+              {clientData?.nombre_clients && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Interlocuteur :</Typography>
-                  <Typography variant="body2">{clientData?.interlocuteur}</Typography>
+                  <Typography variant="subtitle1">Leads Tranféré en Client :</Typography>
+                  <Typography variant="body2">{clientData?.nombre_clients}</Typography>
                 </Stack>
               )}
             </Stack>
           </Stack>
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={6}>
           <Stack spacing={2}>
             <Typography variant="h4">Informations de contact</Typography>
             <Stack spacing={0}>
-              {/* <Typography variant="h6" sx={{ mb: 1 }}>
-                Carrier
-              </Typography> */}
-              {clientData?.phone_number && (
+              {clientData?.creator_user?.name && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Numéro de téléphone :</Typography>
-                  <Typography variant="body2">{clientData?.phone_number}</Typography>
+                  <Typography variant="subtitle1">Créateur :</Typography>
+                  <Typography variant="body2">{clientData?.creator_user?.name}</Typography>
                 </Stack>
               )}
-              {clientData?.email && (
+              {clientData?.creator_user?.email && (
                 <Stack direction="row" spacing={1}>
                   <Typography variant="subtitle1">Email :</Typography>
-                  <Typography variant="body2">{clientData?.email}</Typography>
+                  <Typography variant="body2">{clientData?.creator_user?.email}</Typography>
                 </Stack>
               )}
-              {clientData?.fax && (
+              {clientData?.creator_user?.phone_number && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Fax :</Typography>
-                  <Typography variant="body2">{clientData?.fax}</Typography>
+                  <Typography variant="subtitle1">N° de téléphone :</Typography>
+                  <Typography variant="body2">{clientData?.creator_user?.phone_number}</Typography>
                 </Stack>
               )}
             </Stack>
           </Stack>
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <Stack spacing={2}>
-            <Typography variant="h4">Informations résidentielles</Typography>
-            <Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Addresse :</Typography>
-                <Typography variant="body2">{clientData?.address}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Ville :</Typography>
-                <Typography variant="body2">{clientData?.ville}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Code postal :</Typography>
-                <Typography variant="body2">{clientData?.code_postal}</Typography>
-              </Stack>
-            </Stack>
-          </Stack>
-        </Grid>
-        {clientData?.signature && (
-          <Grid item xs={12} sm={6} md={4}>
-            <Stack spacing={2}>
-              <Typography variant="h4">Signature</Typography>
-              <Stack>
-                <Stack direction="row" spacing={1}>
-                  <img src={clientData?.signature} alt="" />
-                </Stack>
-              </Stack>
-            </Stack>
-          </Grid>
-        )}
       </Grid>
     </MainCard>
   );

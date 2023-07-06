@@ -2,6 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
+
+export const useGetSettingsCategoryClient = () => {
+  return useQuery(['categorie-clients'], () => axiosClient.get(`categorie-clients`).then((res) => res.data), {});
+};
+
+export const useGetSettingsCategoryClientById = (CategoryId) => {
+  return useQuery(['categorie-clients', CategoryId], () => axiosClient.get(`categorie-clients?${CategoryId}`).then((res) => res.data), {});
+};
+
 export const useGetSettingsPreferences = () => {
   return useQuery(['settings', 'preferences'], () => axiosClient.get(`settings/preferences`).then((res) => res.data), {});
 };

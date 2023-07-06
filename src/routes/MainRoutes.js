@@ -762,11 +762,11 @@ const MainRoutes = {
       element: <AppCrmLeadCreate />
     },
     {
-      path: '/leads/:contratId/details',
+      path: '/leads/:leadsId/details',
       element: <AppCrmLeadDetails />
     },
     {
-      path: '/leads/:contratId/update',
+      path: '/leads/:leadsId/update',
       element: <AppCrmLeadUpdate />
     },
     {

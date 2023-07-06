@@ -17,8 +17,9 @@ const DetailsLotLeadsPage = () => {
   const lotData = getLotQuery.data;
 
   console.log('====================================');
-  console.log(lotData.all_clients);
+  console.log(lotData);
   console.log('====================================');
+  localStorage.setItem('LotId', lotLeadsId);
 
   return (
     <MainCard
@@ -38,7 +39,7 @@ const DetailsLotLeadsPage = () => {
         {getLotQuery.isSuccess && (
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12}>
-              <LeadsDataGrid leadsData={lotData.all_clients} />
+              <LeadsDataGrid leadsData={lotData?.all_clients} />
             </Grid>
           </Grid>
         )}

@@ -29,6 +29,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
 import CustomFileUpload from '../clients/list/FileUpload';
 import useAuth from 'hooks/useAuth';
+import { useCreateLotLead } from 'services/lot-leads.service';
 
 const LotChantierCreatePage = () => {
   const fileRef = useRef();
@@ -60,7 +61,7 @@ const LotChantierCreatePage = () => {
   const location = useLocation();
   const goBackLink = location.state?.goBackLink;
   const clientId = location.state?.clientId;
-  const createLotChantiersMutation = useCreateLotChantier();
+  const createLotChantiersMutation = useCreateLotLead();
   const { logout, user } = useAuth();
 
   const getClientsQuery = useGetUsers({ role: 'client', paginated: false });
@@ -68,10 +69,10 @@ const LotChantierCreatePage = () => {
   const [selectedContrat, setSelectedContrat] = useState(null);
 
   const initialFormState = {
-    percentage: 40,
+    percentage: 0,
     d_contrat_id: null,
     chemin_fichier: null,
-    generate_inspections: 0
+    generate_interventions: 0
   };
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState(initialFormState);
@@ -137,7 +138,7 @@ const LotChantierCreatePage = () => {
     try {
       handleOpenLoadingOverlay();
       const res = await createLotChantiersMutation.mutateAsync(formData);
-      navigate(`/lot-chantier/${res?.data?.id}/details`, {
+      navigate(`/lot-leads/${res?.data?.id}/details`, {
         // state: {
         //   LotChantierId: res?.data?.id
         // }
@@ -202,7 +203,7 @@ const LotChantierCreatePage = () => {
   };
 
   return (
-    <MainCard title="Importer Lead" backButton goBackLink={goBackLink}>
+    <MainCard title="Importer Leads" backButton goBackLink={goBackLink}>
       <div
         style={{
           maxWidth: 650,
@@ -216,103 +217,11 @@ const LotChantierCreatePage = () => {
               <Grid item xs={12} md={12}>
                 <>
                   <Typography variant="h3" component="div">
-                    Importer Lead
+                    Importer Leads
                   </Typography>
 
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-                      {/* {!defaultClient && (
-                        <Grid item xs={12}>
-                          <Autocomplete
-                            onChange={(event, newValue) => {
-                              setSelectedClient(newValue?.id);
-                              setFormInput((formData) => {
-                                return { ...formData, client_id: newValue?.id };
-                              });
-                            }}
-                            options={getClientsQuery?.data || []}
-                            getOptionLabel={(option) => option.name}
-                            // defaultValue={[top100Films[0], top100Films[4]]}
-                            // value={getClientsQuery.isSuccess ? getClientsQuery?.data?.find((client) => client.id === selectedClient) : null}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                variant="standard"
-                                label="Client*"
-                                error={!!formErrors?.data?.id}
-                                helperText={renderArrayMultiline(formErrors?.data?.id)}
-                              />
-                            )}
-                          />
-                        </Grid>
-                      )}
-
-                      <Grid item xs={12}>
-                        <Autocomplete
-                          onChange={(event, newValue) => {
-                            setSelectedContrat(newValue);
-                            setFormInput((formData) => {
-                              return { ...formData, d_contrat_id: newValue?.id };
-                            });
-                          }}
-                          options={getClientContratsQuery?.data || []}
-                          getOptionLabel={(option) => option.titre}
-                          // defaultValue={[top100Films[0], top100Films[4]]}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="standard"
-                              label="Contrat*"
-                              error={!!formErrors?.data?.d_contrat_id}
-                              helperText={renderArrayMultiline(formErrors?.data?.d_contrat_id)}
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormControl>
-                          <FormGroup row>
-                            <FormControlLabel
-                              control={
-                                <Switch checked={formInput?.generate_inspections} name="generate_inspections" onChange={handleChange} />
-                              }
-                              label="Générer Interventions"
-                            />
-                          </FormGroup>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography gutterBottom>Pourcentage</Typography>
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: 16,
-                            alignItems: 'center'
-                          }}
-                        >
-                          <Slider
-                            disabled={!formInput?.generate_inspections}
-                            valueLabelDisplay="auto"
-                            defaultValue={formInput?.percentage}
-                            value={formInput?.percentage}
-                            name="percentage"
-                            onChange={handleChange}
-                          />
-                          <Input
-                            disabled={!formInput?.generate_inspections}
-                            onChange={handleChange}
-                            defaultValue={formInput?.percentage}
-                            value={formInput?.percentage}
-                            size="small"
-                            inputProps={{
-                              min: 0,
-                              max: 100,
-                              type: 'number',
-                              'aria-labelledby': 'input-slider'
-                            }}
-                          />
-                        </div>
-                      </Grid> */}
                       <Grid item xs={12}>
                         <FormProvider {...methods}>
                           <Box component="form" noValidate autoComplete="off" onSubmit={methods.handleSubmit(onSubmitHandler)}>
@@ -321,7 +230,7 @@ const LotChantierCreatePage = () => {
                               ref={fileRef}
                               limit={1}
                               multiple={false}
-                              name="image"
+                              name="file"
                               handleFilesChange={handleFilesChange}
                               onFileDelete={onFileDelete}
                             />
