@@ -22,10 +22,9 @@ import {
 import { format } from 'date-fns';
 import useAuth from 'hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useGetSettingsPreferences } from 'services/settings.service';
-import { useGetCategories } from 'services/categorie.service';
+import { useGetSettingsCategoryClient, useGetSettingsPreferences } from 'services/settings.service';
 
-const CategoriesList = ({ userId, goBackLink = `/categories`, disableTopBar, clientId = null }) => {
+const CategoriesList = ({ userId, goBackLink = `/categories-clients`, disableTopBar, clientId = null }) => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
@@ -72,17 +71,17 @@ const CategoriesList = ({ userId, goBackLink = `/categories`, disableTopBar, cli
   return (
     <>
       <MainCard
-        title={'Liste des Catégories'}
+        title={'Liste des Catégories Clients'}
         content={false}
         secondary={
           user?.role.includes('admin') && (
             <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-              <Tooltip title="Ajouter Catégorie">
+              <Tooltip title="Ajouter Catégorie Client">
                 <Fab
                   color="primary"
                   size="small"
                   onClick={() =>
-                    navigate(`/admin/categories/create`, {
+                    navigate(`/admin/categories-clients/create`, {
                       couleur: '',
                       state: {
                         goBackLink: goBackLink
@@ -167,7 +166,7 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/admin/categories/${params?.row?.id}/details`);
+          navigate(`/admin/categories-clients/${params?.row?.id}/details`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
@@ -179,7 +178,7 @@ function EditCell({ params }) {
 function TableDataGrid({ setSearchFilter, searchFilter, setPage, page }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
-  const getCategoriesQuery = useGetCategories({ page, searchFilter });
+  const getCategoriesQuery = useGetSettingsCategoryClient({ page, searchFilter });
 
   const columns = [
     {
@@ -267,14 +266,14 @@ function TableDataGrid({ setSearchFilter, searchFilter, setPage, page }) {
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getCategoriesQuery.data?.data || []}
+        rows={getCategoriesQuery?.data || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
         onPageSizeChange={(e) => console.log(e)}
         checkboxSelection={false}
         disableSelectionOnClick={true}
-        rowCount={getCategoriesQuery.data?.total || 0}
+        rowCount={getCategoriesQuery?.data?.total || 0}
         loading={getCategoriesQuery.isLoading || getCategoriesQuery.isFetching}
         pagination
         paginationMode="server"

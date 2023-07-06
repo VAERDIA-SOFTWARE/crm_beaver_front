@@ -1,60 +1,64 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
 // material-ui
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import { Autocomplete, Divider, Grid, Skeleton, TextField, Typography } from '@mui/material';
+import { Autocomplete, Divider, Grid, Skeleton, TextField, Box } from '@mui/material';
 
 // project imports
 import { LoadingButton } from '@mui/lab';
 import { useConfirm } from 'material-ui-confirm';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDeleteUserMutation, useGetUser, useToggleUserStatus, useUpdateUser } from 'services/users.service';
-import { useGetVilleCodePostals, useGetVilles } from 'services/zone-villes.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
+import CustomFileUpload from '../../clients/list/FileUpload';
+import { toast } from 'react-toastify';
 
-const ClientUpdatePage = () => {
+const UserUpdatePage = () => {
   const { userId } = useParams();
+  const fileRef = useRef();
 
-  const [formErrors, setFormErrors] = useState({});
-  const [formInput, setFormInput] = useState({
-    default_pagination: '',
-    email: '',
-    fax: '',
-    address: '',
-    phone_number: '',
-    password: '',
-    identifient_fiscal: '',
-    identifient_tva: '',
-    interlocuteur: '',
-    code_postal: '',
-    ville: ''
+  const methods = useForm({
+    // resolver: zodResolver(imageUploadSchema),
   });
 
   const toggleClientStatusMutation = useToggleUserStatus(userId);
-  const deleteClientMutation = useDeleteUserMutation(userId);
-  const updateClientMutation = useUpdateUser(userId);
-  const getClientQuery = useGetUser(userId);
-  const clientData = getClientQuery.data?.user;
-  const getVillesQuery = useGetVilles();
-  const getVilleCodePostalsQuery = useGetVilleCodePostals({ villeId: formInput?.ville });
-  const villeCodePostalsData = getVilleCodePostalsQuery.data;
+  const deleteUserMutation = useDeleteUserMutation(userId);
+  const updateUserMutation = useUpdateUser(userId);
+  const getUserQuery = useGetUser(userId);
+  const userData = getUserQuery.data;
+
+  const [formErrors, setFormErrors] = useState({});
+  const [formInput, setFormInput] = useState({
+    identifient: '',
+    name: '',
+    color: '',
+    email: '',
+    address: '',
+    postal_code: '',
+    city: '',
+    gender: '',
+    phone_number: '',
+    file_name: '',
+    password: '',
+    plain_text_password: '',
+    signature: ''
+  });
 
   const navigate = useNavigate();
 
   const confirm = useConfirm();
-
   useEffect(() => {
-    if (getClientQuery.isSuccess) {
+    if (getUserQuery.isSuccess) {
       setFormInput((f) => {
-        return { ...f, ...clientData, ville: clientData?.detail_ville?.id };
+        return { ...f, ...userData };
       });
     }
-  }, [clientData, getClientQuery.isSuccess]);
-
+  }, [userData, getUserQuery.isSuccess]);
   const handleChange = (e) => {
     setFormInput({
       ...formInput,
@@ -62,36 +66,81 @@ const ClientUpdatePage = () => {
     });
   };
 
+  const handleFilesChange = (files) => {
+    // Update chosen files
+    setFormInput((f) => {
+      return { ...f, signature: files[0] };
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormErrors({});
 
     try {
-      await updateClientMutation.mutateAsync({
-        ...formInput
-        // ville: getVillesQuery?.data?.find((e) => formInput?.ville === e?.id)?.nom
+      const formData = new FormData();
+      for (let key in formInput) {
+        formData.append(key, formInput[key]);
+      }
+      await updateUserMutation.mutateAsync(formData);
+      navigate('/users/list', {
+        replace: true
       });
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
     }
   };
+  const onFileDelete = () => {
+    // setSheetActualRowCount(null);
+    methods.reset();
+    fileRef.current.value = null;
+  };
+  const onSubmitHandler = (values) => {
+    const formData = new FormData();
+    formData.append('image', values.image);
 
+    if (values.images.length > 0) {
+      values.images.forEach((el) => formData.append('images', el));
+    }
+
+    // Call the Upload API
+    // uploadImage(formData);
+  };
+
+  const [isAlertShown, setIsAlertShown] = useState(false);
+
+  const handlePhoneChange = (event) => {
+    const phoneNumber = event.target.value;
+    const sanitizedPhoneNumber = phoneNumber.replace('+', ''); // Remove the "+" symbol
+
+    // Update the form input state with the sanitized phone number
+    setFormInput((prevState) => ({
+      ...prevState,
+      phone_number: sanitizedPhoneNumber
+    }));
+
+    if (sanitizedPhoneNumber.length < 8 || sanitizedPhoneNumber.length > 17) {
+      if (!isAlertShown) {
+        showInputErrorToast('Numéro de téléphone invalide : Veuillez entrer un numéro de téléphone valide.'); // Call the function to display an error toast with a custom message
+        setIsAlertShown(true); // Set the flag to indicate that the alert has been shown
+      }
+    } else {
+      setIsAlertShown(false); // Reset the flag when the phone number becomes valid
+    }
+  };
+  const showInputErrorToast = (message) => {
+    toast.error(message, { autoClose: 3000 }); // Display the error toast with a timeout of 3000 milliseconds
+  };
   return (
     <MainCard
-      title={`Client ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
+      title={`Collaborateur ${userData?.reference ? '- ' + userData?.reference : ''}`}
       backButton
-      goBackLink={`/clients/${userId}/details`}
+      goBackLink={`/users/${userId}/details`}
     >
-      <div>
-        <>
-          <form onSubmit={handleSubmit}>
+      {'getUserQuery.isSuccess' && (
+        <div>
+          <form onSubmit={handleSubmit} noValidate>
             <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  A. Informations générales:
-                </Typography>
-              </Grid>
               <Grid item xs={12} md={6}>
                 <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
               </Grid>
@@ -111,52 +160,6 @@ const ClientUpdatePage = () => {
                 <TextField
                   variant="standard"
                   fullWidth
-                  label="Identifiant fiscale (SIRET) *"
-                  value={formInput?.name || ''}
-                  name="name"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.name}
-                  helperText={renderArrayMultiline(formErrors?.data?.name)}
-                />
-              </Grid>
-              <Grid item xs={12} md={12}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="Informations*"
-                  value={formInput?.commentaires || ''}
-                  name="commentaires"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.commentaires}
-                  helperText={renderArrayMultiline(formErrors?.data?.commentaires)}
-                  multiline
-                  rows={4}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  B. Informations de contact:
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="phone_number"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Numéro de téléphone*"
-                  value={formInput?.phone_number || ''}
-                  error={!!!!formErrors?.data?.phone_number}
-                  helperText={renderArrayMultiline(formErrors?.data?.phone_number)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
                   label="E-mail*"
                   value={formInput?.email || ''}
                   name="email"
@@ -164,88 +167,6 @@ const ClientUpdatePage = () => {
                   error={!!formErrors?.data?.email}
                   helperText={renderArrayMultiline(formErrors?.data?.email)}
                 />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="fax"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Fax"
-                  value={formInput?.fax || ''}
-                  error={!!!!formErrors?.data?.fax}
-                  helperText={renderArrayMultiline(formErrors?.data?.fax)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_fiscal"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant Fiscal"
-                  value={formInput?.identifient_fiscal || ''}
-                  error={!!!!formErrors?.data?.identifient_fiscal}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_fiscal)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_tva"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant TVA"
-                  value={formInput?.identifient_tva || ''}
-                  error={!!!!formErrors?.data?.identifient_tva}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_tva)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="interlocuteur"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Interlocuteur"
-                  value={formInput?.interlocuteur || ''}
-                  error={!!!!formErrors?.data?.interlocuteur}
-                  helperText={renderArrayMultiline(formErrors?.data?.interlocuteur)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  C. Infos résidentielles:
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                {clientData && Array.isArray(getVillesQuery?.data) ? (
-                  <Autocomplete
-                    onChange={(event, newValue) => {
-                      setFormInput((formData) => {
-                        return { ...formData, ville: newValue?.id };
-                      });
-                    }}
-                    defaultValue={getVillesQuery?.data?.find((e) => clientData?.detail_ville?.id === e?.id)}
-                    options={getVillesQuery?.data || []}
-                    getOptionLabel={(option) => option?.nom}
-                    renderInput={(params) => (
-                      <TextField
-                        variant="standard"
-                        {...params}
-                        label="Ville*"
-                        error={!!formErrors?.data?.ville}
-                        helperText={renderArrayMultiline(formErrors?.data?.ville)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <Skeleton variant="rounded" width={'100%'} height={40} />
-                )}
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -259,45 +180,116 @@ const ClientUpdatePage = () => {
                   helperText={renderArrayMultiline(formErrors?.data?.address)}
                 />
               </Grid>
-
               <Grid item xs={12} md={6}>
-                {Array.isArray(villeCodePostalsData) ? (
-                  <Autocomplete
-                    onChange={(event, newValue) => {
-                      setFormInput((formData) => {
-                        return { ...formData, code_postal: newValue?.code };
-                      });
-                    }}
-                    defaultValue={villeCodePostalsData?.find((e) => clientData?.code_postal === e?.code)}
-                    options={villeCodePostalsData || []}
-                    getOptionLabel={(option) => {
-                      return option?.code;
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        variant="standard"
-                        {...params}
-                        label="Sélectionner un code postal"
-                        error={!!formErrors?.data?.code_postal}
-                        helperText={renderArrayMultiline(formErrors?.data?.code_postal)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <Skeleton variant="rounded" width={'100%'} height={40} />
-                )}
+                <TextField
+                  required
+                  type="number"
+                  inputProps={{
+                    pattern: '^\\d{8,17}$', // Specify the pattern for 8 to 17 digits
+                    onChange: handlePhoneChange // Custom function to handle phone number change
+                  }}
+                  variant="standard"
+                  name="phone_number"
+                  fullWidth
+                  label="Numéro de téléphone"
+                  value={formInput?.phone_number || ''}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  variant="standard"
+                  name="fax"
+                  onChange={handleChange}
+                  fullWidth
+                  label="Fax*"
+                  value={formInput?.fax || ''}
+                  error={!!formErrors?.data?.fax}
+                  helperText={renderArrayMultiline(formErrors?.data?.fax)}
+                />
               </Grid>
 
+              <Grid item xs={12} md={6}>
+                <div
+                  style={{
+                    marginBottom: 4
+                  }}
+                >
+                  <label htmlFor="couleur">Choisir un indicateur</label>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '10px',
+                    alignItems: 'center',
+                    flexWrap: 'wrap'
+                  }}
+                >
+                  <input id="couleur" onChange={handleChange} value={formInput?.couleur} name="couleur" type="color" />
+                  <p
+                    style={{
+                      color: '#f44336',
+                      fontSize: '0.75rem',
+                      fontWeight: '400',
+                      fontFamily: "'Inter',sans-serif",
+                      lineHeight: '1.66',
+                      textAlign: 'left',
+                      marginTop: '3px',
+                      marginRight: '0',
+                      marginBottom: '0',
+                      marginLeft: '0'
+                    }}
+                  >
+                    {formErrors?.data?.couleur}
+                  </p>
+                </div>
+              </Grid>
+              <Grid item xs={12} md={7}>
+                <TextField variant="standard" fullWidth label="Nom fichier" value={formInput?.nom_fichier || ''} disabled />
+              </Grid>
+              <Grid item xs={12}>
+                <FormProvider {...methods}>
+                  <Box component="form" noValidate autoComplete="off" onSubmit={methods.handleSubmit(onSubmitHandler)}>
+                    <CustomFileUpload
+                      fileTypes={['png']}
+                      ref={fileRef}
+                      limit={1}
+                      multiple={false}
+                      name="image"
+                      handleFilesChange={handleFilesChange}
+                      onFileDelete={onFileDelete}
+                    />
+
+                    {formErrors?.data?.signature && (
+                      <div
+                        style={{
+                          color: '#f44336',
+                          fontSize: '0.75rem',
+                          fontWeight: '400',
+                          fontFamily: "'Inter',sans-serif",
+                          lineHeight: '1.66',
+                          textAlign: 'left',
+                          marginTop: '22px',
+                          marginRight: '14px',
+                          marginBottom: '0',
+                          marginLeft: '14px'
+                        }}
+                      >
+                        {renderArrayMultiline(formErrors?.data?.signature)}
+                      </div>
+                    )}
+                  </Box>
+                </FormProvider>
+              </Grid>
               <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
                 <LoadingButton
-                  disabled={getClientQuery.isLoading}
-                  loadingPosition="end"
-                  endIcon={<SendIcon />}
-                  loading={updateClientMutation.isLoading}
+                  disabled={getUserQuery.isLoading}
+                  loadingPosition="start"
+                  startIcon={<SendIcon />}
+                  loading={updateUserMutation.isLoading}
                   variant="contained"
                   type="submit"
                 >
-                  Sauvegarder
+                  Modifier
                 </LoadingButton>
               </Grid>
             </Grid>
@@ -315,36 +307,36 @@ const ClientUpdatePage = () => {
             }}
           >
             <LoadingButton
-              disabled={getClientQuery.isLoading}
+              disabled={getUserQuery.isLoading}
               loading={toggleClientStatusMutation.isLoading}
               variant="outlined"
               onClick={() =>
                 confirm({
-                  description: `Êtes-vous sûr de vouloir ${clientData?.active_status ? 'désactiver' : 'activer'} ${clientData?.name}.`,
-                  title: `Veuillez confirmer ${clientData?.active_status ? 'la désactivation' : "l'activation"}`
+                  description: `Êtes-vous sûr de vouloir ${userData?.active_status ? 'désactiver' : 'activer'} ${userData?.name}.`,
+                  title: `Veuillez confirmer ${userData?.active_status ? 'la désactivation' : "l'activation"}`
                 })
                   .then(() => toggleClientStatusMutation.mutate())
                   .catch(() => console.log('Deactivation cancelled.'))
               }
             >
-              {clientData?.active_status ? 'Désactiver' : 'Activer'}
+              {userData?.active_status ? 'Désactiver' : 'Activer'}
             </LoadingButton>
 
             <LoadingButton
-              disabled={getClientQuery.isLoading}
+              disabled={getUserQuery.isLoading}
               loadingPosition="start"
               startIcon={<DeleteIcon />}
-              loading={deleteClientMutation.isLoading}
+              loading={deleteUserMutation.isLoading}
               variant="outlined"
               color="error"
               onClick={() =>
                 confirm({
-                  description: `Êtes-vous sûr de vouloir supprimer ${clientData?.name}.`,
+                  description: `Êtes-vous sûr de vouloir supprimer ${userData?.name}.`,
                   title: `Veuillez confirmer la suppression`
                 })
                   .then(async () => {
                     try {
-                      await deleteClientMutation.mutateAsync();
+                      await deleteUserMutation.mutateAsync();
                       navigate('/clients/list', {
                         replace: true
                       });
@@ -356,15 +348,28 @@ const ClientUpdatePage = () => {
               {'Supprimer'}
             </LoadingButton>
           </div>
-        </>
-      </div>
+        </div>
+      )}
     </MainCard>
   );
 };
 
-ClientUpdatePage.propTypes = {
+UserUpdatePage.propTypes = {
   open: PropTypes.bool,
   handleCloseDialog: PropTypes.func
 };
 
-export default ClientUpdatePage;
+export default UserUpdatePage;
+
+const returnEqualValuesInArray = (a, b) => {
+  const t = [];
+
+  a.forEach((aElement) => {
+    b.forEach((bElement) => {
+      if (aElement?.id === bElement?.id) {
+        t.push(aElement);
+      }
+    });
+  });
+  return t;
+};

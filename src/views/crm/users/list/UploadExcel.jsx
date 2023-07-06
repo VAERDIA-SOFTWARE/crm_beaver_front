@@ -205,7 +205,7 @@ const UploadExcel = ({ open, handleCloseDialog, rowData }) => {
   return (
     <Dialog open={open} TransitionComponent={Transition} onClose={handleCloseDialog}>
       <DialogTitle>Importer la liste des chantiers</DialogTitle>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <DialogContent>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12}>
@@ -235,7 +235,7 @@ const UploadExcel = ({ open, handleCloseDialog, rowData }) => {
                 <FormGroup row>
                   <FormControlLabel
                     control={<Switch checked={formInput?.generate_inspections} name="generate_inspections" onChange={handleChange} />}
-                    label="Generer Interventions"
+                    label="Generer inspections"
                   />
                 </FormGroup>
               </FormControl>

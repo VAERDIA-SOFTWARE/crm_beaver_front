@@ -66,9 +66,6 @@ const LeadsCreatePage = () => {
 
   const createClientMutation = useCreateUser();
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  const navigate = useNavigate();
   useEffect(() => {
     if (getLeadsQuery.isSuccess) {
       setFormInput((f) => {

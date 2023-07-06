@@ -511,7 +511,7 @@ const ProfileSection = () => {
                                   </ListItemButton>
                                 </Link>
                                 <Link
-                                  to={'/admin/categories'}
+                                  to={'/admin/categories-articles'}
                                   style={{
                                     textDecorationLine: 'none'
                                   }}
@@ -528,7 +528,28 @@ const ProfileSection = () => {
                                         />
                                       }
                                     </ListItemIcon>
-                                    <ListItemText primary={<Typography variant="body2">Catégories</Typography>} />
+                                    <ListItemText primary={<Typography variant="body2">Catégories Articles</Typography>} />
+                                  </ListItemButton>
+                                </Link>
+                                <Link
+                                  to={'/admin/categories-clients'}
+                                  style={{
+                                    textDecorationLine: 'none'
+                                  }}
+                                >
+                                  <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} selected={selectedIndex === 4}>
+                                    <ListItemIcon sx={{ my: 'auto', minWidth: 36 }}>
+                                      {
+                                        <FiberManualRecordIcon
+                                          sx={{
+                                            width: 6,
+                                            height: 6
+                                          }}
+                                          fontSize={'medium'}
+                                        />
+                                      }
+                                    </ListItemIcon>
+                                    <ListItemText primary={<Typography variant="body2">Catégories Clients</Typography>} />
                                   </ListItemButton>
                                 </Link>
                                 <Link

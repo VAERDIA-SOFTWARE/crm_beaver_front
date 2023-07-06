@@ -75,7 +75,7 @@ const JourFerieUpdatePage = () => {
     <MainCard title={`Jour Férié ${jourFerieData?.nom ? '- ' + jourFerieData?.nom : ''}`} backButton goBackLink={`/settings/jour-ferie`}>
       <div>
         <>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
               <Grid item xs={12} md={6}>
                 <TextField

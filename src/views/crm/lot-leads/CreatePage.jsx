@@ -103,28 +103,6 @@ const LotChantierCreatePage = () => {
   }, [selectedContrat, getClientsQuery.isSuccess, getClientsQuery.data, user, clientId]);
 
   const [sheetActualRowCount, setSheetActualRowCount] = useState(null);
-
-  const handleChange = (e) => {
-    let targetValue = null;
-
-    if (['generate_inspections'].includes(e.target.name)) {
-      targetValue = e.target.checked ? 1 : 0;
-      if (!e.target.checked) {
-        setFormInput({
-          ...formInput,
-          percentage: 0
-        });
-      }
-    } else {
-      targetValue = e.target.value;
-    }
-
-    setFormInput({
-      ...formInput,
-      [e.target.name]: targetValue
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormErrors({});
@@ -182,22 +160,9 @@ const LotChantierCreatePage = () => {
           const actualRowCount = workbook.worksheets[0].actualRowCount;
 
           setSheetActualRowCount(actualRowCount);
-
-          // workbook.eachSheet((sheet, id) => {
-          //   sheet.eachRow((row, rowIndex) => {
-          //     console.log(row.values, rowIndex);
-          //   });
-          // });
         });
       };
     }
-    // if (files[0]) {
-    //   workbook.xlsx.readFile(files[0]).then(function () {
-    //     const ws = workbook.getWorksheet('Sheet1');
-    //     const cell = ws.getCell('A1').value;
-    //     console.log(cell);
-    //   });
-    // }
 
     setFilesToUpload([...files]);
   };

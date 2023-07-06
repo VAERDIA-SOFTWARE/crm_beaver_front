@@ -5,7 +5,6 @@ import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import AuthGuard from 'utils/route-guard/AuthGuard';
 import LogsList from 'views/crm/logs';
-import DocumentsList from 'views/crm/documents';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
@@ -110,15 +109,15 @@ const AppCrmPropositionsUpdate = Loadable(lazy(() => import('views/crm/propositi
 
 const AppCrmInspectionsCreate = Loadable(lazy(() => import('views/crm/inspections/CreatePage')));
 
-const AppCrmDocumentList = Loadable(lazy(() => import('views/crm/documents/index')));
-const AppCrmDocumentCreate = Loadable(lazy(() => import('views/crm/documents/CreatePage')));
-const AppCrmDocumentDetails = Loadable(lazy(() => import('views/crm/documents/DetailsPage')));
-const AppCrmDocumentUpdate = Loadable(lazy(() => import('views/crm/documents/UpdatePage')));
+const AppCrmCategorieArticleList = Loadable(lazy(() => import('views/crm/preferences/categories-articles/index')));
+const AppCrmCategorieArticleCreate = Loadable(lazy(() => import('views/crm/preferences/categories-articles/CreatePage')));
+const AppCrmCategorieArticleDetails = Loadable(lazy(() => import('views/crm/preferences/categories-articles/DetailsPage')));
+const AppCrmCategorieArticleUpdate = Loadable(lazy(() => import('views/crm/preferences/categories-articles/UpdatePage')));
 
-const AppCrmCategorieList = Loadable(lazy(() => import('views/crm/preferences/categories/index')));
-const AppCrmCategorieCreate = Loadable(lazy(() => import('views/crm/preferences/categories/CreatePage')));
-const AppCrmCategorieDetails = Loadable(lazy(() => import('views/crm/preferences/categories/DetailsPage')));
-const AppCrmCategorieUpdate = Loadable(lazy(() => import('views/crm/preferences/categories/UpdatePage')));
+const AppCrmCategorieClientsList = Loadable(lazy(() => import('views/crm/preferences/categories-clients/index')));
+const AppCrmCategorieClientsCreate = Loadable(lazy(() => import('views/crm/preferences/categories-clients/CreatePage')));
+const AppCrmCategorieClientsDetails = Loadable(lazy(() => import('views/crm/preferences/categories-clients/DetailsPage')));
+const AppCrmCategorieClientsUpdate = Loadable(lazy(() => import('views/crm/preferences/categories-clients/UpdatePage')));
 
 const AppCrmPreferencesUpdate = Loadable(lazy(() => import('views/crm/preferences/SettingsPreferencesPage')));
 
@@ -863,37 +862,36 @@ const MainRoutes = {
       element: <LogsList />
     },
     {
-      path: '/documents',
-      element: <AppCrmDocumentList />
+      path: '/admin/categories-articles',
+      element: <AppCrmCategorieArticleList />
     },
     {
-      path: '/documents/create',
-      element: <AppCrmDocumentCreate />
+      path: '/admin/categories-articles/create',
+      element: <AppCrmCategorieArticleCreate />
     },
     {
-      path: '/documents/:documentId/details',
-      element: <AppCrmDocumentDetails />
+      path: '/admin/categories-articles/:categorieId/details',
+      element: <AppCrmCategorieArticleDetails />
     },
     {
-      path: '/documents/:documentId/update',
-      element: <AppCrmDocumentUpdate />
-    },
-
-    {
-      path: '/admin/categories',
-      element: <AppCrmCategorieList />
+      path: '/admin/categories-articles/:categorieId/update',
+      element: <AppCrmCategorieArticleUpdate />
     },
     {
-      path: '/admin/categories/create',
-      element: <AppCrmCategorieCreate />
+      path: '/admin/categories-clients',
+      element: <AppCrmCategorieClientsList />
     },
     {
-      path: '/admin/categories/:categorieId/details',
-      element: <AppCrmCategorieDetails />
+      path: '/admin/categories-clients/create',
+      element: <AppCrmCategorieClientsCreate />
     },
     {
-      path: '/admin/categories/:categorieId/update',
-      element: <AppCrmCategorieUpdate />
+      path: '/admin/categories-clients/:categorieId/details',
+      element: <AppCrmCategorieClientsDetails />
+    },
+    {
+      path: '/admin/categories-clients/:categorieId/update',
+      element: <AppCrmCategorieClientsUpdate />
     },
 
     {

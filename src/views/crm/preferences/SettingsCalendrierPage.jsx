@@ -59,7 +59,7 @@ const SettingsCalendrierPage = () => {
   return (
     <MainCard title={`Calendrier`}>
       <div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             {/* <Grid item xs={12} md={6}>
                 <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
@@ -83,7 +83,7 @@ const SettingsCalendrierPage = () => {
                 name="max_inspections"
                 onChange={handleChange}
                 fullWidth
-                label="Max Interventions"
+                label="Max inspections"
                 value={formInput?.max_inspections ?? ''}
                 error={!!!!formErrors?.data?.max_inspections}
                 helperText={renderArrayMultiline(formErrors?.data?.max_inspections)}
@@ -95,7 +95,7 @@ const SettingsCalendrierPage = () => {
                 name="max_inspections_par"
                 onChange={handleChange}
                 fullWidth
-                label="Max Interventions par"
+                label="Max inspections par"
                 value={formInput?.max_inspections_par ?? ''}
                 error={!!!!formErrors?.data?.max_inspections_par}
                 helperText={renderArrayMultiline(formErrors?.data?.max_inspections_par)}
@@ -140,7 +140,7 @@ const SettingsCalendrierPage = () => {
                 name="max_inspection_hours"
                 onChange={handleChange}
                 fullWidth
-                label="Durée d'Interventions"
+                label="Durée d'inspection"
                 value={formInput?.max_inspection_hours ?? ''}
                 error={!!!!formErrors?.data?.max_inspection_hours}
                 helperText={renderArrayMultiline(formErrors?.data?.max_inspection_hours)}

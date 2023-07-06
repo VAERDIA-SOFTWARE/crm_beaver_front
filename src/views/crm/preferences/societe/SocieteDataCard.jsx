@@ -24,7 +24,7 @@ export function SocieteGeneraleDataCard({ data }) {
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12} sm={6} md={4}>
           <Stack spacing={2}>
-            {/* <Typography variant="h4">Contrat</Typography> */}
+            {/* <Typography variant="h4">Chantier</Typography> */}
             <Stack>
               <Stack direction="row" spacing={1}>
                 <Typography variant="subtitle1">Intitulé :</Typography>
@@ -53,7 +53,7 @@ export function SocieteContactDataCard({ data }) {
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12} sm={6} md={4}>
           <Stack spacing={2}>
-            {/* <Typography variant="h4">Contrat</Typography> */}
+            {/* <Typography variant="h4">Chantier</Typography> */}
             <Stack>
               <Stack direction="row" spacing={1}>
                 <Typography variant="subtitle1">E-mail :</Typography>

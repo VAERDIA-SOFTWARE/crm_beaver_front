@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
 // material-ui
 import SendIcon from '@mui/icons-material/Send';
 import {
   Autocomplete,
   Divider,
+  Box,
   FormControl,
   FormHelperText,
   Grid,
@@ -13,58 +15,67 @@ import {
   Input,
   InputAdornment,
   InputLabel,
-  Skeleton,
-  TextField,
-  Typography
+  TextField
 } from '@mui/material';
 
 // project imports
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useCreateUser } from 'services/users.service';
-import { useGetVilleCodePostals, useGetVilles } from 'services/zone-villes.service';
+import { useGetOperations, useGetZonesVilles } from 'services/zone-villes.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
+import CustomFileUpload from '../../clients/list/FileUpload';
+import { toast } from 'react-toastify';
+import { useGetSettingsRoles } from 'services/settings.service';
 
-const ClientCreatePage = () => {
-  const { clientId } = useParams();
+const UserCreatePage = () => {
+  const createUserMutation = useCreateUser();
 
   const [formErrors, setFormErrors] = useState({});
-  const [formInput, setFormInput] = useState({
-    default_pagination: '',
-    email: '',
-    fax: '',
-    address: '',
-    phone_number: '',
-    password: '12345678',
-    identifient_fiscal: '',
-    identifient_tva: '',
-    interlocuteur: '',
-    code_postal: '',
-    ville: '',
-    role: 'client'
-  });
-
-  const createClientMutation = useCreateUser(clientId);
-
-  const getVilleCodePostalsQuery = useGetVilleCodePostals({ villeId: formInput?.ville });
-  const villeCodePostalsData = getVilleCodePostalsQuery.data;
-
-  const getVillesQuery = useGetVilles();
-
   const [showPassword, setShowPassword] = useState(false);
+  const fileRef = useRef();
 
+  const methods = useForm({
+    // resolver: zodResolver(imageUploadSchema),
+  });
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  const GetSettingsRolesQuery = useGetSettingsRoles();
+  const [formInput, setFormInput] = useState({
+    identifient: '',
+    name: '',
+    color: '#000',
+    email: '',
+    address: '',
+    postal_code: '',
+    city: '',
+    gender: '',
+    phone_number: '',
+    file_name: '',
+    password: '',
+    plain_text_password: '',
+    role_id: ''
+  });
 
   const navigate = useNavigate();
 
+  const handleFilesChange = (files) => {
+    // Update chosen files
+    setFormInput((f) => {
+      return { ...f, file_name: files[0] };
+    });
+  };
+
   const handleChange = (e) => {
+    console.log('====================================');
+    console.log(e.target.value);
+    console.log('====================================');
     setFormInput({
       ...formInput,
       [e.target.name]: e.target.value
@@ -76,253 +87,275 @@ const ClientCreatePage = () => {
     setFormErrors({});
 
     try {
-      await createClientMutation.mutateAsync(formInput);
-
-      navigate('/clients/list');
+      const formData = new FormData();
+      for (let key in formInput) {
+        formData.append(key, formInput[key]);
+      }
+      await createUserMutation.mutateAsync(formData);
+      navigate('/users/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
     }
   };
 
+  const onFileDelete = () => {
+    // setSheetActualRowCount(null);
+    methods.reset();
+    fileRef.current.value = null;
+  };
+  const onSubmitHandler = (values) => {
+    const formData = new FormData();
+    formData.append('image', values.image);
+
+    if (values.images.length > 0) {
+      values.images.forEach((el) => formData.append('images', el));
+    }
+
+    // Call the Upload API
+    // uploadImage(formData);
+  };
+  const [isAlertShown, setIsAlertShown] = useState(false);
+
+  const handlePhoneChange = (event) => {
+    const phoneNumber = event.target.value;
+    const sanitizedPhoneNumber = phoneNumber.replace('+', ''); // Remove the "+" symbol
+
+    // Update the form input state with the sanitized phone number
+    setFormInput((prevState) => ({
+      ...prevState,
+      phone_number: sanitizedPhoneNumber
+    }));
+  };
+  const showInputErrorToast = (message) => {
+    toast.error(message, { autoClose: 3000 }); // Display the error toast with a timeout of 3000 milliseconds
+  };
+  const [selectedRole, setSelectedRole] = useState(null);
+
+  const handleRoleChange = (event, value) => {
+    setSelectedRole(value);
+    setFormInput((prevFormInput) => ({
+      ...prevFormInput,
+      role_id: value ? value.id : ''
+    }));
+  };
   return (
-    <MainCard title="Ajouter Client" backButton goBackLink="/clients/list">
+    <MainCard title="Ajouter Utilisateur" backButton goBackLink="/users/list">
       <div>
-        <>
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  A. Informations générales:
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="Nom*"
-                  value={formInput?.name || ''}
-                  name="name"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.name}
-                  helperText={renderArrayMultiline(formErrors?.data?.name)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="E-mail*"
-                  value={formInput?.email || ''}
-                  name="email"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.email}
-                  helperText={renderArrayMultiline(formErrors?.data?.email)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="address"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Adresse*"
-                  value={formInput?.address || ''}
-                  error={!!formErrors?.data?.address}
-                  helperText={renderArrayMultiline(formErrors?.data?.address)}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  B. Informations de contact:
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="phone_number"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Numéro de téléphone*"
-                  value={formInput?.phone_number || ''}
-                  error={!!!!formErrors?.data?.phone_number}
-                  helperText={renderArrayMultiline(formErrors?.data?.phone_number)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="fax"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Fax"
-                  value={formInput?.fax || ''}
-                  error={!!!!formErrors?.data?.fax}
-                  helperText={renderArrayMultiline(formErrors?.data?.fax)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_fiscal"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant Fiscal"
-                  value={formInput?.identifient_fiscal || ''}
-                  error={!!!!formErrors?.data?.identifient_fiscal}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_fiscal)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_tva"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant TVA"
-                  value={formInput?.identifient_tva || ''}
-                  error={!!!!formErrors?.data?.identifient_tva}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_tva)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="interlocuteur"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Interlocuteur"
-                  value={formInput?.interlocuteur || ''}
-                  error={!!!!formErrors?.data?.interlocuteur}
-                  helperText={renderArrayMultiline(formErrors?.data?.interlocuteur)}
-                />
-              </Grid>
-
-              {false && (
-                <Grid item xs={12} md={6}>
-                  <FormControl error={!!!!formErrors?.data?.password} sx={{ width: '100%' }} variant="standard">
-                    <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
-                    <Input
-                      name="password"
-                      id="standard-adornment-password"
-                      type={showPassword ? 'text' : 'password'}
-                      onChange={handleChange}
-                      fullWidth
-                      label="Mot de passe"
-                      defaultValue=""
-                      error={!!formErrors?.data?.password}
-                      helperText={renderArrayMultiline(formErrors?.data?.password)}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                    <FormHelperText>{renderArrayMultiline(formErrors?.data?.password)}</FormHelperText>
-                  </FormControl>
-                </Grid>
-              )}
-
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  C. Infos résidentielles:
-                </Typography>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Autocomplete
-                  onChange={(event, newValue) => {
-                    // const arr = newValue.map((e) => e?.id);
-                    setFormInput((formData) => {
-                      return { ...formData, ville: newValue?.id };
-                    });
-                  }}
-                  multiple={false}
-                  options={getVillesQuery?.data || []}
-                  getOptionLabel={(option) => option?.nom}
-                  // defaultValue={[top100Films[0], top100Films[4]]}
-                  renderInput={(params) => (
-                    <TextField
-                      variant="standard"
-                      {...params}
-                      label="Ville*"
-                      error={!!formErrors?.data?.ville}
-                      helperText={renderArrayMultiline(formErrors?.data?.ville)}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                {Array.isArray(villeCodePostalsData) ? (
-                  <Autocomplete
-                    onChange={(event, newValue) => {
-                      setFormInput((formData) => {
-                        return { ...formData, code_postal: newValue?.code };
-                      });
-                    }}
-                    options={villeCodePostalsData || []}
-                    getOptionLabel={(option) => {
-                      return option?.code;
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        variant="standard"
-                        {...params}
-                        label="Sélectionner un code postal"
-                        error={!!formErrors?.data?.code_postal}
-                        helperText={renderArrayMultiline(formErrors?.data?.code_postal)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <Skeleton variant="rounded" width={'100%'} height={40} />
-                )}
-              </Grid>
-
-              <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
-                <LoadingButton
-                  loadingPosition="end"
-                  endIcon={<SendIcon />}
-                  loading={createClientMutation.isLoading}
-                  variant="contained"
-                  type="submit"
-                >
-                  Ajouter
-                </LoadingButton>
-              </Grid>
+        <form onSubmit={handleSubmit} noValidate>
+          <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
+            {/* <Grid item xs={12} md={6}>
+              <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
+            </Grid> */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                variant="standard"
+                fullWidth
+                label="Identifient*"
+                value={formInput?.identifient || ''}
+                name="identifient"
+                onChange={handleChange}
+                error={!!formErrors?.data?.identifient}
+                helperText={renderArrayMultiline(formErrors?.data?.identifient)}
+              />
             </Grid>
-          </form>
-        </>
+            <Grid item xs={12} md={6}>
+              <TextField
+                variant="standard"
+                fullWidth
+                label="Nom*"
+                value={formInput?.name || ''}
+                name="name"
+                onChange={handleChange}
+                error={!!formErrors?.data?.name}
+                helperText={renderArrayMultiline(formErrors?.data?.name)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                variant="standard"
+                fullWidth
+                label="E-mail*"
+                value={formInput?.email || ''}
+                name="email"
+                onChange={handleChange}
+                error={!!formErrors?.data?.email}
+                helperText={renderArrayMultiline(formErrors?.data?.email)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                variant="standard"
+                name="address"
+                onChange={handleChange}
+                fullWidth
+                label="Adresse"
+                value={formInput?.address || ''}
+                error={!!formErrors?.data?.address}
+                helperText={renderArrayMultiline(formErrors?.data?.address)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                variant="standard"
+                name="city"
+                onChange={handleChange}
+                fullWidth
+                label="Ville"
+                value={formInput?.city || ''}
+                error={!!formErrors?.data?.city}
+                helperText={renderArrayMultiline(formErrors?.data?.city)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                variant="standard"
+                name="postal_code"
+                onChange={handleChange}
+                fullWidth
+                label="Code Postale"
+                value={formInput?.postal_code || ''}
+                error={!!formErrors?.data?.postal_code}
+                helperText={renderArrayMultiline(formErrors?.data?.postal_code)}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                required
+                type="number"
+                inputProps={{
+                  pattern: '^\\d{8,17}$', // Specify the pattern for 8 to 17 digits
+                  onChange: handlePhoneChange // Custom function to handle phone number change
+                }}
+                variant="standard"
+                name="phone_number"
+                fullWidth
+                label="Numéro de téléphone"
+                value={formInput?.phone_number || ''}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                variant="standard"
+                name="gender"
+                onChange={handleChange}
+                fullWidth
+                label="Genre"
+                value={formInput?.gender || ''}
+                error={!!formErrors?.data?.gender}
+                helperText={renderArrayMultiline(formErrors?.data?.gender)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl error={!!!!formErrors?.data?.password} sx={{ width: '100%' }} variant="standard">
+                <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+                <Input
+                  name="password"
+                  id="standard-adornment-password"
+                  type={showPassword ? 'text' : 'password'}
+                  onChange={handleChange}
+                  fullWidth
+                  label="Mot de passe*"
+                  defaultValue=""
+                  error={!!formErrors?.data?.password}
+                  helperText={renderArrayMultiline(formErrors?.data?.password)}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+                <FormHelperText>{renderArrayMultiline(formErrors?.data?.password)}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Autocomplete
+                id="autocomplete"
+                options={GetSettingsRolesQuery.data}
+                getOptionLabel={(role) => role.name}
+                value={selectedRole}
+                onChange={handleRoleChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Selectionner Role*"
+                    variant="standard"
+                    fullWidth
+                    value={selectedRole ? selectedRole?.id : ''}
+                    onChange={(event) => setSelectedRole({ id: event.target.value })}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <div
+                style={{
+                  marginBottom: 4
+                }}
+              >
+                <label htmlFor="color">Choisir un indicateur</label>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '10px',
+                  alignItems: 'center',
+                  flexWrap: 'wrap'
+                }}
+              >
+                <input id="color" onChange={handleChange} name="color" type="color" />
+                <p
+                  style={{
+                    color: '#f44336',
+                    fontSize: '0.75rem',
+                    fontWeight: '400',
+                    fontFamily: "'Inter',sans-serif",
+                    lineHeight: '1.66',
+                    textAlign: 'left',
+                    marginTop: '3px',
+                    marginRight: '0',
+                    marginBottom: '0',
+                    marginLeft: '0'
+                  }}
+                >
+                  {formErrors?.data?.color}
+                </p>
+              </div>
+            </Grid>
+
+            <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
+              <LoadingButton
+                loadingPosition="end"
+                endIcon={<SendIcon />}
+                loading={createUserMutation.isLoading}
+                variant="contained"
+                type="submit"
+              >
+                Ajouter
+              </LoadingButton>
+            </Grid>
+          </Grid>
+        </form>
+        <Divider
+          style={{
+            margin: 20
+          }}
+        />
       </div>
     </MainCard>
   );
 };
 
-ClientCreatePage.propTypes = {
+UserCreatePage.propTypes = {
   open: PropTypes.bool,
   handleCloseDialog: PropTypes.func
 };
 
-export default ClientCreatePage;
+export default UserCreatePage;

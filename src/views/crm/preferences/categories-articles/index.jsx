@@ -2,9 +2,6 @@ import * as React from 'react';
 
 // material-ui
 import AddIcon from '@mui/icons-material/AddTwoTone';
-import ContentPasteOffRoundedIcon from '@mui/icons-material/ContentPasteOffRounded';
-import ContentPasteRoundedIcon from '@mui/icons-material/ContentPasteRounded';
-import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import { Box, Fab, Grid, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -20,23 +17,14 @@ import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
-  GridToolbarExport,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useGetDocuments, useGetDocumentVersions } from 'services/document.service';
-import useAuth from 'hooks/useAuth';
-import { useGetSettingsPreferences } from 'services/settings.service';
 import { format } from 'date-fns';
+import useAuth from 'hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { useGetSettingsCategoryArticle, useGetSettingsPreferences } from 'services/settings.service';
 
-const DocumentVersionsList = ({
-  documentQueryData,
-  documentId,
-  userId,
-  goBackLink = `/documents/list`,
-  disableTopBar,
-  clientId = null
-}) => {
+const CategoriesList = ({ userId, goBackLink = `/categories-articles`, disableTopBar, clientId = null }) => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
@@ -83,51 +71,93 @@ const DocumentVersionsList = ({
   return (
     <>
       <MainCard
-        title={`Liste des versions ${documentQueryData?.intitule ? '- ' + documentQueryData?.intitule : ''}`}
+        title={'Liste des Catégories Articles'}
         content={false}
         secondary={
-          <>
-            {/* {user?.role.includes('admin') && (
-              <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-                <Tooltip title="Ajouter Document">
-                  <Fab
-                    color="primary"
-                    size="small"
-                    onClick={() =>
-                      navigate(`/documents/create`, {
-                        couleur: '',
-                        state: {
-                          goBackLink: goBackLink,
-                          clientId: clientId
-                        }
-                      })
-                    }
-                    sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
-                  >
-                    <AddIcon fontSize="small" />
-                  </Fab>
-                </Tooltip>
-              </Grid>
-            )} */}
-          </>
+          user?.role.includes('admin') && (
+            <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
+              <Tooltip title="Ajouter Catégorie Article">
+                <Fab
+                  color="primary"
+                  size="small"
+                  onClick={() =>
+                    navigate(`/admin/categories-articles/create`, {
+                      couleur: '',
+                      state: {
+                        goBackLink: goBackLink
+                      }
+                    })
+                  }
+                  sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
+                >
+                  <AddIcon fontSize="small" />
+                </Fab>
+              </Tooltip>
+            </Grid>
+          )
         }
       >
         <TableDataGrid
-          documentId={documentId}
+          userId={userId}
           searchFilter={searchFilter}
           validated={validated}
           page={page}
           setPage={setPage}
           setSearchFilter={setSearchFilter}
         />
+        {false && (
+          <>
+            {' '}
+            <TabPanel value={tabValue} index={0}>
+              <TableDataGrid
+                userId={userId}
+                searchFilter={searchFilter}
+                validated={validated}
+                page={page}
+                setPage={setPage}
+                setSearchFilter={setSearchFilter}
+              />
+            </TabPanel>
+            <TabPanel value={tabValue} index={1}>
+              <TableDataGrid
+                userId={userId}
+                searchFilter={searchFilter}
+                validated={validated}
+                page={page}
+                setPage={setPage}
+                setSearchFilter={setSearchFilter}
+              />
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
+              <TableDataGrid
+                userId={userId}
+                searchFilter={searchFilter}
+                validated={validated}
+                page={page}
+                setPage={setPage}
+                setSearchFilter={setSearchFilter}
+              />
+            </TabPanel>
+            <TabPanel value={tabValue} index={3}>
+              <TableDataGrid
+                userId={userId}
+                searchFilter={searchFilter}
+                validated={validated}
+                page={page}
+                setPage={setPage}
+                setSearchFilter={setSearchFilter}
+              />
+            </TabPanel>
+          </>
+        )}
       </MainCard>
     </>
   );
 };
 
-export default DocumentVersionsList;
+export default CategoriesList;
 
-function EditCell({ params, documentId }) {
+function EditCell({ params }) {
   const navigate = useNavigate();
 
   return (
@@ -136,7 +166,7 @@ function EditCell({ params, documentId }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/documents/${params?.row?.id}/details`);
+          navigate(`/admin/categories-articles/${params?.row?.id}/details`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
@@ -145,10 +175,10 @@ function EditCell({ params, documentId }) {
   );
 }
 
-function TableDataGrid({ setSearchFilter, searchFilter, setPage, page, documentId }) {
+function TableDataGrid({ setSearchFilter, searchFilter, setPage, page }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
-  const getDocumentVersionsQuery = useGetDocumentVersions({ documentId, page, searchFilter });
+  const getCategoriesQuery = useGetSettingsCategoryArticle({ page, searchFilter });
 
   const columns = [
     {
@@ -159,73 +189,39 @@ function TableDataGrid({ setSearchFilter, searchFilter, setPage, page, documentI
       width: 100,
       flex: 1
     },
-    // {
-    //   field: 'description',
-    //   headerName: 'Description',
-    //   sortable: false,
-    //   filterable: false,
-    //   width: 100,
-    //   flex: 1
-    // },
     {
-      field: 'dernier_maj',
-      headerName: 'Dernière mise à jour',
+      field: 'created_at',
+      headerName: 'Créé le',
       sortable: false,
       filterable: false,
       width: 100,
       flex: 1,
       renderCell: (params) => {
-        return <>{format(new Date(params?.row?.updated_at), 'dd/LL/yyyy hh:mm:ss')}</>;
+        return <>{params?.row?.created_at && format(new Date(params?.row?.created_at), 'dd/LL/yyyy hh:mm:ss')}</>;
       }
     },
     {
-      field: 'version_download',
-      headerName: 'Document',
+      field: 'updated_at',
+      headerName: 'Mis à jour le',
+      sortable: false,
+      filterable: false,
       width: 100,
       flex: 1,
+      renderCell: (params) => {
+        return <>{params?.row?.updated_at ? format(new Date(params?.row?.updated_at), 'dd/LL/yyyy hh:mm:ss') : 'N/A'}</>;
+      }
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
       sortable: false,
       hideable: false,
       filterable: false,
       disableExport: true,
       renderCell: (params) => {
-        return (
-          <>
-            {' '}
-            <a
-              style={{
-                textDecoration: 'none',
-                color: 'inherit'
-              }}
-              href={`${process.env.REACT_APP_API_URL}documents/${params?.row?.d_document_id}/versions/${params?.row?.id}/download-pdf`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <IconButton
-                color="secondary"
-                size="large"
-                // onClick={(e) => {
-                //   navigate(`/documents/${params?.row?.id}/details`);
-                // }}
-              >
-                <DownloadIcon sx={{ fontSize: '1.3rem' }} />
-              </IconButton>
-            </a>
-          </>
-        );
+        return <EditCell params={params} />;
       }
     }
-
-    // {
-    //   field: 'action',
-    //   headerName: 'Action',
-    //   sortable: false,
-    //   hideable: false,
-    //   filterable: false,
-    //   disableExport: true,
-    //   renderCell: (params) => {
-    //     return <EditCell params={params} documentId={documentId} />;
-    //   }
-    // }
   ];
 
   return (
@@ -270,15 +266,15 @@ function TableDataGrid({ setSearchFilter, searchFilter, setPage, page, documentI
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getDocumentVersionsQuery.data?.data || []}
+        rows={getCategoriesQuery?.data || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
         onPageSizeChange={(e) => console.log(e)}
         checkboxSelection={false}
         disableSelectionOnClick={true}
-        rowCount={getDocumentVersionsQuery.data?.total || 0}
-        loading={getDocumentVersionsQuery.isLoading || getDocumentVersionsQuery.isFetching}
+        rowCount={getCategoriesQuery?.data?.total || 0}
+        loading={getCategoriesQuery.isLoading || getCategoriesQuery.isFetching}
         pagination
         paginationMode="server"
         filterMode="server"

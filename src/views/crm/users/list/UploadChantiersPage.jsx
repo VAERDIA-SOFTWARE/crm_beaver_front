@@ -202,7 +202,7 @@ const UploadChantiersPage = () => {
           marginRight: 'auto'
         }}
       >
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12}>
               <Autocomplete
@@ -231,7 +231,7 @@ const UploadChantiersPage = () => {
                 <FormGroup row>
                   <FormControlLabel
                     control={<Switch checked={formInput?.generate_inspections} name="generate_inspections" onChange={handleChange} />}
-                    label="Generer Interventions"
+                    label="Generer inspections"
                   />
                 </FormGroup>
               </FormControl>

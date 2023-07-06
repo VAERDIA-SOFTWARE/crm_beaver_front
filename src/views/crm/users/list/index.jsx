@@ -24,14 +24,15 @@ import {
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { useGetUsers } from 'services/users.service';
 import { useGetSettingsPreferences } from 'services/settings.service';
+import { useGetUsers } from 'services/users.service';
 
 const UsersList = () => {
   const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getusersQuery = useGetUsers({ page, searchFilter });
+  const getusersQuery = useGetUsers({ paginated: true, pageSize: pageSize, page: page });
 
   const navigate = useNavigate();
 
@@ -39,23 +40,23 @@ const UsersList = () => {
     <MainCard
       title="Liste des utilisateurs"
       content={false}
-      // secondary={
-      //   <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-      //     <Tooltip title="Ajouter Client">
-      //       <Fab
-      //         color="primary"
-      //         size="small"
-      //         onClick={() => navigate(`/users/create`)}
-      //         sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
-      //       >
-      //         <AddIcon fontSize="small" />
-      //       </Fab>
-      //     </Tooltip>
-      //   </Grid>
-      // }
+      secondary={
+        <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
+          <Tooltip title="Ajouter Client">
+            <Fab
+              color="primary"
+              size="small"
+              onClick={() => navigate(`/users/create`)}
+              sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
+            >
+              <AddIcon fontSize="small" />
+            </Fab>
+          </Tooltip>
+        </Grid>
+      }
       // secondary={<SecondaryAction link="https://material-ui.com/components/data-grid/" />}
     >
-      <TableDataGrid getusersQuery={getusersQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
+      <TableDataGrid setPageSize={setPageSize} getusersQuery={getusersQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
 };
@@ -114,7 +115,7 @@ function EditCell({ params }) {
   );
 }
 
-function TableDataGrid({ setSearchFilter, getusersQuery, setPage }) {
+function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
@@ -223,23 +224,18 @@ function TableDataGrid({ setSearchFilter, getusersQuery, setPage }) {
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getusersQuery.data?.data || []}
+        rows={getusersQuery?.data?.data || []}
         columns={columns}
-        pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
-        rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
-        onPageSizeChange={(e) => console.log(e)}
-        checkboxSelection={false}
-        disableSelectionOnClick={true}
-        rowCount={getusersQuery.data?.total || 0}
-        loading={getusersQuery.isLoading || getusersQuery.isFetching}
-        pagination
+        loading={getusersQuery?.isLoading || getusersQuery?.isFetching}
+        rowsPerPageOptions={[5, 10, 25]}
         paginationMode="server"
         filterMode="server"
-        onFilterModelChange={(e) => {
-          setSearchFilter(e?.quickFilterValues);
-        }}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        pageSize={parseInt(getusersQuery?.data?.per_page) || 10}
+        pagination
+        checkboxSelection={false}
+        rowCount={getusersQuery?.data?.total || 0}
         onPageChange={(newPage) => setPage(newPage + 1)}
-        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         initialState={[]}
       />
     </Box>

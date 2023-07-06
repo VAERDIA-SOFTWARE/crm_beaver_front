@@ -123,7 +123,7 @@ function TableDataGrid({ setSearchFilter, getSettingsCurrentPiecesQuery, setPage
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
-    { field: 'nom', headerName: 'Type', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'type', headerName: 'Type', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     {
       field: 'prefix',
       headerName: 'Prefix',

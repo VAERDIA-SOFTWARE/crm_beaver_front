@@ -4,12 +4,116 @@ import { toast } from 'react-toastify';
 
 
 export const useGetSettingsCategoryClient = () => {
-  return useQuery(['categorie-clients'], () => axiosClient.get(`categorie-clients`).then((res) => res.data), {});
+  return useQuery(['categorie-clients'], () => axiosClient.get(`settings/categorie-clients`).then((res) => res.data), {});
 };
+export const useGetSettingsCategoryClientById = (categorieId) => {
+  return useQuery(
+    ['categorie-clients', categorieId],
+    () => axiosClient.get(`settings/categorie-clients/${categorieId}`).then((res) => res.data),
+    {}
+  );
+};
+export function useCreateSettingsCategoryClient() {
+  const queryClient = useQueryClient();
 
-export const useGetSettingsCategoryClientById = (CategoryId) => {
-  return useQuery(['categorie-clients', CategoryId], () => axiosClient.get(`categorie-clients?${CategoryId}`).then((res) => res.data), {});
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.post(`settings/categorie-clients`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+export function useUpdateSettingsCategoryClient(categorieId) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.post(`settings/categorie-clients/${categorieId}?_method=put`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+export function useDeleteSettingsCategoryClient(categorieId) {
+  return useMutation(
+    async () => {
+      const res = await axiosClient.delete(`settings/categorie-clients/${categorieId}`);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+      }
+    }
+  );
+}
+
+export const useGetSettingsCategoryArticle = () => {
+  return useQuery(['categorie-articles'], () => axiosClient.get(`settings/categorie-articles`).then((res) => res.data), {});
 };
+export const useGetSettingsCategoryArticleById = (categorieId) => {
+  return useQuery(
+    ['categorie-articles', categorieId],
+    () => axiosClient.get(`settings/categorie-articles/${categorieId}`).then((res) => res.data),
+    {}
+  );
+};
+export function useCreateSettingsCategoryArticle() {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.post(`settings/categorie-articles`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+export function useUpdateSettingsCategoryArticle(categorieId) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.post(`settings/categorie-articles/${categorieId}?_method=put`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+export function useDeleteSettingsCategoryArticle(categorieId) {
+  return useMutation(
+    async () => {
+      const res = await axiosClient.delete(`settings/categorie-articles/${categorieId}`);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+      }
+    }
+  );
+}
 
 export const useGetSettingsPreferences = () => {
   return useQuery(['settings', 'preferences'], () => axiosClient.get(`settings/preferences`).then((res) => res.data), {});
@@ -268,3 +372,6 @@ export function useDeleteSocieteMutation() {
     }
   );
 }
+export const useGetSettingsRoles = () => {
+  return useQuery(['settings', 'roles'], () => axiosClient.get(`settings/roles`).then((res) => res.data), {});
+};

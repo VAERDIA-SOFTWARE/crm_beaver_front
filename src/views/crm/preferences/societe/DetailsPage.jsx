@@ -57,7 +57,7 @@ const SocieteDetailsPage = () => {
           >
             <Grid item md={4}>
               <HoverDataCard
-                title="Nombre des Interventions validées"
+                title="Nombre des inspections validées"
                 iconPrimary={ArrowUpwardIcon}
                 primary={32}
                 secondary="6% depuis les 3 derniers mois"
@@ -66,7 +66,7 @@ const SocieteDetailsPage = () => {
             </Grid>
             <Grid item md={4}>
               <HoverDataCard
-                title="Nombre des Interventions rapportées"
+                title="Nombre des inspections rapportées"
                 iconPrimary={ArrowUpwardIcon}
                 primary={28}
                 secondary="6% depuis les 3 derniers mois"
@@ -75,7 +75,7 @@ const SocieteDetailsPage = () => {
             </Grid>
             <Grid item md={4}>
               <HoverDataCard
-                title="Nombre des Contrats"
+                title="Nombre des chantiers"
                 iconPrimary={ArrowUpwardIcon}
                 primary={45}
                 secondary="6% depuis les 3 derniers mois"

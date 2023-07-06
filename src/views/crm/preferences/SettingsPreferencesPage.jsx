@@ -16,12 +16,13 @@ const SettingsPreferencesPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     default_pagination: '',
-    inspection_color: '',
+    intervention_color: '',
+    intervention_terminer_color: '',
     max_inspection_hours: '',
     max_inspections: '',
     max_inspections_par: '',
     percentage: 0,
-    validated_inspection_color: '',
+    proposition_color: '',
     taux_tva: ''
   });
 
@@ -36,7 +37,7 @@ const SettingsPreferencesPage = () => {
       });
     }
   }, [settingsPreferencesData, useGetSettingsPreferencesQuery.isSuccess]);
-
+  console.log(formInput);
   const handleChange = (e) => {
     setFormInput({
       ...formInput,
@@ -61,7 +62,7 @@ const SettingsPreferencesPage = () => {
   return (
     <MainCard title={`Préférences`}>
       <div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             {/* <Grid item xs={12} md={6}>
                 <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
@@ -79,18 +80,18 @@ const SettingsPreferencesPage = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
                 name="max_inspections"
                 onChange={handleChange}
                 fullWidth
-                label="Max Interventions par jour"
+                label="Max inspections par jour"
                 value={formInput?.max_inspections ?? ''}
                 error={!!!!formErrors?.data?.max_inspections}
                 helperText={renderArrayMultiline(formErrors?.data?.max_inspections)}
               />
-            </Grid>
+            </Grid> */}
             {/* <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
@@ -104,19 +105,19 @@ const SettingsPreferencesPage = () => {
               />
             </Grid> */}
 
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
                 name="max_inspection_hours"
                 onChange={handleChange}
                 fullWidth
-                label="Durée d'Intervention"
+                label="Durée d'inspection"
                 value={formInput?.max_inspection_hours ?? ''}
                 error={!!!!formErrors?.data?.max_inspection_hours}
                 helperText={renderArrayMultiline(formErrors?.data?.max_inspection_hours)}
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Grid> */}
+            {/* <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
                 name="taux_tva"
@@ -127,7 +128,7 @@ const SettingsPreferencesPage = () => {
                 error={!!!!formErrors?.data?.taux_tva}
                 helperText={renderArrayMultiline(formErrors?.data?.taux_tva)}
               />
-            </Grid>
+            </Grid> */}
             {/* <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
@@ -146,14 +147,14 @@ const SettingsPreferencesPage = () => {
                   marginBottom: 4
                 }}
               >
-                <label htmlFor="inspection_color">Couleur Intervention</label>
+                <label htmlFor="proposition_color">Couleur Intervention Planifier</label>
               </div>
               <input
-                id="inspection_color"
+                id="proposition_color"
                 onChange={handleChange}
-                name="inspection_color"
+                name="proposition_color"
                 type="color"
-                value={formInput?.inspection_color}
+                value={formInput?.proposition_color}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -162,16 +163,32 @@ const SettingsPreferencesPage = () => {
                   marginBottom: 4
                 }}
               >
-                <label htmlFor="validated_inspection_color">Couleur proposition</label>
+                <label htmlFor="intervention_terminer_color">Couleur Intervention Terminer</label>
               </div>
               <input
-                id="validated_inspection_color"
+                id="intervention_terminer_color"
                 onChange={handleChange}
-                name="validated_inspection_color"
+                name="intervention_terminer_color"
                 type="color"
-                value={formInput?.validated_inspection_color}
+                value={formInput?.intervention_terminer_color}
               />
             </Grid>
+            {/* <Grid item xs={12} md={6}>
+              <div
+                style={{
+                  marginBottom: 4
+                }}
+              >
+                <label htmlFor="proposition_color">Couleur Proposition</label>
+              </div>
+              <input
+                id="proposition_color"
+                onChange={handleChange}
+                name="proposition_color"
+                type="color"
+                value={formInput?.proposition_color}
+              />
+            </Grid> */}
             <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
               <LoadingButton
                 loadingPosition="end"

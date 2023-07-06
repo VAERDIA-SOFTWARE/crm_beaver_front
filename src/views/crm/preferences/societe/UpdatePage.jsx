@@ -66,7 +66,7 @@ const SocieteUpdatePage = () => {
     <MainCard title={`Société ${societeData?.intitule ? '- ' + societeData?.intitule : ''}`} backButton goBackLink={`/settings/societe`}>
       <div>
         <>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
                 <Grid item xs={12}>
