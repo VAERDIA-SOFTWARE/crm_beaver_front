@@ -6,19 +6,8 @@ export const useGetClientsContrats = ({ clientId }) => {
   return useQuery(['clients-contrats', clientId], () => axiosClient.get(`clients/${clientId}/contrats`).then((res) => res.data), {});
 };
 
-export const useGetContrats = ({ userId, page, searchFilter, validated }) => {
-  return useQuery(
-    ['contrats', validated, userId, searchFilter, page],
-    () =>
-      axiosClient
-        .get(
-          `contrats?${searchFilter ? `search=${searchFilter}&` : ''}${page ? `page=${page}&` : ''}${
-            validated !== -2 ? `validated=${validated}&` : ''
-          }${userId ? `userId=${userId}&` : ''}`
-        )
-        .then((res) => res.data),
-    {}
-  );
+export const useGetContrats = () => {
+  return useQuery(['contrats'], () => axiosClient.get(`/contrats`).then((res) => res.data), {});
 };
 
 export const useGetContrat = (contratId) => {
