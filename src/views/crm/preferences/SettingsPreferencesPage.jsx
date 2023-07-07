@@ -15,20 +15,24 @@ import renderArrayMultiline from 'utilities/utilities';
 const SettingsPreferencesPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
+    max_interventions: '',
+    percentage: '',
+    max_intervention_hours: '',
+    max_interventions_par: '',
     default_pagination: '',
     intervention_color: '',
-    intervention_terminer_color: '',
-    max_inspection_hours: '',
-    max_inspections: '',
-    max_inspections_par: '',
-    percentage: 0,
-    proposition_color: '',
-    taux_tva: ''
+    validated_intervention_color: '',
+    taux_tva: '',
+    contract_notice_days: '',
+    echantillonnage: ''
   });
 
   const updateSettingsPreferencesMutation = useUpdateSettingsPreferences();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
-  const settingsPreferencesData = useGetSettingsPreferencesQuery.data;
+  const settingsPreferencesData = useGetSettingsPreferencesQuery;
+  // console.log('====================================');
+  // console.log(useGetSettingsPreferencesQuery);
+  // console.log('====================================');
 
   useEffect(() => {
     if (useGetSettingsPreferencesQuery.isSuccess) {
@@ -80,44 +84,44 @@ const SettingsPreferencesPage = () => {
               />
             </Grid>
 
-            {/* <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
-                name="max_inspections"
+                name="max_interventions"
                 onChange={handleChange}
                 fullWidth
                 label="Max inspections par jour"
-                value={formInput?.max_inspections ?? ''}
-                error={!!!!formErrors?.data?.max_inspections}
-                helperText={renderArrayMultiline(formErrors?.data?.max_inspections)}
+                value={formInput?.max_interventions ?? ''}
+                error={!!!!formErrors?.data?.max_interventions}
+                helperText={renderArrayMultiline(formErrors?.data?.max_interventions)}
               />
-            </Grid> */}
-            {/* <Grid item xs={12} md={6}>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
-                name="max_inspections_par"
+                name="max_interventions_par"
                 onChange={handleChange}
                 fullWidth
                 label="Max inspections par"
-                value={formInput?.max_inspections_par ?? ''}
-                error={!!!!formErrors?.data?.max_inspections_par}
-                helperText={renderArrayMultiline(formErrors?.data?.max_inspections_par)}
+                value={formInput?.max_interventions_par ?? ''}
+                error={!!!!formErrors?.data?.max_interventions_par}
+                helperText={renderArrayMultiline(formErrors?.data?.max_interventions_par)}
               />
-            </Grid> */}
+            </Grid>
 
-            {/* <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
-                name="max_inspection_hours"
+                name="max_interventions_hours"
                 onChange={handleChange}
                 fullWidth
-                label="Durée d'inspection"
-                value={formInput?.max_inspection_hours ?? ''}
-                error={!!!!formErrors?.data?.max_inspection_hours}
-                helperText={renderArrayMultiline(formErrors?.data?.max_inspection_hours)}
+                label="Durée d'interventions"
+                value={formInput?.max_interventions_hours ?? ''}
+                error={!!!!formErrors?.data?.max_interventions_hours}
+                helperText={renderArrayMultiline(formErrors?.data?.max_interventions_hours)}
               />
-            </Grid> */}
-            {/* <Grid item xs={12} md={6}>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
                 name="taux_tva"
@@ -128,8 +132,8 @@ const SettingsPreferencesPage = () => {
                 error={!!!!formErrors?.data?.taux_tva}
                 helperText={renderArrayMultiline(formErrors?.data?.taux_tva)}
               />
-            </Grid> */}
-            {/* <Grid item xs={12} md={6}>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
                 name="percentage"
@@ -140,21 +144,21 @@ const SettingsPreferencesPage = () => {
                 error={!!!!formErrors?.data?.percentage}
                 helperText={renderArrayMultiline(formErrors?.data?.percentage)}
               />
-            </Grid> */}
+            </Grid>
             <Grid item xs={12} md={6}>
               <div
                 style={{
                   marginBottom: 4
                 }}
               >
-                <label htmlFor="proposition_color">Couleur Intervention Planifier</label>
+                <label htmlFor="intervention_color">Couleur Intervention Planifier</label>
               </div>
               <input
-                id="proposition_color"
+                id="intervention_color"
                 onChange={handleChange}
-                name="proposition_color"
+                name="intervention_color"
                 type="color"
-                value={formInput?.proposition_color}
+                value={formInput?.intervention_color}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -163,32 +167,16 @@ const SettingsPreferencesPage = () => {
                   marginBottom: 4
                 }}
               >
-                <label htmlFor="intervention_terminer_color">Couleur Intervention Terminer</label>
+                <label htmlFor="validated_intervention_color">Couleur Intervention Terminer</label>
               </div>
               <input
-                id="intervention_terminer_color"
+                id="validated_intervention_color"
                 onChange={handleChange}
-                name="intervention_terminer_color"
+                name="validated_intervention_color"
                 type="color"
-                value={formInput?.intervention_terminer_color}
+                value={formInput?.validated_intervention_color}
               />
             </Grid>
-            {/* <Grid item xs={12} md={6}>
-              <div
-                style={{
-                  marginBottom: 4
-                }}
-              >
-                <label htmlFor="proposition_color">Couleur Proposition</label>
-              </div>
-              <input
-                id="proposition_color"
-                onChange={handleChange}
-                name="proposition_color"
-                type="color"
-                value={formInput?.proposition_color}
-              />
-            </Grid> */}
             <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
               <LoadingButton
                 loadingPosition="end"

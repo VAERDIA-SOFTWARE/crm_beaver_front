@@ -336,7 +336,9 @@ export const useGetDashboardStats = ({ inspectionFilterValue, totalInspectionsVa
     {}
   );
 };
-
+export const useGetSettingsRoles = () => {
+  return useQuery(['settings', 'roles'], () => axiosClient.get(`settings/roles`).then((res) => res.data), {});
+};
 export const useGetSocieteSettings = () => {
   return useQuery(['societe-settings'], () => axiosClient.get(`settings/societe`).then((res) => res.data), {});
 };
@@ -345,10 +347,27 @@ export const useGetSocieteSettingsById = ({ societeId }) => {
   return useQuery(['societe', societeId], () => axiosClient.get(`settings/societe/${societeId}`).then((res) => res.data), {});
 };
 
-export function useUpdateSociete() {
+export function useUpdateSociete(societeId) {
+  const queryClient = useQueryClient();
+
   return useMutation(
-    async ({ id = '', values }) => {
-      const res = await axiosClient.put(`settings/societe/${id}`, values);
+    async (values) => {
+      const res = await axiosClient.post(`settings/societe/${societeId}?_method=put`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+
+export function useDeleteSociete(societeId) {
+  return useMutation(
+    async () => {
+      const res = await axiosClient.delete(`settings/societe/${societeId}`);
       return res.data;
     },
     {
@@ -359,19 +378,19 @@ export function useUpdateSociete() {
   );
 }
 
-export function useDeleteSocieteMutation() {
+export function useCreateSociete() {
+  const queryClient = useQueryClient();
+
   return useMutation(
-    async ({ id = '', values }) => {
-      const res = await axiosClient.delete(`settings/societe/${id}`, values);
+    async (values) => {
+      const res = await axiosClient.post(`settings/societe`, values);
       return res.data;
     },
     {
       onSuccess: (data) => {
         toast.success(data?.message);
+        queryClient.invalidateQueries();
       }
     }
   );
 }
-export const useGetSettingsRoles = () => {
-  return useQuery(['settings', 'roles'], () => axiosClient.get(`settings/roles`).then((res) => res.data), {});
-};

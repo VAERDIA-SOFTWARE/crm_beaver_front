@@ -88,10 +88,10 @@ export function SocieteAddresseDataCard({ data }) {
           <Stack spacing={2}>
             {/* <Typography variant="h4">Addresse</Typography> */}
             <Stack>
-              <Stack direction="row" spacing={1}>
+              {/* <Stack direction="row" spacing={1}>
                 <Typography variant="subtitle1">Location :</Typography>
                 <Typography variant="body2">{data?.location}</Typography>
-              </Stack>
+              </Stack> */}
               <Stack direction="row" spacing={1}>
                 <Typography variant="subtitle1">Code postale :</Typography>
                 <Typography variant="body2">{data?.code_postale}</Typography>

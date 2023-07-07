@@ -9,7 +9,7 @@ import { LoadingButton } from '@mui/lab';
 import { useConfirm } from 'material-ui-confirm';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDeleteSocieteMutation, useGetSocieteSettingsById, useUpdateSociete } from 'services/settings.service';
+import { useCreateSociete, useDeleteSociete, useGetSocieteSettingsById, useUpdateSociete } from 'services/settings.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
@@ -21,15 +21,31 @@ const SocieteUpdatePage = () => {
   const { societeId } = useParams();
 
   const [formErrors, setFormErrors] = useState({});
-  const [formInput, setFormInput] = useState({});
+  const [formInput, setFormInput] = useState({
+    intitule: '',
+    devise: '',
+    matricule_fisacale: '',
+    mail: '',
+    telephone_1: '',
+    telephone_2: '',
+    fax: '',
+    location: null,
+    code_postale: '',
+    pays: '',
+    ville: '',
+    complement: '',
+    adresse: '',
+    interlocuteur_societe: '',
+    interlocuteur_telephone: ''
+  });
 
-  const deleteSocieteMutation = useDeleteSocieteMutation(societeId);
-  const updateSocieteMutation = useUpdateSociete();
+  const deleteSocieteMutation = useDeleteSociete(societeId);
+  const updateSocieteMutation = useUpdateSociete(societeId);
+  const createSocieteMutation = useCreateSociete();
   const getSocieteQuery = useGetSocieteSettingsById({ societeId });
   const societeData = getSocieteQuery.data;
 
   const navigate = useNavigate();
-
   const confirm = useConfirm();
 
   useEffect(() => {
@@ -51,14 +67,20 @@ const SocieteUpdatePage = () => {
     e.preventDefault();
     setFormErrors({});
 
-    try {
-      await updateSocieteMutation.mutateAsync({
-        id: societeId,
-        values: formInput
-      });
-    } catch (error) {
-      const errorsObject = error?.response?.data;
-      setFormErrors(errorsObject);
+    if (getSocieteQuery.isSuccess) {
+      try {
+        await updateSocieteMutation.mutateAsync(formInput);
+      } catch (error) {
+        const errorsObject = error?.response?.data;
+        setFormErrors(errorsObject);
+      }
+    } else {
+      try {
+        await createSocieteMutation.mutateAsync(formInput);
+      } catch (error) {
+        const errorsObject = error?.response?.data;
+        setFormErrors(errorsObject);
+      }
     }
   };
 
@@ -75,7 +97,18 @@ const SocieteUpdatePage = () => {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <TextField variant="standard" fullWidth label="Intitulé" value={formInput?.intitule || ''} />
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      variant="standard"
+                      fullWidth
+                      label="Intitulé"
+                      value={formInput?.intitule || ''}
+                      name="intitule"
+                      onChange={handleChange}
+                      error={!!formErrors?.data?.intitule}
+                      helperText={renderArrayMultiline(formErrors?.data?.intitule)}
+                    />
+                  </Grid>{' '}
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <TextField
@@ -249,6 +282,18 @@ const SocieteUpdatePage = () => {
                     helperText={renderArrayMultiline(formErrors?.data?.ville)}
                   />
                 </Grid>
+                {/* <Grid item xs={12} md={6}>
+                  <TextField
+                    variant="standard"
+                    name="location"
+                    onChange={handleChange}
+                    fullWidth
+                    label="Location"
+                    value={formInput?.location || ''}
+                    error={!!formErrors?.data?.location}
+                    helperText={renderArrayMultiline(formErrors?.data?.location)}
+                  />
+                </Grid> */}
                 <Grid item xs={12} md={6}>
                   <TextField
                     variant="standard"

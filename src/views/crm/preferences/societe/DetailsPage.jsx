@@ -45,46 +45,6 @@ const SocieteDetailsPage = () => {
       }
     >
       <Grid container spacing={gridSpacing} rowSpacing={5}>
-        {false && (
-          <Grid
-            container
-            item
-            md={12}
-            spacing={gridSpacing}
-            style={{
-              width: '100%'
-            }}
-          >
-            <Grid item md={4}>
-              <HoverDataCard
-                title="Nombre des inspections validées"
-                iconPrimary={ArrowUpwardIcon}
-                primary={32}
-                secondary="6% depuis les 3 derniers mois"
-                // color={theme.palette.success.dark}
-              />
-            </Grid>
-            <Grid item md={4}>
-              <HoverDataCard
-                title="Nombre des inspections rapportées"
-                iconPrimary={ArrowUpwardIcon}
-                primary={28}
-                secondary="6% depuis les 3 derniers mois"
-                // color={theme.palette.success.dark}
-              />
-            </Grid>
-            <Grid item md={4}>
-              <HoverDataCard
-                title="Nombre des chantiers"
-                iconPrimary={ArrowUpwardIcon}
-                primary={45}
-                secondary="6% depuis les 3 derniers mois"
-                // color={theme.palette.success.dark}
-              />
-            </Grid>
-          </Grid>
-        )}
-
         <Grid item xs={12}>
           <SocieteDataCard data={societeData} />
         </Grid>

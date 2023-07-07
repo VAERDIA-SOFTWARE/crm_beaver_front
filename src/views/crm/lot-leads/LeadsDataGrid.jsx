@@ -26,7 +26,7 @@ function EditCell({ params }) {
 }
 const columns = [
   {
-    field: 'status',
+    field: 'type',
     headerName: 'Status',
     sortable: false,
     hideable: false,
@@ -35,9 +35,12 @@ const columns = [
     width: 80,
 
     renderCell: (params) => {
+      console.log('====================================');
+      console.log(params?.row?.type);
+      console.log('====================================');
       return (
         <>
-          {params?.row?.status === 'Active' ? (
+          {params?.row?.type === 0 ? (
             <PendingActionsOutlined
               sx={{
                 color: '#f1c40f'
