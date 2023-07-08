@@ -138,7 +138,7 @@ MainCard.propTypes = {
   shadow: PropTypes.string,
   sx: PropTypes.object,
   title: PropTypes.oneOfType([PropTypes.node, PropTypes.string, PropTypes.object]),
-  circle: prototype.string
+  circle: PropTypes.func
 };
 
 export default MainCard;

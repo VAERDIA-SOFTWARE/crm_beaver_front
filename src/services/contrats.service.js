@@ -9,12 +9,15 @@ export const useGetClientsContrats = ({ clientId }) => {
 export const useGetContrats = () => {
   return useQuery(['contrats'], () => axiosClient.get(`/contrats`).then((res) => res.data), {});
 };
+export const useGetMarquePAC = () => {
+  return useQuery(['parent-operations'], () => axiosClient.get(`/parent-operations`).then((res) => res.data), {});
+};
 
 export const useGetContrat = (contratId) => {
   return useQuery(['contrats', contratId], () => axiosClient.get(`contrats/${contratId ? contratId : ''}`).then((res) => res.data), {});
 };
 
-export function useCreateContrat({ clientId }) {
+export function useCreateContrat() {
   const queryClient = useQueryClient();
 
   return useMutation(

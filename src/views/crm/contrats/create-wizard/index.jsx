@@ -11,7 +11,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 
 // step options
-const steps = ['Détails contrat', 'Details opérations', 'Vérification'];
+const steps = ['Détails contrat', 'Details Interventions', 'Vérification'];
 
 const getStepContent = (step, handleNext, handleBack, setErrorIndex, shippingData, setShippingData, paymentData, setPaymentData) => {
   switch (step) {

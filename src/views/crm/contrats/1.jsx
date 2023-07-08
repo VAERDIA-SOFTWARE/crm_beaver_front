@@ -21,7 +21,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import TextEditor from './TextEditor';
 import { useNavigate } from 'react-router-dom';
 import AnimateButton from 'ui-component/extended/AnimateButton';
-
 const InformationsGenerales = ({
   clientLead,
   clients,
@@ -116,7 +115,6 @@ const InformationsGenerales = ({
     </Box>
   );
 };
-
 const DetailsInterventions = ({
   generateInterventionRows,
   nbrInterventions,

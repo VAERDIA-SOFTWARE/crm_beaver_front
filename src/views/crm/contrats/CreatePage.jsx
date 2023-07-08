@@ -239,7 +239,7 @@ import Review from './create-wizard/Review';
 import InformationsGenerales from './create-wizard/InformationsGeneralesForm';
 
 // step options
-const steps = ['Détails contrat', 'Details opérations', 'Vérification'];
+const steps = ['Crée contrat', 'Ajouter Details Interventions', 'Modifier Détails Contrats', 'Consulter Contrats', 'Mode Facturation'];
 
 const getStepContent = (step, handleNext, handleBack, setErrorIndex, shippingData, setShippingData, paymentData, setPaymentData) => {
   switch (step) {

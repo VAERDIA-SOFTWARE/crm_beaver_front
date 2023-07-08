@@ -2,13 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-export const useGetUsers = ({ type = '', page = 1, searchFilter = '', paginated = true }) => {
+export const useGetUsers = ({ role = '', type = '', page = 1, searchFilter = '', paginated = true }) => {
   return useQuery(
-    ['users', type, page, searchFilter],
+    ['users', role, type, page, searchFilter],
     () =>
       axiosClient
         .get(
-          `users?${type !== '' ? `type=${type}&` : ''}page=${page}&search=${searchFilter}&${paginated ? `paginated=${paginated}&` : ''}$`
+          `users?role_user=${role}${type !== '' ? `&type=${type}` : ''}&page=${page}&search=${searchFilter}&${
+            paginated ? `paginated=${paginated}&` : ''
+          }`
         )
         .then((res) => res.data),
     {}

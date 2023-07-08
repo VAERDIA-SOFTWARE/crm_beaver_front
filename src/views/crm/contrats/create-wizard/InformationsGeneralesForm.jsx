@@ -10,23 +10,24 @@ import { useGetUsers } from 'services/users.service';
 import renderArrayMultiline from 'utilities/utilities';
 import PropTypes from 'prop-types';
 import AnimateButton from 'ui-component/extended/AnimateButton';
-import { useCreateContrat } from 'services/contrats.service';
+import { useCreateContrat, useGetMarquePAC } from 'services/contrats.service';
 
-const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
+const InformationsGenerales = ({ handleNext }) => {
+  const [contractId, setcontractId] = useState('');
   const location = useLocation();
   const clientId = location.state?.clientId;
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     titre: '',
+    description: '',
     date_debut: new Date(),
     date_fin: new Date(),
-    description: '',
     client_id: clientId || null,
-    nb_interventions: null,
-    marque_pac_parents: [],
+    nb_interventions: '0',
+    marque_pac_parents: '',
     mise_en_place_date: new Date()
   });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormInput({
@@ -47,14 +48,10 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
         date_fin: format(formInput?.date_fin, 'yyyy-MM-dd'),
         mise_en_place_date: format(formInput?.date_debut, 'yyyy-MM-dd')
       };
+      const response = await createClientMutation.mutateAsync(formattedInput);
+      setcontractId(response?.data?.id);
 
-      const formData = new FormData();
-      for (let key in formattedInput) {
-        formData.append(key, formattedInput[key]);
-      }
-      await createClientMutation.mutateAsync(formattedInput);
       handleNext(1);
-      //   navigate('/contrats/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -62,21 +59,43 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
   };
 
   const getClientsQuery = useGetUsers({ role: 'client', paginated: false });
+  const getMarquePACQuery = useGetMarquePAC();
+
+  const startDate = moment(formInput?.date_debut, 'DD-MM-YYYY');
+  const endDate = moment(formInput?.date_fin, 'DD-MM-YYYY');
+  const duration = endDate.diff(startDate, 'days');
+
+  localStorage.setItem('duree', duration);
+  localStorage.setItem('contractId', contractId);
+
   return (
     <Box component="form" noValidate onSubmit={handleSubmit} autoComplete="off">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <TextField
-              required
               variant="standard"
               fullWidth
-              label="Description"
+              label="Titre"
               value={formInput?.titre || ''}
               name="titre"
               onChange={handleChange}
               error={!!formErrors?.data?.titre}
               helperText={renderArrayMultiline(formErrors?.data?.titre)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <TextField
+              variant="standard"
+              fullWidth
+              multiline
+              rows={'2'}
+              label="Description"
+              value={formInput?.description || ''}
+              name="description"
+              onChange={handleChange}
+              error={!!formErrors?.data?.description}
+              helperText={renderArrayMultiline(formErrors?.data?.description)}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -94,7 +113,7 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
                   required
                   variant="standard"
                   {...params}
-                  label="Client*"
+                  label="Client"
                   error={!!formErrors?.data?.client_id}
                   helperText={renderArrayMultiline(formErrors?.data?.client_id)}
                 />
@@ -105,18 +124,18 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
             <Autocomplete
               onChange={(event, newValue) => {
                 setFormInput((formData) => {
-                  return { ...formData, marque_pac_parents: newValue ? newValue.map((value) => value.id) : [] };
+                  return { ...formData, marque_pac_parents: newValue ? newValue.map((value) => value.code) : [] };
                 });
               }}
               multiple
-              options={getClientsQuery?.data || []}
-              getOptionLabel={(option) => option?.name}
+              options={getMarquePACQuery?.data || []}
+              getOptionLabel={(option) => option?.titre}
               renderInput={(params) => (
                 <TextField
                   required
                   variant="standard"
                   {...params}
-                  label="Marque PAC*"
+                  label="Marque PAC"
                   error={!!formErrors?.data?.marque_pac_parents}
                   helperText={renderArrayMultiline(formErrors?.data?.marque_pac_parents)}
                 />
@@ -138,6 +157,7 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
               renderInput={(params) => (
                 <TextField
                   required
+                  fullWidth
                   variant="standard"
                   {...params}
                   error={!!formErrors?.data?.mise_en_place_date}
@@ -160,6 +180,7 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
               }}
               renderInput={(params) => (
                 <TextField
+                  fullWidth
                   required
                   variant="standard"
                   {...params}
@@ -181,6 +202,7 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
               }
               renderInput={(params) => (
                 <TextField
+                  fullWidth
                   required
                   variant="standard"
                   {...params}
@@ -190,36 +212,22 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={6}>
             <TextField
-              required
-              variant="standard"
+              id="duree"
               fullWidth
-              label="Description"
-              value={formInput?.description || ''}
-              name="description"
-              onChange={handleChange}
-              error={!!formErrors?.data?.description}
-              helperText={renderArrayMultiline(formErrors?.data?.description)}
+              variant="standard"
+              label="Durée en Jours"
+              placeholder="Durée en Jours"
+              value={duration}
+              disabled
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              variant="standard"
-              fullWidth
-              label="Nombre d'interventions"
-              value={formInput?.nb_interventions || ''}
-              name="nb_interventions"
-              onChange={handleChange}
-              error={!!formErrors?.data?.nb_interventions}
-              helperText={renderArrayMultiline(formErrors?.data?.nb_interventions)}
-            />
-          </Grid>
+
           <Grid item xs={12}>
             <Stack direction="row" justifyContent="flex-end">
               <AnimateButton>
-                <Button variant="contained" sx={{ my: 3, ml: 1 }} type="submit" onClick={() => setErrorIndex(0)}>
+                <Button variant="contained" sx={{ my: 3, ml: 1 }} type="submit">
                   Next
                 </Button>
               </AnimateButton>
@@ -233,7 +241,6 @@ const InformationsGenerales = ({ setErrorIndex, handleNext, handleBack }) => {
 InformationsGenerales.propTypes = {
   shippingData: PropTypes.object,
   setShippingData: PropTypes.func,
-  handleNext: PropTypes.func,
-  setErrorIndex: PropTypes.func
+  handleNext: PropTypes.func
 };
 export default InformationsGenerales;

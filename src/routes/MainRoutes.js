@@ -64,6 +64,11 @@ const AppCrmUsersDetails = Loadable(lazy(() => import('views/crm/users/list/Deta
 const AppCrmUsersCreate = Loadable(lazy(() => import('views/crm/users/list/CreatePage')));
 const AppCrmUserCredentials = Loadable(lazy(() => import('views/crm/users/list/Credentials')));
 
+const AppCrmArticlesList = Loadable(lazy(() => import('views/crm/articles/list/index')));
+const AppCrmArticlesUpdate = Loadable(lazy(() => import('views/crm/articles/list/UpdatePage')));
+const AppCrmArticlesDetails = Loadable(lazy(() => import('views/crm/articles/list/DetailsPage')));
+const AppCrmArticlesCreate = Loadable(lazy(() => import('views/crm/articles/list/CreatePage')));
+
 const AppCrmContratDetails = Loadable(lazy(() => import('views/crm/contrats/DetailsPage')));
 const AppCrmContratUpdate = Loadable(lazy(() => import('views/crm/contrats/UpdatePage')));
 const AppCrmContratCreate = Loadable(lazy(() => import('views/crm/contrats/CreatePage')));
@@ -686,6 +691,22 @@ const MainRoutes = {
     {
       path: '/user/credentials',
       element: <AppCrmUserCredentials />
+    },
+    {
+      path: '/articles/list',
+      element: <AppCrmArticlesList />
+    },
+    {
+      path: '/articles/:articleId/details',
+      element: <AppCrmArticlesDetails />
+    },
+    {
+      path: '/articles/:articleId/update',
+      element: <AppCrmArticlesUpdate />
+    },
+    {
+      path: '/articles/create',
+      element: <AppCrmArticlesCreate />
     },
     {
       path: '/techniciens/create',
