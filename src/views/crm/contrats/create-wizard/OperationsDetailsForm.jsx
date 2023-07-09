@@ -29,13 +29,15 @@ import InterventionRows from './ArticleRow';
 
 const DetailsInterventions = ({ handleNext, handleBack }) => {
   const duration = localStorage.getItem('duree');
-  console.log('====================================');
-  console.log(duration);
-  console.log('====================================');
+
   const contractId = localStorage.getItem('contractId');
 
   const location = useLocation();
   const clientId = location.state?.clientId;
+
+  const [modeIntervention, setModeIntervention] = useState(null);
+  const [contractArticles, setContractArticles] = useState([]);
+
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     mode_id: '',
@@ -74,8 +76,6 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
 
   const getModeInterventionsQuery = useGetModeInterventions();
 
-  const [selectedModeValue, setSelectedModeValue] = useState('');
-  const [selectedModeIntitule, setSelectedModeIntitule] = useState('');
   return (
     <Box component="form" noValidate onSubmit={handleSubmit} autoComplete="off">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -99,8 +99,7 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
                 setFormInput((formData) => {
                   return { ...formData, mode_id: newValue?.id };
                 });
-                setSelectedModeValue(newValue?.valeur);
-                setSelectedModeIntitule(newValue?.intitule);
+                setModeIntervention(newValue);
               }}
               multiple={false}
               options={getModeInterventionsQuery?.data || []}
@@ -133,8 +132,10 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
           {formInput?.mode_id !== '0' && formInput?.nb_interventions > 0 && (
             <Grid container spacing={2}>
               <InterventionRows
-                selectedMode={formInput?.mode_id}
-                selectedModeValue={selectedModeValue}
+                contractArticles={contractArticles}
+                setContractArticles={setContractArticles}
+                interventionNumber={formInput?.nb_interventions}
+                modeIntervention={modeIntervention}
                 // selectedModeIntitule={selectedModeIntitule}
                 duration={duration}
                 nbrInterventions={formInput?.nb_interventions}
