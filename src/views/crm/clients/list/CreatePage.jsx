@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // material-ui
 import SendIcon from '@mui/icons-material/Send';
@@ -22,49 +22,57 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useCreateUser } from 'services/users.service';
+import { useCreateUser, useGetUser } from 'services/users.service';
 import { useGetVilleCodePostals, useGetVilles } from 'services/zone-villes.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
+import AutoComplete from 'views/forms/components/AutoComplete';
+import { useGetSettingsCategoryClient } from 'services/settings.service';
 
-const ClientCreatePage = () => {
-  const { clientId } = useParams();
+const LeadsCreatePage = () => {
+  const { leadsId } = useParams();
+
+  const getLeadsQuery = useGetUser(leadsId);
+  const clientData = getLeadsQuery?.data?.user;
+  const getCategoryClient = useGetSettingsCategoryClient();
+  const categoryData = getCategoryClient?.data;
+
+  const LotId = localStorage.getItem('LotId');
+  console.log('====================================');
+  console.log(LotId);
+  console.log('====================================');
 
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
-    default_pagination: '',
+    name: '',
     email: '',
     fax: '',
     password: '',
     address: '',
     phone_number: '',
+    code_postal: '',
+    // ville: 'null',
+    type: 0,
+    qualifications: '',
+    role: 'client',
+    couleur: '#000',
+    p_category_client_id: '',
     identifient_fiscal: '',
     identifient_tva: '',
-    interlocuteur_adresse: '',
-    interlocuteur_fiscale: '',
-    interlocuteur: '',
-    code_postal: '',
-    ville: '',
-    role: 'client'
+    d_lot_id: LotId,
+    societe: ''
   });
 
-  const createClientMutation = useCreateUser(clientId);
+  const createClientMutation = useCreateUser();
 
-  const getVilleCodePostalsQuery = useGetVilleCodePostals({ villeId: formInput?.ville });
-  const villeCodePostalsData = getVilleCodePostalsQuery.data;
-
-  const getVillesQuery = useGetVilles();
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (getLeadsQuery.isSuccess) {
+      setFormInput((f) => {
+        return { ...f, ...clientData };
+      });
+    }
+  }, [clientData, getLeadsQuery.isSuccess]);
 
   const handleChange = (e) => {
     setFormInput({
@@ -80,30 +88,26 @@ const ClientCreatePage = () => {
     try {
       await createClientMutation.mutateAsync(formInput);
 
-      navigate('/clients/list');
+      // navigate('/leads/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
     }
   };
 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
   return (
-    <MainCard title="Ajouter Client" backButton goBackLink="/clients/list">
+    <MainCard title={`Ajouter Leads`} backButton goBackLink="/lot-Leads/list">
       <div>
         <>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  A. Informations générales:
-                </Typography>
-              </Grid>
-
               <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
                   fullWidth
-                  label="Nom*"
+                  label="Nom Complet*"
                   value={formInput?.name || ''}
                   name="name"
                   onChange={handleChange}
@@ -136,16 +140,32 @@ const ClientCreatePage = () => {
                   helperText={renderArrayMultiline(formErrors?.data?.address)}
                 />
               </Grid>
+              {/* <Grid item xs={12} md={6}>
+                <TextField
+                  variant="standard"
+                  name="ville"
+                  onChange={handleChange}
+                  fullWidth
+                  label="Ville*"
+                  value={formInput?.ville || ''}
+                  error={!!formErrors?.data?.ville}
+                  helperText={renderArrayMultiline(formErrors?.data?.ville)}
+                />
+              </Grid> */}
 
-              <Grid item xs={12}>
-                <Divider />
+              <Grid item xs={12} md={6}>
+                <TextField
+                  variant="standard"
+                  name="code_postal"
+                  onChange={handleChange}
+                  fullWidth
+                  label="Code Postale*"
+                  value={formInput?.code_postal || ''}
+                  error={!!formErrors?.data?.code_postal}
+                  helperText={renderArrayMultiline(formErrors?.data?.code_postal)}
+                />
               </Grid>
 
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  B. Informations de contact:
-                </Typography>
-              </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
@@ -158,175 +178,62 @@ const ClientCreatePage = () => {
                   helperText={renderArrayMultiline(formErrors?.data?.phone_number)}
                 />
               </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="fax"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Fax"
-                  value={formInput?.fax || ''}
-                  error={!!!!formErrors?.data?.fax}
-                  helperText={renderArrayMultiline(formErrors?.data?.fax)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_fiscal"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant Fiscal"
-                  value={formInput?.identifient_fiscal || ''}
-                  error={!!!!formErrors?.data?.identifient_fiscal}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_fiscal)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_tva"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant TVA"
-                  value={formInput?.identifient_tva || ''}
-                  error={!!!!formErrors?.data?.identifient_tva}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_tva)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="interlocuteur"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Interlocuteur"
-                  value={formInput?.interlocuteur || ''}
-                  error={!!!!formErrors?.data?.interlocuteur}
-                  helperText={renderArrayMultiline(formErrors?.data?.interlocuteur)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="interlocuteur_adresse"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Interlocuteur Adresse"
-                  value={formInput?.interlocuteur_adresse || ''}
-                  error={!!!!formErrors?.data?.interlocuteur}
-                  helperText={renderArrayMultiline(formErrors?.data?.interlocuteur_adresse)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="interlocuteur_fiscale"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Interlocuteur Fiscale"
-                  value={formInput?.interlocuteur_fiscale || ''}
-                  error={!!!!formErrors?.data?.interlocuteur}
-                  helperText={renderArrayMultiline(formErrors?.data?.interlocuteur_fiscale)}
-                />
-              </Grid>
-
-              {false && (
-                <Grid item xs={12} md={6}>
-                  <FormControl error={!!!!formErrors?.data?.password} sx={{ width: '100%' }} variant="standard">
-                    <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
-                    <Input
-                      name="password"
-                      id="standard-adornment-password"
-                      type={showPassword ? 'text' : 'password'}
-                      onChange={handleChange}
-                      fullWidth
-                      label="Mot de passe"
-                      defaultValue=""
-                      error={!!formErrors?.data?.password}
-                      helperText={renderArrayMultiline(formErrors?.data?.password)}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                    <FormHelperText>{renderArrayMultiline(formErrors?.data?.password)}</FormHelperText>
-                  </FormControl>
-                </Grid>
-              )}
-
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  C. Infos résidentielles:
-                </Typography>
-              </Grid>
-
               <Grid item xs={12} md={6}>
                 <Autocomplete
                   onChange={(event, newValue) => {
-                    // const arr = newValue.map((e) => e?.id);
+                    setSelectedCategory(newValue);
+
                     setFormInput((formData) => {
-                      return { ...formData, ville: newValue?.id };
+                      return { ...formData, p_category_client_id: newValue?.id };
                     });
                   }}
-                  multiple={false}
-                  options={getVillesQuery?.data || []}
-                  getOptionLabel={(option) => option?.nom}
-                  // defaultValue={[top100Films[0], top100Films[4]]}
+                  options={categoryData || []}
+                  getOptionLabel={(option) => option.intitule}
                   renderInput={(params) => (
                     <TextField
-                      variant="standard"
                       {...params}
-                      label="Ville*"
-                      error={!!formErrors?.data?.ville}
-                      helperText={renderArrayMultiline(formErrors?.data?.ville)}
+                      variant="standard"
+                      label="Catégorie*"
+                      error={!!formErrors?.data?.p_category_client_id}
+                      helperText={renderArrayMultiline(formErrors?.data?.p_category_client_id)}
                     />
                   )}
                 />
               </Grid>
-
               <Grid item xs={12} md={6}>
-                {Array.isArray(villeCodePostalsData) ? (
-                  <Autocomplete
-                    onChange={(event, newValue) => {
-                      setFormInput((formData) => {
-                        return { ...formData, code_postal: newValue?.code };
-                      });
-                    }}
-                    options={villeCodePostalsData || []}
-                    getOptionLabel={(option) => {
-                      return option?.code;
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        variant="standard"
-                        {...params}
-                        label="Sélectionner un code postal"
-                        error={!!formErrors?.data?.code_postal}
-                        helperText={renderArrayMultiline(formErrors?.data?.code_postal)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <Skeleton variant="rounded" width={'100%'} height={40} />
-                )}
+                <TextField
+                  variant="standard"
+                  fullWidth
+                  label="Société*"
+                  value={formInput?.societe || ''}
+                  name="societe"
+                  onChange={handleChange}
+                  error={!!formErrors?.data?.societe}
+                  helperText={renderArrayMultiline(formErrors?.data?.societe)}
+                />
               </Grid>
+              {/* <Grid item xs={12} md={6}>
+                <Autocomplete
+                  onChange={(event, newValue) => {
+                    setSelectedCategory(newValue);
 
+                    setFormInput((formData) => {
+                      return { ...formData, type: newValue?.id };
+                    });
+                  }}
+                  options={['Client', 'Lead']}
+                  // getOptionLabel={(option) => option.intitule}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Type*"
+                      error={!!formErrors?.data?.type}
+                      helperText={renderArrayMultiline(formErrors?.data?.type)}
+                    />
+                  )}
+                />
+              </Grid> */}
               <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
                 <LoadingButton
                   loadingPosition="end"
@@ -346,9 +253,9 @@ const ClientCreatePage = () => {
   );
 };
 
-ClientCreatePage.propTypes = {
+LeadsCreatePage.propTypes = {
   open: PropTypes.bool,
   handleCloseDialog: PropTypes.func
 };
 
-export default ClientCreatePage;
+export default LeadsCreatePage;

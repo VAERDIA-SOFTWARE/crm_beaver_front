@@ -1,49 +1,39 @@
 import EditIcon from '@mui/icons-material/Edit';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
 
 // material-ui
-import { Box, Grid, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { Grid, IconButton, Typography } from '@mui/material';
 
 // project imports
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
-import UserDataCard from './userDataCard';
-
-import { useGetUser } from 'services/users.service';
-import AccessDataCard from './AccessDataCard';
-import AuthToggleCard from './AuthToggleCard';
+import { useGetArticle } from 'services/articles.service';
+import ArticleDataCard from './articleDataCard';
 
 const UserDetailsPage = () => {
-  const { userId } = useParams();
+  const { articleId } = useParams();
 
-  const getUserQuery = useGetUser(userId);
+  const getUserQuery = useGetArticle(articleId);
   const userData = getUserQuery.data;
-  const [toggleAuth, setToggleAuth] = useState(false);
-  const navigate = useNavigate();
 
-  const [value, setValue] = useState(0);
-  const handleTabChange = (event, newValue) => {
-    setValue(newValue);
-  };
-  useEffect(() => {
-    setToggleAuth(userData?.authentication);
-  }, [userData]);
+  console.log('====================================');
+  console.log(userData);
+  console.log('====================================');
+  const navigate = useNavigate();
 
   return (
     <MainCard
-      title={`User ${userData?.reference ? '- ' + userData?.reference : ''}`}
-      circle={userData?.color}
+      title={`Article ${userData?.reference ? '- ' + userData?.reference : ''}`}
       backButton
-      goBackLink="/users/list"
+      goBackLink="/articles/list"
       secondary={
         <IconButton
           color="secondary"
           size="large"
           onClick={(e) => {
-            navigate(`/users/${userId}/update`);
+            navigate(`/articles/${articleId}/update`);
           }}
         >
           <EditIcon sx={{ fontSize: '1.3rem' }} />
@@ -53,7 +43,7 @@ const UserDetailsPage = () => {
       <div>
         <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
           <Grid item xs={12}>
-            <UserDataCard userData={userData} title="Informations du contact" />
+            <ArticleDataCard userData={userData} title="Informations du article" />
           </Grid>
         </Grid>
         <div
