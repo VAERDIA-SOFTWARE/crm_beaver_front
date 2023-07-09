@@ -7,25 +7,19 @@ import { useState, useEffect } from 'react';
 
 // project imports
 import { useNavigate, useParams } from 'react-router-dom';
-import { useChangeLeadToClient, useDeleteUser, useGetUser } from 'services/users.service';
+import { useDeleteUser, useGetUser } from 'services/users.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 
-import LeadsDataCard from './ClientDataCard';
+import ClientsDataCard from './ClientDataCard';
 import { DeleteOutline } from '@mui/icons-material';
 
-const LeadsDetailsPage = () => {
-  const { leadsId } = useParams();
+const ClientsDetailsPage = () => {
+  const { clientId } = useParams();
 
-  const getLeadsQuery = useGetUser(leadsId);
-  const clientData = getLeadsQuery?.data?.user;
-  const leadToClientMutation = useChangeLeadToClient(leadsId);
-  const deleteMutation = useDeleteUser(leadsId);
-  const LotId = localStorage.getItem('LotId');
-
-  console.log('====================================');
-  console.log(LotId);
-  console.log('====================================');
+  const getClientsQuery = useGetUser(clientId);
+  const clientData = getClientsQuery?.data?.user;
+  const deleteMutation = useDeleteUser(clientId);
 
   const [toggleAuth, setToggleAuth] = useState(false);
 
@@ -33,12 +27,12 @@ const LeadsDetailsPage = () => {
 
   useEffect(() => {
     setToggleAuth(clientData?.auth);
-  }, [clientData, getLeadsQuery.isSuccess]);
+  }, [clientData, getClientsQuery.isSuccess]);
   return (
     <MainCard
-      title={`Leads ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
+      title={`Client ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
       backButton
-      goBackLink="/lot-leads/list"
+      goBackLink="/clients/list"
       secondary={
         <div
           style={{
@@ -52,7 +46,7 @@ const LeadsDetailsPage = () => {
             size="large"
             onClick={(e) => {
               // handleOpenEditDialog(e);
-              navigate(`/leads/${leadsId}/update`);
+              navigate(`/clients/${clientId}/update`);
             }}
           >
             <EditIcon sx={{ fontSize: '1.3rem' }} />
@@ -62,36 +56,26 @@ const LeadsDetailsPage = () => {
             size="large"
             onClick={async (e) => {
               await deleteMutation.mutateAsync();
-              navigate(`/lot-leads/${LotId}/details`);
+              navigate(`/clients/list`);
             }}
           >
             <DeleteOutline sx={{ fontSize: '1.3rem' }} />
           </IconButton>
-          <Button
-            sx={{ marginX: '1rem' }}
-            variant="contained"
-            onClick={async (e) => {
-              await leadToClientMutation.mutateAsync();
-              navigate(`/lot-leads/${LotId}/details`);
-            }}
-          >
-            Convertir en client
-          </Button>
         </div>
       }
     >
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
-          <LeadsDataCard clientData={clientData} />
+          <ClientsDataCard clientData={clientData} />
         </Grid>
       </Grid>
     </MainCard>
   );
 };
 
-LeadsDetailsPage.propTypes = {
+ClientsDetailsPage.propTypes = {
   open: PropTypes.bool,
   handleCloseDialog: PropTypes.func
 };
 
-export default LeadsDetailsPage;
+export default ClientsDetailsPage;

@@ -30,11 +30,12 @@ import renderArrayMultiline from 'utilities/utilities';
 import AutoComplete from 'views/forms/components/AutoComplete';
 import { useGetSettingsCategoryClient } from 'services/settings.service';
 
-const LeadsCreatePage = () => {
-  const { leadsId } = useParams();
+const ClientsCreatePage = () => {
+  const navigate = useNavigate();
+  const { clientId } = useParams();
 
-  const getLeadsQuery = useGetUser(leadsId);
-  const clientData = getLeadsQuery?.data?.user;
+  const getClientsQuery = useGetUser(clientId);
+  const clientData = getClientsQuery?.data?.user;
   const getCategoryClient = useGetSettingsCategoryClient();
   const categoryData = getCategoryClient?.data;
 
@@ -53,7 +54,7 @@ const LeadsCreatePage = () => {
     phone_number: '',
     code_postal: '',
     // ville: 'null',
-    type: 0,
+    type: 1,
     qualifications: '',
     role: 'client',
     couleur: '#000',
@@ -67,12 +68,12 @@ const LeadsCreatePage = () => {
   const createClientMutation = useCreateUser();
 
   useEffect(() => {
-    if (getLeadsQuery.isSuccess) {
+    if (getClientsQuery.isSuccess) {
       setFormInput((f) => {
         return { ...f, ...clientData };
       });
     }
-  }, [clientData, getLeadsQuery.isSuccess]);
+  }, [clientData, getClientsQuery.isSuccess]);
 
   const handleChange = (e) => {
     setFormInput({
@@ -87,8 +88,7 @@ const LeadsCreatePage = () => {
 
     try {
       await createClientMutation.mutateAsync(formInput);
-
-      // navigate('/leads/list');
+      navigate('/clients/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -98,7 +98,7 @@ const LeadsCreatePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
-    <MainCard title={`Ajouter Leads`} backButton goBackLink="/lot-Leads/list">
+    <MainCard title={`Ajouter Clients`} backButton goBackLink="/clients/list">
       <div>
         <>
           <form onSubmit={handleSubmit}>
@@ -253,9 +253,9 @@ const LeadsCreatePage = () => {
   );
 };
 
-LeadsCreatePage.propTypes = {
+ClientsCreatePage.propTypes = {
   open: PropTypes.bool,
   handleCloseDialog: PropTypes.func
 };
 
-export default LeadsCreatePage;
+export default ClientsCreatePage;

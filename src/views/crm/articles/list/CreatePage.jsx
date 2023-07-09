@@ -23,11 +23,9 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import { useCreateArticle } from 'services/articles.service';
-import { useGetOperations, useGetZonesVilles } from 'services/zone-villes.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
-import CustomFileUpload from '../../clients/list/FileUpload';
 import { toast } from 'react-toastify';
 import { useGetSettingsRoles } from 'services/settings.service';
 

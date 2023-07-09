@@ -31,7 +31,11 @@ const ClientsList = () => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getClientsQuery = useGetUsers({ page, searchFilter, type: '0' });
+  const getClientsQuery = useGetUsers({ page, searchFilter, type: '1', paginated: true });
+
+  console.log('====================================');
+  console.log(getClientsQuery);
+  console.log('====================================');
 
   const navigate = useNavigate();
 
@@ -45,7 +49,7 @@ const ClientsList = () => {
             <Fab
               color="primary"
               size="small"
-              onClick={() => navigate(`/leads/create`)}
+              onClick={() => navigate(`/clients/create`)}
               sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
             >
               <AddIcon fontSize="small" />
@@ -63,13 +67,14 @@ export default ClientsList;
 
 function EditCell({ params }) {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleMenuClick = (event) => {
-    setAnchorEl(event?.currentTarget);
-  };
+
+  // const [anchorEl, setAnchorEl] = React.useState(null);
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
+  // const handleMenuClick = (event) => {
+  //   setAnchorEl(event?.currentTarget);
+  // };
 
   return (
     <div>
@@ -82,7 +87,7 @@ function EditCell({ params }) {
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
-      <IconButton onClick={handleMenuClick} size="large">
+      {/* <IconButton onClick={handleMenuClick} size="large">
         <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
       </IconButton>
       <Menu
@@ -108,7 +113,7 @@ function EditCell({ params }) {
         >
           Importer
         </MenuItem>
-      </Menu>
+      </Menu> */}
     </div>
   );
 }
@@ -165,7 +170,7 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
       minWidth: 100,
       flex: 1
     },
-    { field: 'ville', headerName: 'Ville', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    // { field: 'ville', headerName: 'Ville', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'code_postal', headerName: 'Code Postal', sortable: false, filterable: false, minWidth: 100, flex: 1 },
 
     {
@@ -222,7 +227,7 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getClientsQuery.data?.data || []}
+        rows={getClientsQuery?.data?.data || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
