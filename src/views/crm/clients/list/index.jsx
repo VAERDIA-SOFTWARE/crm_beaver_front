@@ -31,7 +31,7 @@ const ClientsList = () => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getClientsQuery = useGetUsers({ role: 'client', page, searchFilter });
+  const getClientsQuery = useGetUsers({ page, searchFilter, type: '0' });
 
   const navigate = useNavigate();
 
@@ -41,11 +41,11 @@ const ClientsList = () => {
       content={false}
       secondary={
         <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-          <Tooltip title="Ajouter Client">
+          <Tooltip title="Ajouter Clients">
             <Fab
               color="primary"
               size="small"
-              onClick={() => navigate(`/clients/create`)}
+              onClick={() => navigate(`/leads/create`)}
               sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
             >
               <AddIcon fontSize="small" />
@@ -53,7 +53,6 @@ const ClientsList = () => {
           </Tooltip>
         </Grid>
       }
-      // secondary={<SecondaryAction link="https://material-ui.com/components/data-grid/" />}
     >
       <TableDataGrid getClientsQuery={getClientsQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>

@@ -5,48 +5,34 @@ import MainCard from 'ui-component/cards/MainCard';
 
 export default function ClientDataCard({ clientData, title }) {
   return (
-    <MainCard title={title || 'Informations du client'}>
-      {/* <Typography
-        variant="h3"
-        style={{
-          marginBottom: 20
-        }}
-        gutterBottom
-      >
-        
-      </Typography> */}
+    <MainCard title={title || 'Informations du leads'}>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12} sm={6} md={4}>
           <Stack spacing={2}>
             <Typography variant="h4">Informations générales</Typography>
             <Stack spacing={0}>
-              {/* <Typography variant="h6" sx={{ mb: 1 }}>
-                Credit Card
-              </Typography> */}
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Référence :</Typography>
-                <Typography variant="body2">{clientData?.reference}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Intitulé :</Typography>
-                <Typography variant="body2">{clientData?.name}</Typography>
-              </Stack>
-              {clientData?.identifient_fiscal && (
+              {clientData?.reference && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Identifiant Fiscal :</Typography>
-                  <Typography variant="body2">{clientData?.identifient_fiscal}</Typography>
+                  <Typography variant="subtitle1">Référence :</Typography>
+                  <Typography variant="body2">{clientData?.reference}</Typography>
                 </Stack>
               )}
-              {clientData?.identifient_tva && (
+              {clientData?.name && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Identifiant TVA :</Typography>
-                  <Typography variant="body2">{clientData?.identifient_tva}</Typography>
+                  <Typography variant="subtitle1">Intitulé :</Typography>
+                  <Typography variant="body2">{clientData?.name}</Typography>
                 </Stack>
               )}
-              {clientData?.interlocuteur && (
+              {clientData?.category?.intitule && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Interlocuteur :</Typography>
-                  <Typography variant="body2">{clientData?.interlocuteur}</Typography>
+                  <Typography variant="subtitle1">Catégorie :</Typography>
+                  <Typography variant="body2">{clientData?.category?.intitule}</Typography>
+                </Stack>
+              )}
+              {clientData?.societe && (
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle1">Societé :</Typography>
+                  <Typography variant="body2">{clientData?.societe}</Typography>
                 </Stack>
               )}
             </Stack>
@@ -56,9 +42,6 @@ export default function ClientDataCard({ clientData, title }) {
           <Stack spacing={2}>
             <Typography variant="h4">Informations de contact</Typography>
             <Stack spacing={0}>
-              {/* <Typography variant="h6" sx={{ mb: 1 }}>
-                Carrier
-              </Typography> */}
               {clientData?.phone_number && (
                 <Stack direction="row" spacing={1}>
                   <Typography variant="subtitle1">Numéro de téléphone :</Typography>
@@ -80,33 +63,29 @@ export default function ClientDataCard({ clientData, title }) {
             </Stack>
           </Stack>
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <Stack spacing={2}>
-            <Typography variant="h4">Informations résidentielles</Typography>
-            <Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Addresse :</Typography>
-                <Typography variant="body2">{clientData?.address}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Ville :</Typography>
-                <Typography variant="body2">{clientData?.ville}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1}>
-                <Typography variant="subtitle1">Code postal :</Typography>
-                <Typography variant="body2">{clientData?.code_postal}</Typography>
-              </Stack>
-            </Stack>
-          </Stack>
-        </Grid>
-        {clientData?.signature && (
+        {(clientData?.address || clientData?.ville || clientData?.code_postal) && (
           <Grid item xs={12} sm={6} md={4}>
             <Stack spacing={2}>
-              <Typography variant="h4">Signature</Typography>
+              <Typography variant="h4">Informations résidentielles</Typography>
               <Stack>
-                <Stack direction="row" spacing={1}>
-                  <img src={clientData?.signature} alt="" />
-                </Stack>
+                {clientData?.address && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography variant="subtitle1">Addresse :</Typography>
+                    <Typography variant="body2">{clientData?.address}</Typography>
+                  </Stack>
+                )}
+                {clientData?.ville && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography variant="subtitle1">Ville :</Typography>
+                    <Typography variant="body2">{clientData?.ville}</Typography>
+                  </Stack>
+                )}
+                {clientData?.code_postal && (
+                  <Stack direction="row" spacing={1}>
+                    <Typography variant="subtitle1">Code postal :</Typography>
+                    <Typography variant="body2">{clientData?.code_postal}</Typography>
+                  </Stack>
+                )}
               </Stack>
             </Stack>
           </Grid>

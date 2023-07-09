@@ -22,7 +22,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
-import { useCreateUser } from 'services/users.service';
+import { useCreateArticle } from 'services/articles.service';
 import { useGetOperations, useGetZonesVilles } from 'services/zone-villes.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
@@ -32,7 +32,7 @@ import { toast } from 'react-toastify';
 import { useGetSettingsRoles } from 'services/settings.service';
 
 const UserCreatePage = () => {
-  const createUserMutation = useCreateUser();
+  const createArticleMutation = useCreateArticle();
 
   const [formErrors, setFormErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -48,19 +48,13 @@ const UserCreatePage = () => {
   };
   const GetSettingsRolesQuery = useGetSettingsRoles();
   const [formInput, setFormInput] = useState({
-    identifient: '',
-    name: '',
-    color: '#000',
-    email: '',
-    address: '',
-    postal_code: '',
-    city: '',
-    gender: '',
-    phone_number: '',
-    file_name: '',
-    password: '',
-    plain_text_password: '',
-    role_id: ''
+    nom: '',
+    reference: '',
+    prix_unitaire: '',
+    remise: '',
+    unite_id: '',
+    parent: '',
+    p_category_article_id: ''
   });
 
   const navigate = useNavigate();
@@ -91,8 +85,8 @@ const UserCreatePage = () => {
       for (let key in formInput) {
         formData.append(key, formInput[key]);
       }
-      await createUserMutation.mutateAsync(formData);
-      navigate('/users/list');
+      await createArticleMutation.mutateAsync(formData);
+      navigate('/articles/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -140,7 +134,7 @@ const UserCreatePage = () => {
     }));
   };
   return (
-    <MainCard title="Ajouter Utilisateur" backButton goBackLink="/users/list">
+    <MainCard title="Ajouter Article" backButton goBackLink="/articles/list">
       <div>
         <form onSubmit={handleSubmit} noValidate>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
@@ -334,7 +328,7 @@ const UserCreatePage = () => {
               <LoadingButton
                 loadingPosition="end"
                 endIcon={<SendIcon />}
-                loading={createUserMutation.isLoading}
+                loading={createArticleMutation.isLoading}
                 variant="contained"
                 type="submit"
               >

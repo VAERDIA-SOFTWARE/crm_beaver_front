@@ -1,6 +1,7 @@
 import React from 'react';
 import { Autocomplete, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { useGetArticles } from 'services/articles.service';
 
 const InterventionRows = ({
   selectedModeValue,
@@ -23,7 +24,7 @@ const InterventionRows = ({
             <TableCell>Date</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{rows}</TableBody>
+        {/* <TableBody>{rows}</TableBody> */}
       </Table>
     </TableContainer>
   );

@@ -23,9 +23,9 @@ export const useGetArticles = () => {
   return useQuery(['operations'], () => axiosClient.get(`operations`).then((res) => res.data), {});
 };
 
-export const useGetArticle = (ArticleId = '') => {
-  return useQuery(['operations', ArticleId], () => axiosClient.get(`operations/${ArticleId}`).then((res) => res.data), {
-    enabled: !!ArticleId
+export const useGetArticle = (articleId = '') => {
+  return useQuery(['operations', articleId], () => axiosClient.get(`operations/${articleId}`).then((res) => res.data), {
+    enabled: !!articleId
   });
 };
 
@@ -46,12 +46,12 @@ export function useCreateArticle() {
   );
 }
 
-export function useUpdateArticle() {
+export function useToggleArticleStatus(articleId = '') {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async ({ ArticleId, values }) => {
-      const res = await axiosClient.post(`operations/${ArticleId}?_method=put`, values);
+    async (values) => {
+      const res = await axiosClient.put(`operations/${articleId}/toggle`, values);
       return res.data;
     },
     {
@@ -62,21 +62,32 @@ export function useUpdateArticle() {
     }
   );
 }
-export function useDeleteArticle() {
+
+export function useUpdateArticle(articleId) {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async (ArticleId) => {
-      const res = await axiosClient.delete(`operations/${ArticleId}`);
+    async (values) => {
+      const res = await axiosClient.post(`operations/${articleId}?_method=put`, values);
       return res.data;
     },
     {
       onSuccess: (data) => {
         toast.success(data?.message);
         queryClient.invalidateQueries();
-      },
-      onError: (data) => {
-        toast.error(data?.response?.data?.message);
+      }
+    }
+  );
+}
+export function useDeleteArticle(articleId) {
+  return useMutation(
+    async () => {
+      const res = await axiosClient.delete(`operations/${articleId}`);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
       }
     }
   );

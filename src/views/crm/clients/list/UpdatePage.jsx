@@ -2,58 +2,75 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 // material-ui
-import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import { Autocomplete, Divider, Grid, Skeleton, TextField, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  Divider,
+  FormControl,
+  FormHelperText,
+  Grid,
+  IconButton,
+  Input,
+  InputAdornment,
+  InputLabel,
+  Skeleton,
+  TextField,
+  Typography
+} from '@mui/material';
 
 // project imports
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { useConfirm } from 'material-ui-confirm';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDeleteUserMutation, useGetUser, useToggleUserAuth, useToggleUserStatus, useUpdateUser } from 'services/users.service';
+import { useUpdateUser, useGetUser } from 'services/users.service';
 import { useGetVilleCodePostals, useGetVilles } from 'services/zone-villes.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
+import AutoComplete from 'views/forms/components/AutoComplete';
+import { useGetSettingsCategoryClient } from 'services/settings.service';
 
-const ClientUpdatePage = () => {
-  const { clientId } = useParams();
+const LeadsUpdatePage = () => {
+  const { leadsId } = useParams();
+
+  const getLeadsQuery = useGetUser(leadsId);
+  const clientData = getLeadsQuery?.data?.user;
+  const getCategoryClient = useGetSettingsCategoryClient();
+  const categoryData = getCategoryClient?.data;
+
+  console.log('====================================');
+  console.log(categoryData);
+  console.log('====================================');
 
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
-    default_pagination: '',
+    name: '',
     email: '',
     fax: '',
+    password: '',
     address: '',
     phone_number: '',
-    password: '',
-    identifient_fiscal: '',
-    identifient_tva: '',
-    interlocuteur: '',
     code_postal: '',
-    ville: ''
+    // ville: 'null',
+    type: 0,
+    qualifications: '',
+    role: 'client',
+    couleur: '#000',
+    p_category_client_id: ''
   });
 
-  const toggleClientStatusMutation = useToggleUserStatus(clientId);
-  const deleteClientMutation = useDeleteUserMutation(clientId);
-  const updateClientMutation = useUpdateUser(clientId);
-  const getClientQuery = useGetUser(clientId);
-  const clientData = getClientQuery.data?.user;
-  const getVillesQuery = useGetVilles();
-  const getVilleCodePostalsQuery = useGetVilleCodePostals({ villeId: formInput?.ville });
-  const villeCodePostalsData = getVilleCodePostalsQuery.data;
+  const createClientMutation = useUpdateUser(leadsId);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-
-  const confirm = useConfirm();
-
   useEffect(() => {
-    if (getClientQuery.isSuccess) {
+    if (getLeadsQuery.isSuccess) {
       setFormInput((f) => {
-        return { ...f, ...clientData, ville: clientData?.detail_ville?.id };
+        return { ...f, ...clientData };
       });
     }
-  }, [clientData, getClientQuery.isSuccess]);
+  }, [clientData, getLeadsQuery.isSuccess]);
 
   const handleChange = (e) => {
     setFormInput({
@@ -67,90 +84,33 @@ const ClientUpdatePage = () => {
     setFormErrors({});
 
     try {
-      await updateClientMutation.mutateAsync({
-        ...formInput
-        // ville: getVillesQuery?.data?.find((e) => formInput?.ville === e?.id)?.nom
-      });
+      await createClientMutation.mutateAsync(formInput);
+
+      // navigate('/leads/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
     }
   };
 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
   return (
-    <MainCard
-      title={`Client ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
-      backButton
-      goBackLink={`/clients/${clientId}/details`}
-    >
+    <MainCard title={`Modifier Leads ${clientData?.reference ? '- ' + clientData?.reference : ''}`} backButton goBackLink="/lot-Leads/list">
       <div>
         <>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  A. Informations générales:
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
-              </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
                   fullWidth
-                  label="Nom*"
+                  label="Nom Complet*"
                   value={formInput?.name || ''}
                   name="name"
                   onChange={handleChange}
                   error={!!formErrors?.data?.name}
                   helperText={renderArrayMultiline(formErrors?.data?.name)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="Identifiant fiscale (SIRET) *"
-                  value={formInput?.name || ''}
-                  name="name"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.name}
-                  helperText={renderArrayMultiline(formErrors?.data?.name)}
-                />
-              </Grid>
-              <Grid item xs={12} md={12}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="Informations*"
-                  value={formInput?.commentaires || ''}
-                  name="commentaires"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.commentaires}
-                  helperText={renderArrayMultiline(formErrors?.data?.commentaires)}
-                  multiline
-                  rows={4}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  B. Informations de contact:
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="phone_number"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Numéro de téléphone*"
-                  value={formInput?.phone_number || ''}
-                  error={!!!!formErrors?.data?.phone_number}
-                  helperText={renderArrayMultiline(formErrors?.data?.phone_number)}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -165,88 +125,7 @@ const ClientUpdatePage = () => {
                   helperText={renderArrayMultiline(formErrors?.data?.email)}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="fax"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Fax"
-                  value={formInput?.fax || ''}
-                  error={!!!!formErrors?.data?.fax}
-                  helperText={renderArrayMultiline(formErrors?.data?.fax)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_fiscal"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant Fiscal"
-                  value={formInput?.identifient_fiscal || ''}
-                  error={!!!!formErrors?.data?.identifient_fiscal}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_fiscal)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="identifient_tva"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Identifiant TVA"
-                  value={formInput?.identifient_tva || ''}
-                  error={!!!!formErrors?.data?.identifient_tva}
-                  helperText={renderArrayMultiline(formErrors?.data?.identifient_tva)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  name="interlocuteur"
-                  onChange={handleChange}
-                  fullWidth
-                  label="Interlocuteur"
-                  value={formInput?.interlocuteur || ''}
-                  error={!!!!formErrors?.data?.interlocuteur}
-                  helperText={renderArrayMultiline(formErrors?.data?.interlocuteur)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h5" component="div">
-                  C. Infos résidentielles:
-                </Typography>
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                {clientData && Array.isArray(getVillesQuery?.data) ? (
-                  <Autocomplete
-                    onChange={(event, newValue) => {
-                      setFormInput((formData) => {
-                        return { ...formData, ville: newValue?.id };
-                      });
-                    }}
-                    defaultValue={getVillesQuery?.data?.find((e) => clientData?.detail_ville?.id === e?.id)}
-                    options={getVillesQuery?.data || []}
-                    getOptionLabel={(option) => option?.nom}
-                    renderInput={(params) => (
-                      <TextField
-                        variant="standard"
-                        {...params}
-                        label="Ville*"
-                        error={!!formErrors?.data?.ville}
-                        helperText={renderArrayMultiline(formErrors?.data?.ville)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <Skeleton variant="rounded" width={'100%'} height={40} />
-                )}
-              </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
@@ -259,107 +138,110 @@ const ClientUpdatePage = () => {
                   helperText={renderArrayMultiline(formErrors?.data?.address)}
                 />
               </Grid>
+              {/* <Grid item xs={12} md={6}>
+                <TextField
+                  variant="standard"
+                  name="ville"
+                  onChange={handleChange}
+                  fullWidth
+                  label="Ville*"
+                  value={formInput?.ville || ''}
+                  error={!!formErrors?.data?.ville}
+                  helperText={renderArrayMultiline(formErrors?.data?.ville)}
+                />
+              </Grid> */}
 
               <Grid item xs={12} md={6}>
-                {Array.isArray(villeCodePostalsData) ? (
-                  <Autocomplete
-                    onChange={(event, newValue) => {
-                      setFormInput((formData) => {
-                        return { ...formData, code_postal: newValue?.code };
-                      });
-                    }}
-                    defaultValue={villeCodePostalsData?.find((e) => clientData?.code_postal === e?.code)}
-                    options={villeCodePostalsData || []}
-                    getOptionLabel={(option) => {
-                      return option?.code;
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        variant="standard"
-                        {...params}
-                        label="Sélectionner un code postal"
-                        error={!!formErrors?.data?.code_postal}
-                        helperText={renderArrayMultiline(formErrors?.data?.code_postal)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <Skeleton variant="rounded" width={'100%'} height={40} />
-                )}
+                <TextField
+                  variant="standard"
+                  name="code_postal"
+                  onChange={handleChange}
+                  fullWidth
+                  label="Code Postale*"
+                  value={formInput?.code_postal || ''}
+                  error={!!formErrors?.data?.code_postal}
+                  helperText={renderArrayMultiline(formErrors?.data?.code_postal)}
+                />
               </Grid>
 
+              <Grid item xs={12} md={6}>
+                <TextField
+                  variant="standard"
+                  name="phone_number"
+                  onChange={handleChange}
+                  fullWidth
+                  label="Numéro de téléphone*"
+                  value={formInput?.phone_number || ''}
+                  error={!!!!formErrors?.data?.phone_number}
+                  helperText={renderArrayMultiline(formErrors?.data?.phone_number)}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Autocomplete
+                  onChange={(event, newValue) => {
+                    setSelectedCategory(newValue);
+
+                    setFormInput((formData) => {
+                      return { ...formData, p_category_client_id: newValue?.id };
+                    });
+                  }}
+                  options={categoryData || []}
+                  getOptionLabel={(option) => option.intitule}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Catégorie*"
+                      error={!!formErrors?.data?.p_category_client_id}
+                      helperText={renderArrayMultiline(formErrors?.data?.p_category_client_id)}
+                    />
+                  )}
+                />
+              </Grid>
+              {/* <Grid item xs={12} md={6}>
+                <Autocomplete
+                  onChange={(event, newValue) => {
+                    setSelectedCategory(newValue);
+
+                    setFormInput((formData) => {
+                      return { ...formData, type: newValue?.id };
+                    });
+                  }}
+                  options={['Client', 'Lead']}
+                  // getOptionLabel={(option) => option.intitule}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Type*"
+                      error={!!formErrors?.data?.type}
+                      helperText={renderArrayMultiline(formErrors?.data?.type)}
+                    />
+                  )}
+                />
+              </Grid> */}
               <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
                 <LoadingButton
-                  disabled={getClientQuery.isLoading}
                   loadingPosition="end"
                   endIcon={<SendIcon />}
-                  loading={updateClientMutation.isLoading}
+                  loading={createClientMutation.isLoading}
                   variant="contained"
                   type="submit"
                 >
-                  Sauvegarder
+                  Ajouter
                 </LoadingButton>
               </Grid>
             </Grid>
           </form>
-          <Divider
-            style={{
-              margin: 20
-            }}
-          />
-          <div
-            style={{
-              display: 'flex',
-              gap: 10,
-              justifyContent: 'start'
-            }}
-          >
-            <LoadingButton
-              disabled={getClientQuery.isLoading}
-              loading={toggleClientStatusMutation.isLoading}
-              variant="outlined"
-              onClick={() =>
-                confirm({
-                  description: `Êtes-vous sûr de vouloir ${clientData?.active_status ? 'désactiver' : 'activer'} ${clientData?.name}.`,
-                  title: `Veuillez confirmer ${clientData?.active_status ? 'la désactivation' : "l'activation"}`
-                })
-                  .then(() => toggleClientStatusMutation.mutate())
-                  .catch(() => console.log('Deactivation cancelled.'))
-              }
-            >
-              {clientData?.active_status ? 'Désactiver' : 'Activer'}
-            </LoadingButton>
-
-            <LoadingButton
-              disabled={getClientQuery.isLoading}
-              loadingPosition="start"
-              startIcon={<DeleteIcon />}
-              loading={deleteClientMutation.isLoading}
-              variant="outlined"
-              color="error"
-              onClick={() =>
-                confirm({
-                  description: `Êtes-vous sûr de vouloir supprimer ${clientData?.name}.`,
-                  title: `Veuillez confirmer la suppression`
-                })
-                  .then(async () => {
-                    try {
-                      await deleteClientMutation.mutateAsync();
-                      navigate('/clients/list', {
-                        replace: true
-                      });
-                    } catch (error) {}
-                  })
-                  .catch(() => console.log('Utilisateur supprimé avec succès.'))
-              }
-            >
-              {'Supprimer'}
-            </LoadingButton>
-          </div>
         </>
       </div>
     </MainCard>
   );
 };
 
-export default ClientUpdatePage;
+LeadsUpdatePage.propTypes = {
+  open: PropTypes.bool,
+  handleCloseDialog: PropTypes.func
+};
+
+export default LeadsUpdatePage;

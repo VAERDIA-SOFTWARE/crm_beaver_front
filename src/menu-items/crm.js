@@ -1,17 +1,13 @@
 // assets
+import { DescriptionRounded, HistoryRounded } from '@mui/icons-material';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
-import FoundationOutlinedIcon from '@mui/icons-material/FoundationOutlined';
 import ReceiptRoundedIcon from '@mui/icons-material/ReceiptRounded';
-import { IconDashboard, IconDeviceAnalytics } from '@tabler/icons';
-import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
-import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
+import { IconDashboard } from '@tabler/icons';
+import { FormattedMessage } from 'react-intl';
 const Crm = {
   id: 'crm',
-  // title: <FormattedMessage id="Navigation" />,
   type: 'group',
   children: [
     {
@@ -22,15 +18,40 @@ const Crm = {
       icon: IconDashboard,
       breadcrumbs: false
     },
+    // {
+    //   id: 'leads-group',
+    //   title: 'Leads',
+    //   type: 'collapse',
+    //   icon: AccountCircleOutlinedIcon,
+    //   // url: '/leads/list',
+    //   breadcrumbs: false,
+    //   children: [
+    //     {
+    //       id: 'lot-leads',
+    //       title: 'Lot-Leads',
+    //       type: 'item',
+    //       url: '/lot-leads/list',
+    //       breadcrumbs: false
+    //     },
+    //     {
+    //       id: 'leads',
+    //       title: 'Nouveau Leads',
+    //       type: 'item',
+    //       url: '/leads/create',
+    //       breadcrumbs: false
+    //     }
+    //   ]
+    // },
     {
-      id: 'lot-leads',
-      title: 'Leads',
+      id: 'clients-group',
+      title: 'CRM BEAVER',
       type: 'collapse',
-      icon: PostAddOutlinedIcon,
+      icon: AccountCircleOutlinedIcon,
+      // url: '/clients/list',
       breadcrumbs: false,
       children: [
         {
-          id: 'chantiers',
+          id: 'lot-leads',
           title: 'Lot-Leads',
           type: 'item',
           url: '/lot-leads/list',
@@ -42,22 +63,12 @@ const Crm = {
           type: 'item',
           url: '/leads/create',
           breadcrumbs: false
-        }
-      ]
-    },
-    {
-      id: 'clients-group',
-      title: 'Clients',
-      type: 'collapse',
-      icon: AccountCircleOutlinedIcon,
-      url: '/clients/list',
-      breadcrumbs: false,
-      children: [
+        },
         {
-          id: 'chantiers',
+          id: 'clients',
           title: 'Client',
           type: 'item',
-          url: '/chantiers/list',
+          url: '/clients/list',
           breadcrumbs: false
         },
         {
@@ -66,17 +77,7 @@ const Crm = {
           type: 'item',
           url: '/contrats/list',
           breadcrumbs: false
-        }
-      ]
-    },
-    {
-      id: 'techniciens-group',
-      title: 'Collaborateurs',
-      type: 'collapse',
-      icon: EngineeringOutlinedIcon,
-      url: '/techniciens/list',
-      breadcrumbs: false,
-      children: [
+        },
         {
           id: 'techniciens',
           title: 'Collaborateurs',
@@ -100,6 +101,37 @@ const Crm = {
         }
       ]
     },
+    // {
+    //   id: 'techniciens-group',
+    //   title: 'Collaborateurs',
+    //   type: 'collapse',
+    //   icon: EngineeringOutlinedIcon,
+    //   // url: '/techniciens/list',
+    //   breadcrumbs: false,
+    //   children: [
+    //     {
+    //       id: 'techniciens',
+    //       title: 'Collaborateurs',
+    //       type: 'item',
+    //       url: '/techniciens/list',
+    //       breadcrumbs: false
+    //     },
+    //     {
+    //       id: 'techniciens',
+    //       title: 'Pointage',
+    //       type: 'item',
+    //       url: '/techniciens/list',
+    //       breadcrumbs: false
+    //     },
+    //     {
+    //       id: 'techniciens',
+    //       title: 'Maps',
+    //       type: 'item',
+    //       url: '/techniciens/list',
+    //       breadcrumbs: false
+    //     }
+    //   ]
+    // },
 
     {
       id: 'inspections-group',
@@ -128,6 +160,27 @@ const Crm = {
           title: 'Calendrier',
           type: 'item',
           url: '/inspections/calendar',
+          breadcrumbs: false
+        },
+        {
+          id: 'commandes',
+          title: 'Devis',
+          type: 'item',
+          url: '/commandes/list',
+          breadcrumbs: false
+        },
+        {
+          id: 'nouvelle-facture',
+          title: 'Nouvelle Facture',
+          type: 'item',
+          url: '/factures/create',
+          breadcrumbs: false
+        },
+        {
+          id: 'factures',
+          title: 'Factures',
+          type: 'item',
+          url: '/factures/list',
           breadcrumbs: false
         }
       ]
@@ -164,96 +217,6 @@ const Crm = {
         }
       ]
     }
-
-    // {
-    //   id: 'logs-group',
-    //   title: 'Historique',
-    //   type: 'collapse',
-    //   icon: HistoryRoundedIcon,
-    //   // url: '/inspections/inspections',
-    //   breadcrumbs: false,
-    //   children: [
-    //     {
-    //       id: 'logs',
-    //       title: 'Logs',
-    //       type: 'item',
-    //       url: '/logs',
-    //       breadcrumbs: false
-    //     }
-    //   ]
-    // },
-    // {
-    //   id: 'documents-group',
-    //   title: 'Documents',
-    //   type: 'collapse',
-    //   icon: DescriptionRoundedIcon,
-    //   // url: '/inspections/inspections',
-    //   breadcrumbs: false,
-    //   children: [
-    //     {
-    //       id: 'document',
-    //       title: 'Documents',
-    //       type: 'item',
-    //       url: '/documents',
-    //       breadcrumbs: false
-    //     }
-    //   ]
-    // }
-    // {
-    //   id: 'users-group',
-    //   title: <FormattedMessage id="Users" />,
-    //   type: 'collapse',
-    //   // icon: icons.IconBasket,
-    //   url: '/users/list',
-    //   breadcrumbs: false,
-    //   children: [
-    //     {
-    //       id: 'users',
-    //       title: <FormattedMessage id="Utilisateurs" />,
-    //       type: 'item',
-    //       url: '/users/list',
-    //       breadcrumbs: false
-    //     }
-    //   ]
-    // }
-    // {
-    //   id: 'settings',
-    //   title: <FormattedMessage id="Paramètres" />,
-    //   type: 'collapse',
-    //   // icon: icons.IconBasket,
-    //   // url: '/inspections/inspections',
-    //   breadcrumbs: false,
-    //   children: [
-    //     {
-    //       id: 'calendrier',
-    //       title: <FormattedMessage id="Calendrier" />,
-    //       type: 'item',
-    //       url: '/settings/calendrier',
-    //       breadcrumbs: false
-    //     },
-    //     {
-    //       id: 'current-piece',
-    //       title: <FormattedMessage id="Références" />,
-    //       type: 'item',
-    //       url: '/settings/current-pieces',
-    //       breadcrumbs: false
-    //     },
-    //     {
-    //       id: 'jour-ferie',
-    //       title: <FormattedMessage id="Jours Fériés" />,
-    //       type: 'item',
-    //       url: '/settings/jour-ferie',
-    //       breadcrumbs: false
-    //     },
-    //     {
-    //       id: 'preferences',
-    //       title: <FormattedMessage id="Préférences" />,
-    //       type: 'item',
-    //       url: '/settings/preferences',
-    //       breadcrumbs: false
-    //     }
-    //   ]
-    // }
   ]
 };
 
