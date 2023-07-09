@@ -131,17 +131,19 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
 
           {formInput?.mode_id !== '0' && formInput?.nb_interventions > 0 && (
             <Grid container spacing={2}>
-              <InterventionRows
-                contractArticles={contractArticles}
-                setContractArticles={setContractArticles}
-                interventionNumber={formInput?.nb_interventions}
-                modeIntervention={modeIntervention}
-                // selectedModeIntitule={selectedModeIntitule}
-                duration={duration}
-                nbrInterventions={formInput?.nb_interventions}
-                contratStartDate={contractData?.date_debut}
-                contratEndDate={contractData?.date_fin}
-              />
+              <Grid item xs={12}>
+                <InterventionRows
+                  contractArticles={contractArticles}
+                  setContractArticles={setContractArticles}
+                  interventionNumber={formInput?.nb_interventions}
+                  modeIntervention={modeIntervention}
+                  // selectedModeIntitule={selectedModeIntitule}
+                  duration={duration}
+                  nbrInterventions={formInput?.nb_interventions}
+                  contratStartDate={contractData?.date_debut}
+                  contratEndDate={contractData?.date_fin}
+                />
+              </Grid>
             </Grid>
             // <>test</>
           )}

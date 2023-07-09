@@ -63,7 +63,11 @@ const InterventionRows = ({
         <TableHead>
           <TableRow>
             <TableCell>Intervention</TableCell>
-            <TableCell>Date</TableCell>
+            <TableCell>Date Intervention</TableCell>
+            <TableCell>Article</TableCell>
+            <TableCell>Prix Unitaire</TableCell>
+            <TableCell>Catégorie</TableCell>
+            <TableCell>Remise</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -79,7 +83,7 @@ const InterventionRows = ({
                   <DateTimePicker
                     ampm={false}
                     inputFormat="dd/MM/yyyy HH:mm"
-                    renderInput={(params) => <TextField variant="standard" {...params} />}
+                    renderInput={(params) => <TextField fullWidth variant="standard" {...params} />}
                     label="Date de fin Prévu"
                     value={moment(contractArticle.date_prevu).format('YYYY-MM-DD HH:mm:ss')}
                     onChange={(v) => {
@@ -101,6 +105,7 @@ const InterventionRows = ({
                   getOptionLabel={(option) => option?.reference}
                   renderInput={(params) => (
                     <TextField
+                      fullWidth
                       required
                       variant="standard"
                       {...params}
@@ -113,6 +118,9 @@ const InterventionRows = ({
               </TableCell>
               <TableCell>
                 <TextField
+                  fullWidth
+                  variant="standard"
+                  margin="normal"
                   value={contractArticle.prix_unitaire}
                   onChange={(e) => handleContractArticleUpdate(index, 'prix_unitaire', e.target.value)}
                   // Additional props for the TextField component
@@ -120,6 +128,9 @@ const InterventionRows = ({
               </TableCell>
               <TableCell>
                 <TextField
+                  fullWidth
+                  variant="standard"
+                  margin="normal"
                   value={contractArticle.p_category_intitule}
                   disabled
                   // Additional props for the TextField component
@@ -127,6 +138,9 @@ const InterventionRows = ({
               </TableCell>
               <TableCell>
                 <TextField
+                  fullWidth
+                  variant="standard"
+                  margin="normal"
                   value={contractArticle.remise}
                   onChange={(e) => handleContractArticleUpdate(index, 'remise', e.target.value)}
                   // Additional props for the TextField component
