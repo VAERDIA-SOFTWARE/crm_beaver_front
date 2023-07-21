@@ -39,7 +39,7 @@ const LeadsUpdatePage = () => {
   const categoryData = getCategoryClient?.data;
 
   console.log('====================================');
-  console.log(categoryData);
+  console.log(clientData);
   console.log('====================================');
 
   const [formErrors, setFormErrors] = useState({});
@@ -96,7 +96,11 @@ const LeadsUpdatePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
-    <MainCard title={`Modifier Leads ${clientData?.reference ? '- ' + clientData?.reference : ''}`} backButton goBackLink="/lot-Leads/list">
+    <MainCard
+      title={`Modifier Leads ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
+      backButton
+      goBackLink={`/lot-leads/${clientData?.d_lot_id}/details`}
+    >
       <div>
         <>
           <form onSubmit={handleSubmit}>
@@ -177,26 +181,31 @@ const LeadsUpdatePage = () => {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <Autocomplete
-                  onChange={(event, newValue) => {
-                    setSelectedCategory(newValue);
+                {clientData && Array.isArray(categoryData) ? (
+                  <Autocomplete
+                    onChange={(event, newValue) => {
+                      setSelectedCategory(newValue);
 
-                    setFormInput((formData) => {
-                      return { ...formData, p_category_client_id: newValue?.id };
-                    });
-                  }}
-                  options={categoryData || []}
-                  getOptionLabel={(option) => option.intitule}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="standard"
-                      label="Catégorie*"
-                      error={!!formErrors?.data?.p_category_client_id}
-                      helperText={renderArrayMultiline(formErrors?.data?.p_category_client_id)}
-                    />
-                  )}
-                />
+                      setFormInput((formData) => {
+                        return { ...formData, p_category_client_id: newValue?.id };
+                      });
+                    }}
+                    options={categoryData || []}
+                    getOptionLabel={(option) => option.intitule}
+                    defaultValue={categoryData?.find((e) => clientData?.p_category_client_id === e?.id)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Catégorie*"
+                        error={!!formErrors?.data?.p_category_client_id}
+                        helperText={renderArrayMultiline(formErrors?.data?.p_category_client_id)}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Skeleton variant="rounded" width={'100%'} height={50} />
+                )}
               </Grid>
               {/* <Grid item xs={12} md={6}>
                 <Autocomplete
@@ -228,7 +237,7 @@ const LeadsUpdatePage = () => {
                   variant="contained"
                   type="submit"
                 >
-                  Ajouter
+                  Modifier
                 </LoadingButton>
               </Grid>
             </Grid>

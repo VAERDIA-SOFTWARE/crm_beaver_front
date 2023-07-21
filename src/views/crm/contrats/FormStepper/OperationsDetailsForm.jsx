@@ -3,6 +3,7 @@ import {
   Button,
   Divider,
   Grid,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -16,33 +17,30 @@ import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { format } from 'date-fns';
 import moment from 'moment';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useGetUsers } from 'services/users.service';
 import renderArrayMultiline from 'utilities/utilities';
 import PropTypes from 'prop-types';
 import AnimateButton from 'ui-component/extended/AnimateButton';
-import { useCreateContrat, useGetContrat, useGetMarquePAC } from 'services/contrats.service';
+import { useGetContrat } from 'services/contrats.service';
 import { useGetModeInterventions } from 'services/interventions.service';
 import { useCreateArticleContrat } from 'services/articles.service';
 import InterventionRows from './ArticleRow';
 
-const DetailsInterventions = ({ handleNext, handleBack }) => {
+const DetailsInterventions = ({ handleNext, handleBack, contractId }) => {
   const duration = localStorage.getItem('duree');
 
-  const contractId = localStorage.getItem('contractId');
-
-  const location = useLocation();
-  const clientId = location.state?.clientId;
+  // const location = useLocation();
+  // const clientId = location.state?.clientId;
 
   const [modeIntervention, setModeIntervention] = useState(null);
   const [contractArticles, setContractArticles] = useState([]);
-
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
-    mode_id: '',
+    mode_id: '1',
     nb_interventions: '',
-    article: [{ prix_unitaire: '', remise: '', date_prevu: '' }]
+    articles: ''
   });
   const handleChange = (e) => {
     setFormInput({
@@ -50,7 +48,7 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
       [e.target.name]: e?.target?.value
     });
   };
-  const createArticleContratMutation = useCreateArticleContrat({ contractId });
+  const createArticleContratMutation = useCreateArticleContrat(contractId);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,9 +57,7 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
     try {
       const formattedInput = {
         ...formInput,
-        date_debut: format(formInput?.date_debut, 'yyyy-MM-dd'),
-        date_fin: format(formInput?.date_fin, 'yyyy-MM-dd'),
-        mise_en_place_date: format(formInput?.date_debut, 'yyyy-MM-dd')
+        articles: contractArticles
       };
       await createArticleContratMutation.mutateAsync(formattedInput);
       handleNext(1);
@@ -73,13 +69,50 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
   };
   const getContractQuery = useGetContrat(contractId);
   const contractData = getContractQuery?.data;
-
   const getModeInterventionsQuery = useGetModeInterventions();
+
+  useEffect(() => {
+    if (getModeInterventionsQuery?.isSuccess && getModeInterventionsQuery?.data && getModeInterventionsQuery.data.length > 0) {
+      setModeIntervention(getModeInterventionsQuery.data[0]);
+    }
+  }, [getModeInterventionsQuery?.data, getModeInterventionsQuery?.isSuccess]);
 
   return (
     <Box component="form" noValidate onSubmit={handleSubmit} autoComplete="off">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
+            {getModeInterventionsQuery?.isSuccess && getModeInterventionsQuery?.data ? (
+              <Autocomplete
+                defaultValue={
+                  getModeInterventionsQuery?.isSuccess && getModeInterventionsQuery?.data.length > 0
+                    ? getModeInterventionsQuery.data[0]
+                    : null
+                }
+                onChange={(event, newValue) => {
+                  setFormInput((formData) => {
+                    return { ...formData, mode_id: newValue?.id };
+                  });
+                  setModeIntervention(newValue);
+                }}
+                multiple={false}
+                options={getModeInterventionsQuery?.data || []}
+                getOptionLabel={(option) => option?.intitule}
+                renderInput={(params) => (
+                  <TextField
+                    required
+                    variant="standard"
+                    {...params}
+                    label="Selectionner une Mode"
+                    error={!!formErrors?.data?.mode_id}
+                    helperText={renderArrayMultiline(formErrors?.data?.mode_id)}
+                  />
+                )}
+              />
+            ) : (
+              <Skeleton variant="rounded" width={'100%'} height={40} />
+            )}
+          </Grid>
           <Grid item xs={12} md={4}>
             <TextField
               variant="standard"
@@ -93,29 +126,7 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
               helperText={renderArrayMultiline(formErrors?.data?.nb_interventions)}
             />
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Autocomplete
-              onChange={(event, newValue) => {
-                setFormInput((formData) => {
-                  return { ...formData, mode_id: newValue?.id };
-                });
-                setModeIntervention(newValue);
-              }}
-              multiple={false}
-              options={getModeInterventionsQuery?.data || []}
-              getOptionLabel={(option) => option?.intitule}
-              renderInput={(params) => (
-                <TextField
-                  required
-                  variant="standard"
-                  {...params}
-                  label="Selectionner une Mode"
-                  error={!!formErrors?.data?.mode_id}
-                  helperText={renderArrayMultiline(formErrors?.data?.mode_id)}
-                />
-              )}
-            />
-          </Grid>
+
           <Grid item xs={12} md={4}>
             <TextField
               id="duree"
@@ -137,7 +148,6 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
                   setContractArticles={setContractArticles}
                   interventionNumber={formInput?.nb_interventions}
                   modeIntervention={modeIntervention}
-                  // selectedModeIntitule={selectedModeIntitule}
                   duration={duration}
                   nbrInterventions={formInput?.nb_interventions}
                   contratStartDate={contractData?.date_debut}
@@ -145,7 +155,6 @@ const DetailsInterventions = ({ handleNext, handleBack }) => {
                 />
               </Grid>
             </Grid>
-            // <>test</>
           )}
           <Grid item xs={12}>
             <Stack direction="row" justifyContent="space-between">

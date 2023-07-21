@@ -62,7 +62,7 @@ const ClientsCreatePage = () => {
     identifient_fiscal: '',
     identifient_tva: '',
     d_lot_id: LotId,
-    societe: ''
+    societe: null
   });
 
   const createClientMutation = useCreateUser();
@@ -200,7 +200,7 @@ const ClientsCreatePage = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              {/* <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
                   fullWidth
@@ -211,7 +211,7 @@ const ClientsCreatePage = () => {
                   error={!!formErrors?.data?.societe}
                   helperText={renderArrayMultiline(formErrors?.data?.societe)}
                 />
-              </Grid>
+              </Grid> */}
               {/* <Grid item xs={12} md={6}>
                 <Autocomplete
                   onChange={(event, newValue) => {

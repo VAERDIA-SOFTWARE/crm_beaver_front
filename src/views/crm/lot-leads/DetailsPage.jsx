@@ -15,10 +15,6 @@ const DetailsLotLeadsPage = () => {
   const { lotLeadsId } = useParams();
   const getLotQuery = useGetLotLead(lotLeadsId);
   const lotData = getLotQuery.data;
-
-  console.log('====================================');
-  console.log(lotData);
-  console.log('====================================');
   localStorage.setItem('LotId', lotLeadsId);
 
   return (

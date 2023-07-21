@@ -31,14 +31,15 @@ import AddIcon from '@mui/icons-material/AddTwoTone';
 import SubCard from 'ui-component/cards/SubCard';
 import ResponsiveDialog from './deleteContratDialog';
 import DeleteContratDialog from './deleteContratDialog';
-
+import ContentPasteOffIcon from '@mui/icons-material/ContentPasteOff';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 const Contract = () => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
   const navigate = useNavigate();
   const getContratQuery = useGetContrats();
-  console.log(getContratQuery);
+  // console.log(getContratQuery);
 
   return (
     <MainCard
@@ -74,7 +75,7 @@ function TableDataGrid({ setSearchFilter, getContratQuery, setPage }) {
 
   const columns = [
     {
-      field: 'active_status',
+      field: 'validated',
       headerName: 'Statut',
       sortable: false,
       hideable: false,
@@ -83,14 +84,14 @@ function TableDataGrid({ setSearchFilter, getContratQuery, setPage }) {
       renderCell: (params) => {
         return (
           <>
-            {params?.row?.active_status ? (
-              <AccountCircleIcon
+            {params?.row?.validated ? (
+              <ContentPasteIcon
                 sx={{
                   color: '#16a34a'
                 }}
               />
             ) : (
-              <NoAccountsIcon
+              <ContentPasteOffIcon
                 sx={{
                   color: '#dc2626'
                 }}
@@ -112,7 +113,30 @@ function TableDataGrid({ setSearchFilter, getContratQuery, setPage }) {
       flex: 1
     },
 
-    { field: 'client', headerName: 'Client', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    {
+      field: 'client',
+      headerName: 'Client',
+      sortable: false,
+      filterable: false,
+      minWidth: 100,
+      flex: 1,
+      renderCell: (params) => {
+        return <div>{params?.row?.user?.name}</div>;
+      }
+    },
+    {
+      field: 'marque_pac_parents',
+      headerName: 'Marque PAC',
+      sortable: false,
+      filterable: false,
+      minWidth: 100,
+      flex: 1,
+      renderCell: (params) => {
+        const marqueList = params?.row?.marque_pac_parents;
+        const marqueText = marqueList?.join(', ');
+        return <div>{marqueText}</div>;
+      }
+    },
     {
       field: 'action',
       headerName: 'Action',
@@ -245,13 +269,14 @@ function EditCell({ params }) {
           Modifier Contrat
         </MenuItem>
         {/* <MenuItem> */}
-        <MenuItem onClick={handleModal}>
-          <IconButton color="secondary" size="large">
+        {/* <MenuItem onClick={handleModal}> */}
+        <MenuItem>
+          {/* <IconButton color="secondary" size="large">
             <VisibilityOffIcon sx={{ fontSize: '1.3rem' }} />{' '}
           </IconButton>
-          Supprimer Client
+          Supprimer Contrat */}
         </MenuItem>
-        {setOpen && <DeleteContratDialog open={open} setOpen={setOpen} />}
+        {/* {setOpen && <DeleteContratDialog open={open} setOpen={setOpen} />} */}
       </Menu>
     </div>
   );

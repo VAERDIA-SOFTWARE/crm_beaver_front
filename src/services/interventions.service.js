@@ -5,3 +5,18 @@ import { toast } from 'react-toastify';
 export const useGetModeInterventions = () => {
   return useQuery(['mode-interventions'], () => axiosClient.get(`/mode-interventions`).then((res) => res.data), {});
 };
+
+export const useGetInterventionsProposes = ({ searchFilter = '', userId = '', page = 1 }) => {
+  return useQuery(
+    ['interventions-proposer', searchFilter, userId, page],
+    () =>
+      axiosClient
+        .get(
+          `interventions-proposer?${searchFilter ? `search=${searchFilter}&` : ''}${userId ? `userId=${userId}&` : ''}${
+            page ? `page=${page}&` : ''
+          }`
+        )
+        .then((res) => res.data),
+    {}
+  );
+};

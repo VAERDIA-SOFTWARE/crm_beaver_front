@@ -32,16 +32,13 @@ import { useGetSettingsCategoryClient } from 'services/settings.service';
 
 const LeadsCreatePage = () => {
   const { leadsId } = useParams();
-
+  const navigate = useNavigate();
   const getLeadsQuery = useGetUser(leadsId);
   const clientData = getLeadsQuery?.data?.user;
   const getCategoryClient = useGetSettingsCategoryClient();
   const categoryData = getCategoryClient?.data;
 
   const LotId = localStorage.getItem('LotId');
-  console.log('====================================');
-  console.log(LotId);
-  console.log('====================================');
 
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
@@ -61,7 +58,7 @@ const LeadsCreatePage = () => {
     identifient_fiscal: '',
     identifient_tva: '',
     d_lot_id: LotId,
-    societe: ''
+    societe: null
   });
 
   const createClientMutation = useCreateUser();
@@ -88,7 +85,7 @@ const LeadsCreatePage = () => {
     try {
       await createClientMutation.mutateAsync(formInput);
 
-      // navigate('/leads/list');
+      navigate(`/lot-leads/${LotId}/details`);
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -98,7 +95,7 @@ const LeadsCreatePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
-    <MainCard title={`Ajouter Leads`} backButton goBackLink="/lot-Leads/list">
+    <MainCard title={`Ajouter Leads Manuellement`} backButton goBackLink={`/lot-leads/${LotId}/details`}>
       <div>
         <>
           <form onSubmit={handleSubmit}>
@@ -200,7 +197,7 @@ const LeadsCreatePage = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              {/* <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
                   fullWidth
@@ -211,7 +208,7 @@ const LeadsCreatePage = () => {
                   error={!!formErrors?.data?.societe}
                   helperText={renderArrayMultiline(formErrors?.data?.societe)}
                 />
-              </Grid>
+              </Grid> */}
               {/* <Grid item xs={12} md={6}>
                 <Autocomplete
                   onChange={(event, newValue) => {

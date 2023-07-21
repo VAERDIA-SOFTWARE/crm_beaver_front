@@ -27,6 +27,7 @@ import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import useAuth from 'hooks/useAuth';
 import { useGetSettingsPreferences } from 'services/settings.service';
+import { useGetInterventionsProposes } from 'services/interventions.service';
 
 const PropositionsList = ({ title, userId = '' }) => {
   const [page, setPage] = React.useState(1);
@@ -34,9 +35,11 @@ const PropositionsList = ({ title, userId = '' }) => {
   const [selectedRows, setSelectedRows] = React.useState([]);
   const { logout, user } = useAuth();
 
-  const getInspectionsQuery = useGetInspectionsProposes({ searchFilter, userId, page });
-  const chantiersData = getInspectionsQuery.data?.listInspections?.data;
-
+  const getInterventionsQuery = useGetInterventionsProposes({ searchFilter, userId, page });
+  const propositionData = getInterventionsQuery?.data?.listInterventions?.data;
+  console.log('====================================');
+  console.log(propositionData);
+  console.log('====================================');
   const useValiderPropositionsMutation = useValiderPropositions();
 
   return (
@@ -49,7 +52,7 @@ const PropositionsList = ({ title, userId = '' }) => {
             user?.role.includes('admin') && (
               <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
                 <LoadingButton
-                  disabled={!chantiersData?.length}
+                  disabled={!propositionData?.length}
                   loadingPosition="end"
                   endIcon={<SendIcon />}
                   loading={useValiderPropositionsMutation.isLoading}
@@ -72,7 +75,7 @@ const PropositionsList = ({ title, userId = '' }) => {
           <TableDataGrid
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
-            getInspectionsQuery={getInspectionsQuery}
+            getInspectionsQuery={getInterventionsQuery}
             setPage={setPage}
             setSearchFilter={setSearchFilter}
           />
@@ -115,9 +118,12 @@ function EditCell({ params }) {
 
 function TableDataGrid({ setSearchFilter, getInspectionsQuery, setPage, setSelectedRows, selectedRows }) {
   const theme = useTheme();
-  const inspectionsData = getInspectionsQuery.data?.listInspections;
+  const inspectionsData = getInspectionsQuery?.data?.listInterventions;
   const navigate = useNavigate();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
+  console.log('==============aaa======================');
+  console.log(inspectionsData);
+  console.log('====================================');
 
   const columns = [
     {

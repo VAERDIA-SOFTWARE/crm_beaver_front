@@ -5,7 +5,6 @@ import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { useState } from 'react';
 import MainCard from 'ui-component/cards/MainCard';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import TextEditor from './TextEditor';
 import { useNavigate } from 'react-router-dom';
 
 const ContratCreatePage = () => {
@@ -449,16 +448,7 @@ const ContratCreatePage = () => {
           </Box>
         </TabPanel>
         <TabPanel value="3">
-          <Box>
-            {/* <TextEditor /> */}
-            <div>
-              <MainCard content={true}>
-                <div>
-                  <TextEditor />
-                </div>
-              </MainCard>
-            </div>
-          </Box>
+
         </TabPanel>
         <TabPanel value="4">
           <Box>

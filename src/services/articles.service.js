@@ -2,12 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-export function useCreateArticleContrat() {
+export function useCreateArticleContrat(contratId) {
   const queryClient = useQueryClient();
 
   return useMutation(
     async (values) => {
-      const res = await axiosClient.post(`contrats/articles`, values);
+      const res = await axiosClient.post(`contrats/${contratId}/articles`, values);
       return res.data;
     },
     {

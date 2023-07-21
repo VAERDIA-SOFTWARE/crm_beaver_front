@@ -149,24 +149,24 @@ const Crm = {
           breadcrumbs: false
         },
         {
-          id: 'inspections',
+          id: 'interventions',
           title: 'Interventions',
           type: 'item',
-          url: '/inspections/list',
+          url: '/interventions/list',
           breadcrumbs: false
         },
         {
           id: 'calendrier',
           title: 'Calendrier',
           type: 'item',
-          url: '/inspections/calendar',
+          url: '/interventions/calendar',
           breadcrumbs: false
         },
         {
           id: 'commandes',
           title: 'Devis',
           type: 'item',
-          url: '/commandes/list',
+          url: '/devis/list',
           breadcrumbs: false
         },
         {

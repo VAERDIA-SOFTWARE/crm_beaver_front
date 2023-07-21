@@ -112,42 +112,43 @@ function EditCell({ params }) {
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
       {params?.row?.validated === 1 ? (
-        <>
-          <IconButton onClick={handleMenuClick} size="large">
-            <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
-          </IconButton>
-          <Menu
-            id="menu-popular-card-1"
-            anchorEl={anchorEl}
-            keepMounted={true}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            variant="selectedMenu"
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-          >
-            <MenuItem>
-              <a
-                target={'_blank'}
-                style={{
-                  textDecoration: 'none',
-                  color: 'inherit'
-                }}
-                href={params?.row?.excel_download_link}
-                rel="noreferrer"
-              >
-                Exporter Excel
-              </a>
-            </MenuItem>
-          </Menu>
-        </>
+        <></>
       ) : (
+        // <>
+        //   <IconButton onClick={handleMenuClick} size="large">
+        //     <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
+        //   </IconButton>
+        //   <Menu
+        //     id="menu-popular-card-1"
+        //     anchorEl={anchorEl}
+        //     keepMounted={true}
+        //     open={Boolean(anchorEl)}
+        //     onClose={handleClose}
+        //     variant="selectedMenu"
+        //     anchorOrigin={{
+        //       vertical: 'bottom',
+        //       horizontal: 'right'
+        //     }}
+        //     transformOrigin={{
+        //       vertical: 'top',
+        //       horizontal: 'right'
+        //     }}
+        //   >
+        //     <MenuItem>
+        //       <a
+        //         target={'_blank'}
+        //         style={{
+        //           textDecoration: 'none',
+        //           color: 'inherit'
+        //         }}
+        //         href={params?.row?.excel_download_link}
+        //         rel="noreferrer"
+        //       >
+        //         Exporter Excel
+        //       </a>
+        //     </MenuItem>
+        //   </Menu>
+        // </>
         <IconButton
           color="secondary"
           size="large"
@@ -172,19 +173,17 @@ const BorderLinearProgress = withStyles(() => ({
   }
 }))(LinearProgress);
 
-function TableDataGrid({
-  setSearchFilter,
-  setPage,
-  validated,
-
-  page,
-  searchFilter,
-  userId,
-  paginated
-}) {
+function TableDataGrid({ setSearchFilter, setPage, validated, page, searchFilter, userId, paginated }) {
   const theme = useTheme();
   const getLotsLeadsQuery = useGetLotLeads({ searchFilter, userId, page, validated });
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
+
+  const lotleadsArray = getLotsLeadsQuery.isSuccess && getLotsLeadsQuery?.data;
+  const pinnedLot = getLotsLeadsQuery.isSuccess && lotleadsArray[lotleadsArray?.length - 1];
+  const lotLeadsRows = [pinnedLot];
+  for (let i = 0; i < lotleadsArray?.length - 1; i++) {
+    lotLeadsRows.push(lotleadsArray[i]);
+  }
 
   const columns = [
     {
@@ -298,15 +297,16 @@ function TableDataGrid({
         components={{
           Toolbar: () => <CustomToolbar page={page} searchFilter={searchFilter} userId={userId} paginated={paginated} /> || GridToolbar
         }}
-        rows={getLotsLeadsQuery.data || []}
+        // rows={getLotsLeadsQuery?.data || []}
+        rows={(getLotsLeadsQuery.isSuccess && lotLeadsRows) || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
         onPageSizeChange={(e) => console.log(e)}
         checkboxSelection={false}
         disableSelectionOnClick={true}
-        rowCount={getLotsLeadsQuery.data?.total || 0}
-        loading={getLotsLeadsQuery.isLoading || getLotsLeadsQuery.isFetching}
+        rowCount={getLotsLeadsQuery?.data?.total || 0}
+        loading={getLotsLeadsQuery?.isLoading || getLotsLeadsQuery?.isFetching}
         paginationMode="server"
         filterMode="server"
         onFilterModelChange={(e) => {

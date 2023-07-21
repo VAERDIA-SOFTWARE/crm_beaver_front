@@ -2,7 +2,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
+import { Button, Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
 import AuthWrapper1 from '../AuthWrapper1';
@@ -100,7 +100,20 @@ const Login = () => {
                   textAlign: 'center'
                 }}
               >
-                © 2023 Vaerdia. Tous les droits sont réservés.
+                © 2023
+                <a
+                  style={{
+                    textDecoration: 'none',
+                    color: 'inherit'
+                  }}
+                  href={'http://vaerdia.com/'}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {' '}
+                  Vaerdia{' '}
+                </a>
+                Tous les droits sont réservés.
               </div>
             </Grid>
           </Grid>

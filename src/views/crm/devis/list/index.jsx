@@ -1,11 +1,8 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import * as React from 'react';
 
 // material-ui
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
-import { Box, Fab, Grid, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Box, Fab, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 // project imports
@@ -20,36 +17,36 @@ import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
-  GridToolbarExport,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { useGetUsers } from 'services/users.service';
 import { useGetSettingsPreferences } from 'services/settings.service';
+import { useGetArticles } from 'services/articles.service';
+import { AccountCircleOutlined, NoAccountsOutlined } from '@mui/icons-material';
 
-const ClientsList = () => {
+const UsersList = () => {
   const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getClientsQuery = useGetUsers({ page, searchFilter, type: '1', paginated: true, role: 'client' });
-
+  const getArticlesQuery = useGetArticles();
+  const articlesData = getArticlesQuery?.data;
   console.log('====================================');
-  console.log(getClientsQuery);
+  console.log(articlesData);
   console.log('====================================');
-
   const navigate = useNavigate();
 
   return (
     <MainCard
-      title="Liste des Clients"
+      title="Liste des Devis"
       content={false}
       secondary={
         <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-          <Tooltip title="Ajouter Clients">
+          <Tooltip title="Ajouter Devis">
             <Fab
               color="primary"
               size="small"
-              onClick={() => navigate(`/clients/create`)}
+              onClick={() => navigate(`/devis/create`)}
               sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
             >
               <AddIcon fontSize="small" />
@@ -58,23 +55,22 @@ const ClientsList = () => {
         </Grid>
       }
     >
-      <TableDataGrid getClientsQuery={getClientsQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
+      <TableDataGrid setPageSize={setPageSize} getusersQuery={articlesData} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
 };
 
-export default ClientsList;
+export default UsersList;
 
 function EditCell({ params }) {
   const navigate = useNavigate();
-
-  // const [anchorEl, setAnchorEl] = React.useState(null);
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  // };
-  // const handleMenuClick = (event) => {
-  //   setAnchorEl(event?.currentTarget);
-  // };
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleMenuClick = (event) => {
+    setAnchorEl(event?.currentTarget);
+  };
 
   return (
     <div>
@@ -82,49 +78,22 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/clients/${params?.row?.id}/details`);
+          navigate(`/articles/${params?.row?.id}/details`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
-      {/* <IconButton onClick={handleMenuClick} size="large">
-        <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
-      </IconButton>
-      <Menu
-        id="menu-popular-card-1"
-        anchorEl={anchorEl}
-        keepMounted={true}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        variant="selectedMenu"
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: '{{ righ }}t'
-        }}
-      >
-        <MenuItem
-          onClick={(e) => {
-            navigate(`/clients/${params.row?.id}/import-chantiers`);
-          }}
-        >
-          Importer
-        </MenuItem>
-      </Menu> */}
     </div>
   );
 }
 
-function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
+function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
     {
-      field: 'active_status',
+      field: 'active',
       headerName: 'Statut',
       sortable: false,
       hideable: false,
@@ -133,14 +102,14 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
       renderCell: (params) => {
         return (
           <>
-            {params?.row?.active_status ? (
-              <AccountCircleIcon
+            {params?.row?.active ? (
+              <AccountCircleOutlined
                 sx={{
                   color: '#16a34a'
                 }}
               />
             ) : (
-              <NoAccountsIcon
+              <NoAccountsOutlined
                 sx={{
                   color: '#dc2626'
                 }}
@@ -151,28 +120,31 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
       }
     },
     { field: 'reference', headerName: 'Référence', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'name', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'nom', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'prix_unitaire', headerName: 'Prix Unitaire', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'remise', headerName: 'Remise', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     {
-      field: 'phone_number',
-      headerName: 'Téléphone',
-      sortable: false,
-      filterable: false,
-
-      minWidth: 100,
-      flex: 1
-    },
-    { field: 'email', headerName: 'E-mail', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    {
-      field: 'address',
-      headerName: 'Addresse',
+      field: 'unite_id',
+      headerName: 'Unité',
       sortable: false,
       filterable: false,
       minWidth: 100,
-      flex: 1
+      flex: 1,
+      renderCell: (params) => {
+        return <>{params?.row?.unite?.intitule}</>;
+      }
     },
-    // { field: 'ville', headerName: 'Ville', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'code_postal', headerName: 'Code Postal', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-
+    {
+      field: 'p_category_article_id',
+      headerName: 'Catégorie',
+      sortable: false,
+      filterable: false,
+      minWidth: 100,
+      flex: 1,
+      renderCell: (params) => {
+        return <>{params?.row?.unite?.intitule}</>;
+      }
+    },
     {
       field: 'action',
       headerName: 'Action',
@@ -227,23 +199,18 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getClientsQuery?.data?.data || []}
+        rows={getusersQuery || []}
         columns={columns}
-        pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
-        rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
-        onPageSizeChange={(e) => console.log(e)}
-        checkboxSelection={false}
-        disableSelectionOnClick={true}
-        rowCount={getClientsQuery.data?.total || 0}
-        loading={getClientsQuery.isLoading || getClientsQuery.isFetching}
-        pagination
+        loading={getusersQuery?.isLoading || getusersQuery?.isFetching}
+        rowsPerPageOptions={[5, 10, 25]}
         paginationMode="server"
         filterMode="server"
-        onFilterModelChange={(e) => {
-          setSearchFilter(e?.quickFilterValues);
-        }}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        pageSize={parseInt(getusersQuery?.data?.per_page) || 10}
+        pagination
+        checkboxSelection={false}
+        rowCount={getusersQuery?.data?.total || 0}
         onPageChange={(newPage) => setPage(newPage + 1)}
-        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         initialState={[]}
       />
     </Box>

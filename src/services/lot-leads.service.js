@@ -97,7 +97,7 @@ export function useDeleteLot() {
         queryClient.invalidateQueries();
       },
       onError: (data) => {
-        toast.error(data?.response?.data?.message);
+        // toast.error(data?.response?.data?.message);
       }
     }
   );

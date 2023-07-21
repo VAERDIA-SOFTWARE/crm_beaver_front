@@ -71,7 +71,7 @@ const AppCrmArticlesCreate = Loadable(lazy(() => import('views/crm/articles/list
 
 const AppCrmContratDetails = Loadable(lazy(() => import('views/crm/contrats/DetailsPage')));
 const AppCrmContratUpdate = Loadable(lazy(() => import('views/crm/contrats/UpdatePage')));
-const AppCrmContratCreate = Loadable(lazy(() => import('views/crm/contrats/CreatePage')));
+const AppCrmContratCreate = Loadable(lazy(() => import('views/crm/contrats/FormStepper/index')));
 const AppCrmContratsList = Loadable(lazy(() => import('views/crm/contrats/index')));
 
 const AppCrmChantiersList = Loadable(lazy(() => import('views/crm/chantiers/NewIndex')));
@@ -93,6 +93,14 @@ const AppCrmLeadUpdate = Loadable(lazy(() => import('views/crm/leads/list/Update
 const AppCrmLeadCreate = Loadable(lazy(() => import('views/crm/leads/list/CreatePage')));
 const AppCrmLeadsList = Loadable(lazy(() => import('views/crm/leads/list/index')));
 
+const AppCrmDevisDetails = Loadable(lazy(() => import('views/crm/devis/list/DetailsPage')));
+const AppCrmDevisUpdate = Loadable(lazy(() => import('views/crm/devis/list/UpdatePage')));
+const AppCrmDevisCreate = Loadable(lazy(() => import('views/crm/devis/list/CreatePage')));
+const AppCrmDevisList = Loadable(lazy(() => import('views/crm/devis/list/index')));
+
+const AppCrmPointageDetails = Loadable(lazy(() => import('views/crm/pointage/list/DetailsPage')));
+const AppCrmPointageList = Loadable(lazy(() => import('views/crm/pointage/list/index')));
+
 const AppCrmCommandesList = Loadable(lazy(() => import('views/crm/commandes/index')));
 const AppCrmCommandesDetails = Loadable(lazy(() => import('views/crm/commandes/DetailsPage')));
 
@@ -107,12 +115,18 @@ const AppCrmInspectionsListRapports = Loadable(lazy(() => import('views/crm/insp
 const AppCrmInspectionDetails = Loadable(lazy(() => import('views/crm/inspections/DetailsPage')));
 const AppCrmInspectionUpdate = Loadable(lazy(() => import('views/crm/inspections/UpdatePage')));
 const AppCrmInspectionFormulaire = Loadable(lazy(() => import('views/crm/inspections/Formulaire')));
+const AppCrmInspectionsCreate = Loadable(lazy(() => import('views/crm/inspections/CreatePage')));
+
+const AppCrmInterventionsList = Loadable(lazy(() => import('views/crm/interventions/index')));
+const AppCrmInterventionsListRapports = Loadable(lazy(() => import('views/crm/interventions/ListRapports')));
+const AppCrmInterventionDetails = Loadable(lazy(() => import('views/crm/interventions/DetailsPage')));
+const AppCrmInterventionUpdate = Loadable(lazy(() => import('views/crm/interventions/UpdatePage')));
+const AppCrmInterventionFormulaire = Loadable(lazy(() => import('views/crm/interventions/Formulaire')));
+const AppCrmInterventionsCreate = Loadable(lazy(() => import('views/crm/interventions/CreatePage')));
 
 const AppCrmPropositionsList = Loadable(lazy(() => import('views/crm/propositions/index')));
 const AppCrmPropositionsDetails = Loadable(lazy(() => import('views/crm/propositions/DetailsPage')));
 const AppCrmPropositionsUpdate = Loadable(lazy(() => import('views/crm/propositions/UpdatePage')));
-
-const AppCrmInspectionsCreate = Loadable(lazy(() => import('views/crm/inspections/CreatePage')));
 
 const AppCrmCategorieArticleList = Loadable(lazy(() => import('views/crm/preferences/categories-articles/index')));
 const AppCrmCategorieArticleCreate = Loadable(lazy(() => import('views/crm/preferences/categories-articles/CreatePage')));
@@ -790,6 +804,30 @@ const MainRoutes = {
       element: <AppCrmLeadUpdate />
     },
     {
+      path: '/devis/list',
+      element: <AppCrmDevisList />
+    },
+    {
+      path: '/devis/create',
+      element: <AppCrmDevisCreate />
+    },
+    {
+      path: '/devis/:devisId/details',
+      element: <AppCrmDevisDetails />
+    },
+    {
+      path: '/devis/:devisId/update',
+      element: <AppCrmDevisUpdate />
+    },
+    {
+      path: '/pointage/list',
+      element: <AppCrmPointageList />
+    },
+    {
+      path: '/pointage/:pointageId/details',
+      element: <AppCrmPointageDetails />
+    },
+    {
       path: '/commandes/list',
       element: <AppCrmCommandesList />
     },
@@ -849,6 +887,35 @@ const MainRoutes = {
     {
       path: '/inspections/:inspectionId/formulaire',
       element: <AppCrmInspectionFormulaire />
+    },
+
+    {
+      path: '/interventions/list',
+      element: <AppCrmInterventionsList />
+    },
+    {
+      path: '/interventions/rapports',
+      element: <AppCrmInterventionsListRapports />
+    },
+    {
+      path: '/interventions/:interventionId/details',
+      element: <AppCrmInterventionDetails />
+    },
+    {
+      path: '/interventions/:interventionId/update',
+      element: <AppCrmInterventionUpdate />
+    },
+    {
+      path: '/interventions/:interventionId/formulaire',
+      element: <AppCrmInterventionFormulaire />
+    },
+    {
+      path: '/interventions/create',
+      element: <AppCrmInterventionsCreate />
+    },
+    {
+      path: '/interventions/calendar',
+      element: <AppCrmCalendar />
     },
     {
       path: '/propositions/list',

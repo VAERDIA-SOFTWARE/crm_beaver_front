@@ -4,50 +4,50 @@ import React from 'react';
 import { Button, Step, Stepper, StepLabel, Stack, Typography } from '@mui/material';
 
 // project imports
-import ContratDetailsForm from './ContratDetailsForm';
-import OperationsDetailsForm from './OperationsDetailsForm';
-import Review from './Review';
 import MainCard from 'ui-component/cards/MainCard';
 import AnimateButton from 'ui-component/extended/AnimateButton';
+import InformationsGenerales from './InformationsGeneralesForm';
+import ContratSqueletteDetails from './ContratDetailsForm';
+import ContratSquelette from './ContratDetails';
+import DetailsInterventions from './OperationsDetailsForm';
 
 // step options
-const steps = ['Détails contrat', 'Details Interventions', 'Vérification'];
+const steps = ['Crée contrat', 'Ajouter Details Interventions', 'Modifier Détails Contrats', 'Consulter Contrats'];
 
-const getStepContent = (step, handleNext, handleBack, setErrorIndex, shippingData, setShippingData, paymentData, setPaymentData) => {
+const getStepContent = (step, handleNext, handleBack, setErrorIndex, contractId, setcontractId) => {
   switch (step) {
     case 0:
       return (
-        <ContratDetailsForm
+        <InformationsGenerales
           handleNext={handleNext}
+          contractId={contractId}
+          setcontractId={setcontractId}
           setErrorIndex={setErrorIndex}
-          shippingData={shippingData}
-          setShippingData={setShippingData}
         />
       );
     case 1:
+      return <DetailsInterventions handleNext={handleNext} contractId={contractId} handleBack={handleBack} setErrorIndex={setErrorIndex} />;
+    case 2:
       return (
-        <OperationsDetailsForm
+        <ContratSqueletteDetails
+          step={step}
           handleNext={handleNext}
+          contractId={contractId}
           handleBack={handleBack}
           setErrorIndex={setErrorIndex}
-          paymentData={paymentData}
-          setPaymentData={setPaymentData}
         />
       );
-    case 2:
-      return <Review />;
+    case 3:
+      return <ContratSquelette handleNext={handleNext} contractId={contractId} handleBack={handleBack} setErrorIndex={setErrorIndex} />;
     default:
       throw new Error('Unknown step');
   }
 };
 
-// ==============================|| FORMS WIZARD - BASIC ||============================== //
-
-const ValidationWizard = () => {
+const CreatePage = () => {
   const [activeStep, setActiveStep] = React.useState(0);
-  const [shippingData, setShippingData] = React.useState({});
-  const [paymentData, setPaymentData] = React.useState({});
   const [errorIndex, setErrorIndex] = React.useState(null);
+  const [contractId, setcontractId] = React.useState('');
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -59,7 +59,7 @@ const ValidationWizard = () => {
   };
 
   return (
-    <MainCard title="Contract Wizard">
+    <MainCard title="Crée Contrat">
       <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
         {steps.map((label, index) => {
           const labelProps = {};
@@ -84,7 +84,7 @@ const ValidationWizard = () => {
       <>
         {activeStep === steps.length ? (
           <>
-            <Typography variant="h5" gutterBottom>
+            {/* <Typography variant="h5" gutterBottom>
               Thank you for your order.
             </Typography>
             <Typography variant="subtitle1">
@@ -97,8 +97,6 @@ const ValidationWizard = () => {
                   variant="contained"
                   color="error"
                   onClick={() => {
-                    setShippingData({});
-                    setPaymentData({});
                     setActiveStep(0);
                   }}
                   sx={{ my: 3, ml: 1 }}
@@ -106,12 +104,12 @@ const ValidationWizard = () => {
                   Reset
                 </Button>
               </AnimateButton>
-            </Stack>
+            </Stack> */}
           </>
         ) : (
           <>
-            {getStepContent(activeStep, handleNext, handleBack, setErrorIndex, shippingData, setShippingData, paymentData, setPaymentData)}
-            {activeStep === steps.length - 1 && (
+            {getStepContent(activeStep, handleNext, handleBack, setErrorIndex, contractId, setcontractId)}
+            {/* {activeStep === steps.length - 1 && (
               <Stack direction="row" justifyContent={activeStep !== 0 ? 'space-between' : 'flex-end'}>
                 {activeStep !== 0 && (
                   <Button onClick={handleBack} sx={{ my: 3, ml: 1 }}>
@@ -124,7 +122,7 @@ const ValidationWizard = () => {
                   </Button>
                 </AnimateButton>
               </Stack>
-            )}
+            )} */}
           </>
         )}
       </>
@@ -132,4 +130,4 @@ const ValidationWizard = () => {
   );
 };
 
-export default ValidationWizard;
+export default CreatePage;

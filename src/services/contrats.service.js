@@ -12,6 +12,9 @@ export const useGetContrats = () => {
 export const useGetMarquePAC = () => {
   return useQuery(['parent-operations'], () => axiosClient.get(`/parent-operations`).then((res) => res.data), {});
 };
+export const useGetModeFacturations = () => {
+  return useQuery(['mode-factures'], () => axiosClient.get(`/mode-factures`).then((res) => res.data), {});
+};
 
 export const useGetContrat = (contratId) => {
   return useQuery(['contrats', contratId], () => axiosClient.get(`contrats/${contratId ? contratId : ''}`).then((res) => res.data), {});
@@ -85,7 +88,7 @@ export function useDeleteContrat(contratId) {
   );
 }
 
-export const useGetContratsSkeleton = ({ contratId }) => {
+export const useGetContratsSkeleton = (contratId) => {
   return useQuery(['contrats-skeleton', contratId], () => axiosClient.get(`contrats/${contratId}/squelette`).then((res) => res.data), {
     enabled: !!contratId
   });
@@ -146,8 +149,8 @@ export function useValidateContrats(contratId = '') {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async (values) => {
-      const res = await axiosClient.put(`contrats/${contratId}/validate`, values);
+    async () => {
+      const res = await axiosClient.put(`contrats/${contratId}/validate`);
       return res.data;
     },
     {

@@ -122,29 +122,31 @@ const columns = [
 ];
 
 function LeadsDataGrid(leadsData) {
-  console.log('====================================');
-  console.log(leadsData.leadsData);
-  console.log('====================================');
+  // console.log('====================================');
+  // console.log('leadsData', );
+  // console.log('====================================');
   const navigate = useNavigate();
   return (
     <MainCard
       title={'Liste des Leads'}
       secondary={
         <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-          <Tooltip title="Ajouter Leads">
-            <Fab
-              color="primary"
-              size="small"
-              onClick={() => navigate(`/leads/create`)}
-              sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
-            >
-              <AddIcon fontSize="small" />
-            </Fab>
-          </Tooltip>
+          {leadsData?.leadsData[0]?.d_lot_id === 1 && (
+            <Tooltip title="Ajouter Leads">
+              <Fab
+                color="primary"
+                size="small"
+                onClick={() => navigate(`/leads/create`)}
+                sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
+              >
+                <AddIcon fontSize="small" />
+              </Fab>
+            </Tooltip>
+          )}
         </Grid>
       }
     >
-      <Box sx={{ height: 800, width: '100%' }}>
+      <Box sx={{ height: 650, width: '100%' }}>
         <DataGrid
           density="compact"
           componentsProps={{

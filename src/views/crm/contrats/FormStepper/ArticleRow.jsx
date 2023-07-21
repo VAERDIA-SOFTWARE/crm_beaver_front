@@ -5,8 +5,10 @@ import { useGetArticles } from 'services/articles.service';
 import { useState } from 'react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import moment from 'moment';
+import { useGetContrat } from 'services/contrats.service';
 
 const InterventionRows = ({
+  contractId,
   contractArticles,
   setContractArticles,
   interventionNumber,
@@ -17,8 +19,21 @@ const InterventionRows = ({
   contratStartDate,
   contratEndDate
 }) => {
+  const contractQuery = useGetContrat(contractId);
+  const contractData = contractQuery?.data;
+  console.log('================contractData====================');
+  console.log(contractData);
+  console.log('====================================');
   const articlesQeury = useGetArticles();
   const articleData = articlesQeury.data;
+  // useEffect(() => {
+  //   if (contractQuery.isSuccess) {
+  //     setContractArticles((f) => {
+  //       return { ...f, ...contractArticles };
+  //     });
+  //   }
+  // }, [contractArticles, contractQuery.isSuccess]);
+
   useEffect(() => {
     const nbModeInterventions = Math.ceil(duration / modeIntervention?.valeur);
     console.log(modeIntervention, 'nbModeInterventions');
@@ -40,7 +55,7 @@ const InterventionRows = ({
     }
     setContractArticles(newContractArticles);
   }, [interventionNumber, modeIntervention, duration]);
-  console.log(contractArticles);
+  // console.log(contractArticles);
 
   const handleContractArticleUpdate = (index, property, value) => {
     const updatedArticles = [...contractArticles];
@@ -154,5 +169,4 @@ const InterventionRows = ({
   );
 };
 
-const articleDetailsRow = () => {};
 export default InterventionRows;
