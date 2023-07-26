@@ -280,7 +280,7 @@ const Calendar = () => {
               color={'secondary'}
               variant="contained"
               onClick={async () => {
-                const d = getInspectionsCalendarQuery.data?.map((e) => {
+                const d = await getInspectionsCalendarQuery.data?.map((e) => {
                   return {
                     ...e,
 

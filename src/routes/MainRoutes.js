@@ -74,18 +74,9 @@ const AppCrmContratUpdate = Loadable(lazy(() => import('views/crm/contrats/Updat
 const AppCrmContratCreate = Loadable(lazy(() => import('views/crm/contrats/FormStepper/index')));
 const AppCrmContratsList = Loadable(lazy(() => import('views/crm/contrats/index')));
 
-const AppCrmChantiersList = Loadable(lazy(() => import('views/crm/chantiers/NewIndex')));
-const AppCrmChantierUpdate = Loadable(lazy(() => import('views/crm/chantiers/UpdatePage')));
-const AppCrmChantierDetails = Loadable(lazy(() => import('views/crm/chantiers/DetailsPage')));
-
-const AppCrmLotChantierList = Loadable(lazy(() => import('views/crm/lot-chantier/index')));
-const AppCrmLotChantierDetails = Loadable(lazy(() => import('views/crm/lot-chantier/DetailsPage')));
-const AppCrmLotChantierChangePercentage = Loadable(lazy(() => import('views/crm/lot-chantier/ChangePercentage')));
-const AppCrmLotChantierCreate = Loadable(lazy(() => import('views/crm/lot-chantier/CreatePage')));
-
 const AppCrmLotLeadsList = Loadable(lazy(() => import('views/crm/lot-leads/index')));
 const AppCrmLotLeadsDetails = Loadable(lazy(() => import('views/crm/lot-leads/DetailsPage')));
-const AppCrmLotLeadsChangePercentage = Loadable(lazy(() => import('views/crm/lot-leads/ChangePercentage')));
+
 const AppCrmLotLeadsCreate = Loadable(lazy(() => import('views/crm/lot-leads/CreatePage')));
 
 const AppCrmLeadDetails = Loadable(lazy(() => import('views/crm/leads/list/DetailsPage')));
@@ -101,21 +92,11 @@ const AppCrmDevisList = Loadable(lazy(() => import('views/crm/devis/list/index')
 const AppCrmPointageDetails = Loadable(lazy(() => import('views/crm/pointage/list/DetailsPage')));
 const AppCrmPointageList = Loadable(lazy(() => import('views/crm/pointage/list/index')));
 
-const AppCrmCommandesList = Loadable(lazy(() => import('views/crm/commandes/index')));
-const AppCrmCommandesDetails = Loadable(lazy(() => import('views/crm/commandes/DetailsPage')));
-
 const AppCrmFacturesList = Loadable(lazy(() => import('views/crm/factures/list/index')));
 const AppCrmFacturesDetails = Loadable(lazy(() => import('views/crm/factures/list/DetailsPage')));
 const AppCrmCreateFacture = Loadable(lazy(() => import('views/crm/factures/list/CreateFacture')));
 
 const AppCrmCalendar = Loadable(lazy(() => import('views/crm/calendar')));
-
-const AppCrmInspectionsList = Loadable(lazy(() => import('views/crm/inspections/index')));
-const AppCrmInspectionsListRapports = Loadable(lazy(() => import('views/crm/inspections/ListRapports')));
-const AppCrmInspectionDetails = Loadable(lazy(() => import('views/crm/inspections/DetailsPage')));
-const AppCrmInspectionUpdate = Loadable(lazy(() => import('views/crm/inspections/UpdatePage')));
-const AppCrmInspectionFormulaire = Loadable(lazy(() => import('views/crm/inspections/Formulaire')));
-const AppCrmInspectionsCreate = Loadable(lazy(() => import('views/crm/inspections/CreatePage')));
 
 const AppCrmInterventionsList = Loadable(lazy(() => import('views/crm/interventions/index')));
 const AppCrmInterventionsListRapports = Loadable(lazy(() => import('views/crm/interventions/ListRapports')));
@@ -742,34 +723,7 @@ const MainRoutes = {
       path: '/contrats/:contratId/update',
       element: <AppCrmContratUpdate />
     },
-    {
-      path: '/chantiers/list',
-      element: <AppCrmChantiersList />
-    },
-    {
-      path: '/chantiers/:chantierId/update',
-      element: <AppCrmChantierUpdate />
-    },
-    {
-      path: '/chantiers/:chantierId/details',
-      element: <AppCrmChantierDetails />
-    },
-    {
-      path: '/lot-chantier/list',
-      element: <AppCrmLotChantierList />
-    },
-    {
-      path: '/lot-chantier/:lotChantierId/details',
-      element: <AppCrmLotChantierDetails />
-    },
-    {
-      path: '/lot-chantier/:lotChantierId/change-percentage',
-      element: <AppCrmLotChantierChangePercentage />
-    },
-    {
-      path: '/lot-chantier/create',
-      element: <AppCrmLotChantierCreate />
-    },
+
     // BEAVER CRM
     {
       path: '/lot-leads/list',
@@ -779,10 +733,7 @@ const MainRoutes = {
       path: '/lot-leads/:lotLeadsId/details',
       element: <AppCrmLotLeadsDetails />
     },
-    {
-      path: '/lot-leads/:lotLeadsId/change-percentage',
-      element: <AppCrmLotLeadsChangePercentage />
-    },
+
     {
       path: '/lot-leads/create',
       element: <AppCrmLotLeadsCreate />
@@ -828,14 +779,6 @@ const MainRoutes = {
       element: <AppCrmPointageDetails />
     },
     {
-      path: '/commandes/list',
-      element: <AppCrmCommandesList />
-    },
-    {
-      path: '/commandes/:commandeId/details',
-      element: <AppCrmCommandesDetails />
-    },
-    {
       path: '/commandes/:commandeId/factures/create',
       element: <AppCrmCreateFacture />
     },
@@ -850,43 +793,19 @@ const MainRoutes = {
     },
     {
       path: '/factures/:factureId',
-      // element: <AppCrmCreateFacture />
       element: <AppCrmFacturesDetails />
     },
     {
       path: '/factures/:factureId/generer-avoir',
       element: <AppCrmCreateFacture />
-      // element: <AppCrmFacturesDetails />
     },
     {
       path: '/factures/:factureId/update',
       element: <AppCrmCreateFacture />
-      // element: <AppCrmFacturesDetails />
     },
     {
       path: '/factures/create',
       element: <AppCrmCreateFacture />
-    },
-
-    {
-      path: '/inspections/list',
-      element: <AppCrmInspectionsList />
-    },
-    {
-      path: '/inspections/rapports',
-      element: <AppCrmInspectionsListRapports />
-    },
-    {
-      path: '/inspections/:inspectionId/details',
-      element: <AppCrmInspectionDetails />
-    },
-    {
-      path: '/inspections/:inspectionId/update',
-      element: <AppCrmInspectionUpdate />
-    },
-    {
-      path: '/inspections/:inspectionId/formulaire',
-      element: <AppCrmInspectionFormulaire />
     },
 
     {
@@ -929,12 +848,9 @@ const MainRoutes = {
       path: '/propositions/:propositionId/details',
       element: <AppCrmPropositionsDetails />
     },
+
     {
-      path: '/inspections/create',
-      element: <AppCrmInspectionsCreate />
-    },
-    {
-      path: '/inspections/calendar',
+      path: '/calendar',
       element: <AppCrmCalendar />
     },
     {

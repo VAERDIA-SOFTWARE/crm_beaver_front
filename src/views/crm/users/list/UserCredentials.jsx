@@ -77,7 +77,7 @@ export default function UserCredentials() {
                 color={'secondary'}
                 variant="contained"
                 onClick={async () => {
-                  changeLoginCredentialsMutation.mutateAsync(formInput);
+                  await changeLoginCredentialsMutation.mutateAsync(formInput);
                 }}
               >
                 {'Sauvegarder'}

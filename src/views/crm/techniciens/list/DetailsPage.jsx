@@ -3,18 +3,14 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 // material-ui
-import { Box, Grid, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Tab, Tabs, Typography } from '@mui/material';
 
 // project imports
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetUser, useGetUserPermissions } from 'services/users.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
-import ChantierList from 'views/crm/chantiers';
-import InspectionsList from 'views/crm/inspections';
-import PopularCard from 'views/dashboard/Default/PopularCard';
 import ClientDataCard from 'views/crm/clients/list/ClientDataCard';
-import HistoriqueCard from 'views/crm/chantiers/HistoriqueCard';
 import AuthToggleCard from 'views/crm/users/list/AuthToggleCard';
 import AccessDataCard from 'views/crm/users/list/AccessDataCard';
 
@@ -96,24 +92,24 @@ const TechnicienDetailsPage = () => {
               </Grid>
 
               <Grid item md={4}>
-                <HistoriqueCard
+                {/* <HistoriqueCard
                   isLoading={false}
                   title="Qualifications"
                   data={technicienData?.operations}
                   style={{
                     height: 400
                   }}
-                />
+                /> */}
               </Grid>
               <Grid item md={4}>
-                <HistoriqueCard
+                {/* <HistoriqueCard
                   isLoading={false}
                   title="Zones de travail"
                   data={technicienData?.zone_villes}
                   style={{
                     height: 400
                   }}
-                />
+                /> */}
               </Grid>
             </Grid>
           </>
@@ -122,7 +118,7 @@ const TechnicienDetailsPage = () => {
         <TabPanel value={value} index={1}>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12}>
-              <ChantierList
+              {/* <ChantierList
                 title=""
                 // inspectionChantierFilter={1}
                 // etatFilter={0}
@@ -131,21 +127,22 @@ const TechnicienDetailsPage = () => {
                 disableCheckboxSelection={true}
                 userId={technicienId}
                 genererInspections
-              />
+              /> */}
             </Grid>
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={2}>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12}>
-              <InspectionsList
+              liste des interventions
+              {/* <InspectionsList
                 title=""
                 disableFilters
                 disableCreate
                 disableCheckboxSelection={true}
                 userId={technicienId}
                 genererInspections
-              />
+              /> */}
             </Grid>
           </Grid>
         </TabPanel>

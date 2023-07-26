@@ -11,7 +11,6 @@ import { Box, Button, Grid, IconButton, SwipeableDrawer, Tab, Tabs, Tooltip, Typ
 import { LoadingButton } from '@mui/lab';
 import { useState, Fragment, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetChantier, useGetChantierHistorique } from 'services/chantier.service';
 import {
   useGenererInspectionsRapport,
   useGetInspection,
@@ -22,13 +21,10 @@ import { gridSpacing } from 'store/constant';
 import EtatStaus from 'ui-component/cards/EtatStatus';
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
-import ChantierDataCard from '../chantiers/ChantierDataCard';
 import TechnicienDataCard from '../techniciens/list/TechnicienDataCard';
 import FormulaireCard from './FormulaireCard';
 import InspectionDataCard from './InspectionDataCard';
-import HistoriqueCard from '../chantiers/HistoriqueCard';
 import InfoIcon from '@mui/icons-material/Info';
-import axiosClient from 'axiosClient';
 import useAuth from 'hooks/useAuth';
 
 const InspectionDetailsPage = () => {
@@ -40,14 +36,10 @@ const InspectionDetailsPage = () => {
   const getInspectionQuery = useGetInspection(inspectionId);
   const inspectionData = getInspectionQuery.data?.inspection;
   const [pdfPath, setPdfPath] = useState(`${process.env.REACT_APP_API_URL}rapports/default`);
-  const getChantierHistoriqueQuery = useGetChantierHistorique({ chantierId: inspectionData?.d_chantier_id });
-
-  const getChantierQuery = useGetChantier(inspectionData?.d_chantier_id);
-  const chantierData = getChantierQuery.data;
 
   const inspectionsEtatData = getInspectionQuery.data?.etats;
   const inspectionsStatutData = getInspectionQuery.data?.status;
-  const { logout, user } = useAuth();
+  const { user } = useAuth();
   useEffect(() => {
     setPdfPath(
       inspectionData?.etat !== 3
@@ -299,11 +291,11 @@ const InspectionDetailsPage = () => {
             />
           </Grid>
         </Grid> */}
-          {getChantierQuery.isSuccess && (
+          {/* {getChantierQuery.isSuccess && (
             <Grid item xs={12}>
               <ChantierDataCard data={chantierData} showButton />
             </Grid>
-          )}
+          )} */}
 
           <Grid item xs={12}>
             <TechnicienDataCard data={inspectionData?.technicien} />
@@ -349,7 +341,7 @@ const InspectionDetailsPage = () => {
         <TabPanel value={activeRapportTab} index={0}>
           <Grid container spacing={gridSpacing}>
             <Grid item xs={12} md={7}>
-              <HistoriqueCard title="Historique" data={getChantierHistoriqueQuery?.data} chantierData={chantierData} map />
+              {/* <HistoriqueCard title="Historique" data={getChantierHistoriqueQuery?.data} chantierData={chantierData} map /> */}
             </Grid>
 
             <Grid item xs={12} md={5}>

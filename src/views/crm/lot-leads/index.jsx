@@ -92,14 +92,6 @@ function EditCell({ params }) {
 
   const navigate = useNavigate();
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleMenuClick = (event) => {
-    setAnchorEl(event?.currentTarget);
-  };
-
   return (
     <div>
       <IconButton

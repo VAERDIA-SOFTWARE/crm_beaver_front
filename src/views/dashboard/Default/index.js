@@ -1,31 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
 // material-ui
-import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import { Grid, Typography, useMediaQuery, useTheme } from '@mui/material';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import ContentPasteOffIcon from '@mui/icons-material/ContentPasteOff';
 import TaskIcon from '@mui/icons-material/Task';
 // project imports
-import EarningCard from './EarningCard';
-import PopularCard from './PopularCard';
-import TotalOrderLineChartCard from './TotalOrderLineChartCard';
-import TotalIncomeDarkCard from './TotalIncomeDarkCard';
-import TotalIncomeLightCard from './TotalIncomeLightCard';
-import TotalGrowthBarChart from './TotalGrowthBarChart';
+
 import { gridSpacing } from 'store/constant';
 import { useGetDashboardStats } from 'services/settings.service';
-import InspectionsList from 'views/crm/inspections';
 import InspectionsBarChart from 'views/crm/clients/list/charts/InspectionsBarChart';
 import { format } from 'date-fns';
 import MainCard from 'ui-component/cards/MainCard';
-import { IconAccessPoint, IconCircles, IconCreditCard, IconShare } from '@tabler/icons';
-import RevenueCard from 'ui-component/cards/RevenueCard';
-import FoundationIcon from '@mui/icons-material/Foundation';
 import LatestInspectionsTableCard from './LatestInspectionsTableCard';
 import RapportPieChartCard from './RapportPieChartCard';
-import UserCountCard from 'ui-component/cards/UserCountCard';
 import CustomerSatisfactionCard from 'views/widget/Statistics/CustomerSatisfactionCard';
 import useAuth from 'hooks/useAuth';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
