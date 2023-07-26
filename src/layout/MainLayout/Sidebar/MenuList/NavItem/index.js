@@ -72,11 +72,11 @@ const NavItem = ({ item, level, loggedInUser, parentItem }) => {
     // eslint-disable-next-line
   }, []);
 
-  if (loggedInUser && loggedInUser?.resources?.[item?.id]) {
-    if (loggedInUser?.resources?.[item?.id].authorized == false) {
-      return null;
-    }
-  }
+  // if (loggedInUser && loggedInUser?.resources?.[item?.id]) {
+  //   if (loggedInUser?.resources?.[item?.id].authorized == false) {
+  //     return null;
+  //   }
+  // }
 
   return (
     <ListItemButton

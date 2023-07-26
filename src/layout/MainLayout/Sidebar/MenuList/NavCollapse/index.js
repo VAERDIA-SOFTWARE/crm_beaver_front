@@ -73,17 +73,17 @@ const NavCollapse = ({ menu, level, parentItem, loggedInUser }) => {
   );
 
   let count = 0;
-  if (parentItem?.id === 'crm') {
-    menu?.children.forEach((item) => {
-      if (loggedInUser?.resources?.[item?.id]?.authorized) {
-        count++;
-      }
-    });
+  // if (parentItem?.id === 'crm') {
+  //   menu?.children.forEach((item) => {
+  //     if (loggedInUser?.resources?.[item?.id]?.authorized) {
+  //       count++;
+  //     }
+  //   });
 
-    if (count === 0) {
-      return null;
-    }
-  }
+  //   if (count === 0) {
+  //     return null;
+  //   }
+  // }
 
   return (
     <>

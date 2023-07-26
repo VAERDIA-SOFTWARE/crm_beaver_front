@@ -73,7 +73,7 @@ const LotChantierList = ({ title, userId, disableTopBar, goBackLink = '/lot-lead
         }
       >
         <TableDataGrid
-          userId={userId}
+          // userId={userId}
           validated={validated}
           page={page}
           setPage={setPage}
@@ -173,17 +173,12 @@ const BorderLinearProgress = withStyles(() => ({
   }
 }))(LinearProgress);
 
-function TableDataGrid({ setSearchFilter, setPage, validated, page, searchFilter, userId, paginated }) {
+function TableDataGrid({ setSearchFilter, setPage, validated, page, searchFilter, userId = '', paginated }) {
   const theme = useTheme();
   const getLotsLeadsQuery = useGetLotLeads({ searchFilter, userId, page, validated });
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const lotleadsArray = getLotsLeadsQuery.isSuccess && getLotsLeadsQuery?.data;
-  const pinnedLot = getLotsLeadsQuery.isSuccess && lotleadsArray[lotleadsArray?.length - 1];
-  const lotLeadsRows = [pinnedLot];
-  for (let i = 0; i < lotleadsArray?.length - 1; i++) {
-    lotLeadsRows.push(lotleadsArray[i]);
-  }
 
   const columns = [
     {
@@ -298,7 +293,7 @@ function TableDataGrid({ setSearchFilter, setPage, validated, page, searchFilter
           Toolbar: () => <CustomToolbar page={page} searchFilter={searchFilter} userId={userId} paginated={paginated} /> || GridToolbar
         }}
         // rows={getLotsLeadsQuery?.data || []}
-        rows={(getLotsLeadsQuery.isSuccess && lotLeadsRows) || []}
+        rows={(getLotsLeadsQuery?.isSuccess && lotleadsArray) || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}

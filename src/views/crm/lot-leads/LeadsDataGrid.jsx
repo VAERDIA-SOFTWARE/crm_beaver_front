@@ -2,11 +2,13 @@ import { AssignmentTurnedInOutlined, PendingActionsOutlined } from '@mui/icons-m
 import { Fab, Grid, IconButton, TextField, Tooltip } from '@mui/material';
 import { Box } from '@mui/system';
 import { DataGrid } from '@mui/x-data-grid';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainCard from 'ui-component/cards/MainCard';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import AddIcon from '@mui/icons-material/AddTwoTone';
+import { LoadingButton } from '@mui/lab';
+import SendIcon from '@mui/icons-material/Send';
 
 function EditCell({ params }) {
   const navigate = useNavigate();
@@ -32,12 +34,9 @@ const columns = [
     hideable: false,
     filterable: false,
     disableExport: true,
-    width: 80,
+    width: 55,
 
     renderCell: (params) => {
-      console.log('====================================');
-      console.log(params?.row?.type);
-      console.log('====================================');
       return (
         <>
           {params?.row?.type === 0 ? (
@@ -60,38 +59,38 @@ const columns = [
   {
     field: 'reference',
     headerName: 'Référence',
-    width: 150,
+    width: 100,
     editable: true
   },
   {
     field: 'name',
     headerName: 'Nom et Prénom',
-    width: 150,
+    width: 200,
     editable: true
   },
   {
     field: 'address',
     headerName: 'Adresse',
     sortable: false,
-    width: 160
+    width: 350
   },
   {
     field: 'code_postal',
-    headerName: 'Code Postale',
+    headerName: 'Code Postal',
     sortable: false,
-    width: 160
+    width: 80
   },
   {
     field: 'societe',
     headerName: 'Société',
     sortable: false,
-    width: 160
+    width: 110
   },
   {
     field: 'category',
     headerName: 'catégorie',
     sortable: false,
-    width: 160,
+    width: 140,
     renderCell: (params) => {
       return <>{params?.row?.category?.intitule}</>;
     }
@@ -107,42 +106,27 @@ const columns = [
     headerName: 'Email',
     sortable: false,
     width: 160
-  },
-  {
-    field: 'action',
-    headerName: 'Action',
-    sortable: false,
-    hideable: false,
-    filterable: false,
-    disableExport: true,
-    renderCell: (params) => {
-      return <EditCell params={params} />;
-    }
   }
 ];
 
 function LeadsDataGrid(leadsData) {
-  // console.log('====================================');
-  // console.log('leadsData', );
-  // console.log('====================================');
   const navigate = useNavigate();
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
   return (
     <MainCard
       title={'Liste des Leads'}
       secondary={
         <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-          {leadsData?.leadsData[0]?.d_lot_id === 1 && (
-            <Tooltip title="Ajouter Leads">
-              <Fab
-                color="primary"
-                size="small"
-                onClick={() => navigate(`/leads/create`)}
-                sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
-              >
-                <AddIcon fontSize="small" />
-              </Fab>
-            </Tooltip>
-          )}
+          <LoadingButton
+            disabled={rowSelectionModel?.length === 0}
+            loadingPosition="end"
+            endIcon={<SendIcon />}
+            loading={''}
+            variant="contained"
+            type="submit"
+          >
+            Convert
+          </LoadingButton>
         </Grid>
       }
     >
@@ -162,7 +146,7 @@ function LeadsDataGrid(leadsData) {
               quickFilterProps: { debounceMs: 300 }
             }
           }}
-          rows={leadsData.leadsData}
+          rows={leadsData?.leadsData}
           columns={columns}
           initialState={{
             pagination: {
@@ -174,6 +158,10 @@ function LeadsDataGrid(leadsData) {
           rowsPerPageOptions={[5, 10, 25]}
           checkboxSelection
           disableRowSelectionOnClick
+          onSelectionModelChange={(newRowSelectionModel) => {
+            setRowSelectionModel(newRowSelectionModel);
+          }}
+          selectionModel={rowSelectionModel}
         />
       </Box>
     </MainCard>

@@ -18,30 +18,29 @@ const Crm = {
       icon: IconDashboard,
       breadcrumbs: false
     },
-    // {
-    //   id: 'leads-group',
-    //   title: 'Leads',
-    //   type: 'collapse',
-    //   icon: AccountCircleOutlinedIcon,
-    //   // url: '/leads/list',
-    //   breadcrumbs: false,
-    //   children: [
-    //     {
-    //       id: 'lot-leads',
-    //       title: 'Lot-Leads',
-    //       type: 'item',
-    //       url: '/lot-leads/list',
-    //       breadcrumbs: false
-    //     },
-    //     {
-    //       id: 'leads',
-    //       title: 'Nouveau Leads',
-    //       type: 'item',
-    //       url: '/leads/create',
-    //       breadcrumbs: false
-    //     }
-    //   ]
-    // },
+    {
+      id: 'leads-group',
+      title: 'Leads',
+      type: 'collapse',
+      icon: AccountCircleOutlinedIcon,
+      breadcrumbs: false,
+      children: [
+        {
+          id: 'leads',
+          title: 'Leads',
+          type: 'item',
+          url: '/leads/list',
+          breadcrumbs: false
+        },
+        {
+          id: 'lot-leads',
+          title: 'Lot-Leads',
+          type: 'item',
+          url: '/lot-leads/list',
+          breadcrumbs: false
+        }
+      ]
+    },
     {
       id: 'clients-group',
       title: 'CRM BEAVER',

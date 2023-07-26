@@ -62,7 +62,8 @@ const ClientsCreatePage = () => {
     identifient_fiscal: '',
     identifient_tva: '',
     d_lot_id: LotId,
-    societe: null
+    societe: null,
+    auth: 0
   });
 
   const createClientMutation = useCreateUser();

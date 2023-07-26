@@ -3,26 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 
 // material-ui
 import SendIcon from '@mui/icons-material/Send';
-import {
-  Autocomplete,
-  Box,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Input,
-  Slider,
-  Switch,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
 // project imports
 import { LoadingButton } from '@mui/lab';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGetClientsContrats } from 'services/contrats.service';
-import { useCreateLotChantier } from 'services/lot-chantiers.service';
 import { useGetUsers } from 'services/users.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
@@ -49,24 +36,10 @@ const LotChantierCreatePage = () => {
     // resolver: zodResolver(imageUploadSchema),
   });
 
-  const [isLoadingOverlayOpen, setIsLoadingOverlayOpen] = useState(false);
-  const handleCloseLoadingOverlay = () => {
-    setIsLoadingOverlayOpen(false);
-  };
-  const handleOpenLoadingOverlay = () => {
-    setIsLoadingOverlayOpen(true);
-  };
-
   const navigate = useNavigate();
   const location = useLocation();
   const goBackLink = location.state?.goBackLink;
-  const clientId = location.state?.clientId;
   const createLotChantiersMutation = useCreateLotLead();
-  const { logout, user } = useAuth();
-
-  const getClientsQuery = useGetUsers({ role: 'client', paginated: false });
-
-  const [selectedContrat, setSelectedContrat] = useState(null);
 
   const initialFormState = {
     percentage: 0,
@@ -76,31 +49,6 @@ const LotChantierCreatePage = () => {
   };
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState(initialFormState);
-
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [defaultClient, setDefaultClient] = useState(null);
-
-  const getClientContratsQuery = useGetClientsContrats({ clientId: selectedClient });
-  console.log(selectedClient);
-  useEffect(() => {
-    if (getClientsQuery.isSuccess && getClientsQuery.data.length > 0) {
-      setFormInput((formData) => {
-        return { ...formData, client_id: getClientsQuery.data[0].id };
-      });
-    }
-    setFormInput((formData) => {
-      return { ...formData, percentage: selectedContrat?.percentage || 0 };
-    });
-    if (user?.role.includes('client')) {
-      setDefaultClient(user?.id);
-      setSelectedClient(user?.id);
-    }
-    if (clientId) {
-      setDefaultClient(clientId);
-      setSelectedClient(clientId);
-    }
-    return () => {};
-  }, [selectedContrat, getClientsQuery.isSuccess, getClientsQuery.data, user, clientId]);
 
   const [sheetActualRowCount, setSheetActualRowCount] = useState(null);
   const handleSubmit = async (e) => {
@@ -114,22 +62,14 @@ const LotChantierCreatePage = () => {
     }
 
     try {
-      handleOpenLoadingOverlay();
       const res = await createLotChantiersMutation.mutateAsync(formData);
-      navigate(`/lot-leads/${res?.data?.id}/details`, {
-        // state: {
-        //   LotChantierId: res?.data?.id
-        // }
-      });
+      navigate(`/lot-leads/${res?.data?.id}/details`);
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
     } finally {
-      handleCloseLoadingOverlay();
     }
   };
-
-  const [filesToUpload, setFilesToUpload] = useState([]);
 
   const onFileDelete = () => {
     setSheetActualRowCount(null);
@@ -163,8 +103,6 @@ const LotChantierCreatePage = () => {
         });
       };
     }
-
-    setFilesToUpload([...files]);
   };
 
   return (
