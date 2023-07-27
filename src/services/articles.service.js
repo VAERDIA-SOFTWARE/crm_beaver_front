@@ -19,12 +19,15 @@ export function useCreateArticleContrat(contratId) {
   );
 }
 
+export const useGetNewArticles = (id) => {
+  return useQuery(['contracts-new-articles'], () => axiosClient.get(`contrats/${id}/new-articles`).then((res) => res.data), {});
+};
 export const useGetArticles = () => {
   return useQuery(['operations'], () => axiosClient.get(`operations`).then((res) => res.data), {});
 };
 
 export const useGetArticle = (articleId = '') => {
-  return useQuery(['operations', articleId], () => axiosClient.get(`operations/${articleId}`).then((res) => res.data), {
+  return useQuery(['operation', articleId], () => axiosClient.get(`operations/${articleId}`).then((res) => res.data), {
     enabled: !!articleId
   });
 };

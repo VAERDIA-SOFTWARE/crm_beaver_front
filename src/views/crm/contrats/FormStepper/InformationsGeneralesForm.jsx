@@ -11,85 +11,57 @@ import renderArrayMultiline from 'utilities/utilities';
 import PropTypes from 'prop-types';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { useCreateContrat, useGetContrat, useGetMarquePAC, useGetModeFacturations, useUpdateContrat } from 'services/contrats.service';
+import { useGetModeInterventions } from 'services/interventions.service';
 
-const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
-  const location = useLocation();
-  const clientId = location.state?.clientId;
+const InformationsGenerales = ({ handleNext, contractId, setcontractId, contractForm, setContractForm }) => {
   const [formErrors, setFormErrors] = useState({});
-  const [formInput, setFormInput] = useState({
-    titre: '',
-    description: '',
-    date_debut: new Date(),
-    date_fin: new Date(),
-    client_id: clientId || null,
-    nb_interventions: '0',
-    marque_pac_parents: '',
-    mise_en_place_date: new Date(),
-    facture_mode_id: ''
-  });
+
   // const navigate = useNavigate();
 
-  const getContractQuery = useGetContrat(contractId);
-  const contratData = getContractQuery.data;
-
-  console.log('============contratData===========');
-  console.log(contratData);
-  console.log('====================================');
-
   const handleChange = (e) => {
-    setFormInput({
-      ...formInput,
+    setContractForm({
+      ...contractForm,
       [e.target.name]: e.target.value
     });
   };
 
-  const createClientMutation = useCreateContrat({ clientId });
-  const updateClientMutation = useUpdateContrat(contractId);
-  console.log('================aaaaaaaaaa====================');
-  console.log(contractId);
-  console.log('====================================');
+  const createClientMutation = useCreateContrat();
+  const updateClientMutation = useUpdateContrat();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormErrors({});
     try {
       const formattedInput = {
-        ...formInput,
-        date_debut: format(formInput?.date_debut, 'yyyy-MM-dd'),
-        date_fin: format(formInput?.date_fin, 'yyyy-MM-dd'),
-        mise_en_place_date: format(formInput?.date_debut, 'yyyy-MM-dd')
+        ...contractForm,
+        date_debut: moment(contractForm?.date_debut).format('YYYY-MM-DD'),
+        date_fin: moment(contractForm?.date_fin).format('YYYY-MM-DD'),
+        mise_en_place_date: moment(contractForm?.date_debut).format('YYYY-MM-DD')
       };
-      if (contractId) {
+      if (!contractForm?.id) {
         const response = await createClientMutation.mutateAsync(formattedInput);
-        setcontractId(response?.data?.id);
+        setContractForm({ ...contractForm, id: response?.data?.id });
       } else {
-        await updateClientMutation.mutateAsync(formattedInput);
+        const response = await updateClientMutation.mutateAsync(formattedInput);
+        setContractForm({ ...contractForm, ...response?.data });
       }
 
       handleNext(1);
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
+      console.log(error, 'azeaz');
     }
   };
 
   const getClientsQuery = useGetUsers({ role: 'client', paginated: false });
   const getMarquePACQuery = useGetMarquePAC();
   const getModeFacturationsQuery = useGetModeFacturations();
+  const getModeInterventionsQuery = useGetModeInterventions();
 
-  const startDate = moment(formInput?.date_debut, 'DD-MM-YYYY');
-  const endDate = moment(formInput?.date_fin, 'DD-MM-YYYY');
+  const startDate = moment(contractForm?.date_debut, 'YYYY-MM-DD HH:mm:ss');
+  const endDate = moment(contractForm?.date_fin, 'YYYY-MM-DD HH:mm:ss');
   const duration = endDate.diff(startDate, 'days');
-
-  localStorage.setItem('duree', duration);
-
-  useEffect(() => {
-    if (getContractQuery.isSuccess) {
-      setFormInput((f) => {
-        return { ...f, ...contratData };
-      });
-    }
-  }, [contratData, getContractQuery.isSuccess]);
-
   return (
     <Box component="form" noValidate onSubmit={handleSubmit} autoComplete="off">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -99,7 +71,7 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
               variant="standard"
               fullWidth
               label="Titre"
-              value={formInput?.titre || ''}
+              value={contractForm?.titre || ''}
               name="titre"
               onChange={handleChange}
               error={!!formErrors?.data?.titre}
@@ -113,7 +85,7 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
               multiline
               rows={'3'}
               label="Description"
-              value={formInput?.description || ''}
+              value={contractForm?.description || ''}
               name="description"
               onChange={handleChange}
               error={!!formErrors?.data?.description}
@@ -124,11 +96,12 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
             {getClientsQuery?.data ? (
               <Autocomplete
                 onChange={(event, newValue) => {
-                  setFormInput((formData) => {
+                  setContractForm((formData) => {
                     return { ...formData, client_id: newValue?.id };
                   });
                 }}
                 multiple={false}
+                defaultValue={getClientsQuery?.data?.find((item) => item?.id === contractForm?.client_id)}
                 options={getClientsQuery?.data || []}
                 getOptionLabel={(option) => option?.name}
                 renderInput={(params) => (
@@ -150,13 +123,15 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
             {getMarquePACQuery?.data ? (
               <Autocomplete
                 onChange={(event, newValue) => {
-                  setFormInput((formData) => {
+                  setContractForm((formData) => {
                     return { ...formData, marque_pac_parents: newValue ? newValue.map((value) => value.code) : [] };
                   });
                 }}
                 multiple
                 options={getMarquePACQuery?.data || []}
                 getOptionLabel={(option) => option?.titre}
+                defaultValue={returnEqualValuesInArray(getMarquePACQuery?.data, contractForm?.marque_pac_parents, 'code')}
+                // defaultValue={getMarquePACQuery?.data?.find((item) => item?.code === contractForm?.marque_pac_parents)}
                 renderInput={(params) => (
                   <TextField
                     required
@@ -176,11 +151,12 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
             {getModeFacturationsQuery?.data ? (
               <Autocomplete
                 onChange={(event, newValue) => {
-                  setFormInput((formData) => {
+                  setContractForm((formData) => {
                     return { ...formData, facture_mode_id: newValue?.id };
                   });
                 }}
                 options={getModeFacturationsQuery?.data || []}
+                defaultValue={getModeFacturationsQuery?.data?.find((item) => item?.id === contractForm?.facture_mode_id)}
                 getOptionLabel={(option) => option?.intitule}
                 renderInput={(params) => (
                   <TextField
@@ -201,10 +177,10 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
             <DesktopDatePicker
               label="Date de premiére Mise En Place"
               inputFormat="dd/MM/yyyy"
-              value={moment(formInput?.mise_en_place_date, 'DD-MM-YYYY').toDate()}
+              value={moment(contractForm?.mise_en_place_date).format('YYYY-MM-DD HH:mm:ss')}
               onChange={(v) => {
                 try {
-                  setFormInput((f) => {
+                  setContractForm((f) => {
                     return { ...f, mise_en_place_date: v };
                   });
                 } catch (error) {}
@@ -225,10 +201,10 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
             <DesktopDatePicker
               label="Date de début"
               inputFormat="dd/MM/yyyy"
-              value={moment(formInput?.date_debut, 'DD-MM-YYYY').toDate()}
+              value={moment(contractForm?.date_debut).format('YYYY-MM-DD HH:mm:ss')}
               onChange={(v) => {
                 try {
-                  setFormInput((f) => {
+                  setContractForm((f) => {
                     return { ...f, date_debut: v };
                   });
                 } catch (error) {}
@@ -249,9 +225,9 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
             <DesktopDatePicker
               label="Date de fin"
               inputFormat="dd/MM/yyyy"
-              value={moment(formInput?.date_fin, 'DD-MM-YYYY').toDate()}
+              value={moment(contractForm?.date_fin).format('YYYY-MM-DD HH:mm:ss')}
               onChange={(v) =>
-                setFormInput((f) => {
+                setContractForm((f) => {
                   return { ...f, date_fin: v };
                 })
               }
@@ -278,7 +254,46 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId }) => {
               disabled
             />
           </Grid>
-
+          <Grid item xs={12} md={3}>
+            {getModeInterventionsQuery?.isSuccess && getModeInterventionsQuery?.data ? (
+              <Autocomplete
+                onChange={(event, newValue) => {
+                  setContractForm((formData) => {
+                    return { ...formData, mode_id: newValue?.id };
+                  });
+                }}
+                multiple={false}
+                defaultValue={getModeInterventionsQuery?.data?.find((item) => item?.id === contractForm?.mode_id)}
+                options={getModeInterventionsQuery?.data || []}
+                getOptionLabel={(option) => option?.intitule}
+                renderInput={(params) => (
+                  <TextField
+                    required
+                    variant="standard"
+                    {...params}
+                    label="Selectionner une Mode"
+                    error={!!formErrors?.data?.mode_id}
+                    helperText={renderArrayMultiline(formErrors?.data?.mode_id)}
+                  />
+                )}
+              />
+            ) : (
+              <Skeleton variant="rounded" width={'100%'} height={40} />
+            )}
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              variant="standard"
+              type="number"
+              fullWidth
+              label="Nombre des Interventions"
+              value={contractForm?.nb_interventions || ''}
+              name="nb_interventions"
+              onChange={handleChange}
+              error={!!formErrors?.data?.nb_interventions}
+              helperText={renderArrayMultiline(formErrors?.data?.nb_interventions)}
+            />
+          </Grid>
           <Grid item xs={12}>
             <Stack direction="row" justifyContent="flex-end">
               <AnimateButton>
@@ -299,3 +314,19 @@ InformationsGenerales.propTypes = {
   handleNext: PropTypes.func
 };
 export default InformationsGenerales;
+
+const returnEqualValuesInArray = (a, b, field) => {
+  const t = [];
+  try {
+    a?.forEach((aElement) => {
+      b?.forEach((bElement) => {
+        if (aElement[field] === bElement) {
+          t.push(aElement);
+        }
+      });
+    });
+    return t;
+  } catch (error) {
+    return [];
+  }
+};

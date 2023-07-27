@@ -37,12 +37,11 @@ export function useCreateContrat() {
   );
 }
 
-export function useUpdateContrat(contratId) {
+export function useUpdateContrat() {
   const queryClient = useQueryClient();
-
   return useMutation(
     async (values) => {
-      const res = await axiosClient.post(`contrats/${contratId}?_method=PUT`, values);
+      const res = await axiosClient.post(`contrats/${values?.id}?_method=PUT`, values);
       return res.data;
     },
     {

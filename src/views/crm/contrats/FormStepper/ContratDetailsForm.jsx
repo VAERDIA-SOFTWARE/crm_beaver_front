@@ -17,11 +17,10 @@ import { Button, Grid } from '@mui/material';
 
 import { LoadingButton } from '@mui/lab';
 
-const ContratSqueletteDetails = ({ handleNext, handleBack, contractId, step }) => {
-  const updateContratSkeletonMutation = useUpdateContratSkeleton(contractId);
-  const getContratsSkeletonQuery = useGetContratsSkeleton(contractId);
+const ContratSqueletteDetails = ({ handleNext, handleBack, contractForm, step }) => {
+  const updateContratSkeletonMutation = useUpdateContratSkeleton(contractForm?.id);
+  const getContratsSkeletonQuery = useGetContratsSkeleton(contractForm?.id);
   const [contratSkeletonLocalData, setContratSkeletonLocalData] = useState([]);
-
   useEffect(() => {
     if (getContratsSkeletonQuery?.isSuccess && getContratsSkeletonQuery?.isFetching === false) {
       setContratSkeletonLocalData((f) => [...f, ...getContratsSkeletonQuery.data?.data]);
@@ -46,7 +45,7 @@ const ContratSqueletteDetails = ({ handleNext, handleBack, contractId, step }) =
             variant="contained"
             onClick={async () => {
               await updateContratSkeletonMutation.mutateAsync({
-                contratId: contractId,
+                contratId: contractForm?.id,
                 values: { skeleton: contratSkeletonLocalData }
               });
               handleNext(1);

@@ -19,42 +19,36 @@ const InterventionRows = ({
   contratStartDate,
   contratEndDate
 }) => {
-  const contractQuery = useGetContrat(contractId);
-  const contractData = contractQuery?.data;
-  console.log('================contractData====================');
-  console.log(contractData);
-  console.log('====================================');
-  const articlesQeury = useGetArticles();
-  const articleData = articlesQeury.data;
-  // useEffect(() => {
-  //   if (contractQuery.isSuccess) {
-  //     setContractArticles((f) => {
-  //       return { ...f, ...contractArticles };
-  //     });
-  //   }
-  // }, [contractArticles, contractQuery.isSuccess]);
 
+  // const articlesQeury = useGetArticles();
+  // const articleData = articlesQeury.data;
   useEffect(() => {
-    const nbModeInterventions = Math.ceil(duration / modeIntervention?.valeur);
-    console.log(modeIntervention, 'nbModeInterventions');
-    const nombreArticle = interventionNumber * nbModeInterventions;
-    console.log(nombreArticle, 'nombreArticle');
-    let newContractArticles = [];
-    for (let index = 1; index <= nbModeInterventions; index++) {
-      for (let index2 = 1; index2 <= interventionNumber; index2++) {
-        newContractArticles.push({
-          title: `Intervention ${index2}${modeIntervention?.intitule.replace('Par', '')} ${index}`,
-          p_operation_id: '',
-          prix_unitaire: '',
-          p_category_article_id: '',
-          p_category_intitule: '',
-          remise: '',
-          date_prevu: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
-        });
-      }
-    }
-    setContractArticles(newContractArticles);
-  }, [interventionNumber, modeIntervention, duration]);
+      setContractArticles((f) => {
+        return { ...f, ...contractArticles };
+      });
+  }, []);
+
+  // useEffect(() => {
+  //   const nbModeInterventions = Math.ceil(duration / modeIntervention?.valeur);
+  //   console.log(modeIntervention, 'nbModeInterventions');
+  //   const nombreArticle = interventionNumber * nbModeInterventions;
+  //   console.log(nombreArticle, 'nombreArticle');
+  //   let newContractArticles = [];
+  //   for (let index = 1; index <= nbModeInterventions; index++) {
+  //     for (let index2 = 1; index2 <= interventionNumber; index2++) {
+  //       newContractArticles.push({
+  //         title: `Intervention ${index2}${modeIntervention?.intitule.replace('Par', '')} ${index}`,
+  //         p_operation_id: '',
+  //         prix_unitaire: '',
+  //         p_category_article_id: '',
+  //         p_category_intitule: '',
+  //         remise: '',
+  //         date_prevu: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+  //       });
+  //     }
+  //   }
+  //   setContractArticles(newContractArticles);
+  // }, [interventionNumber, modeIntervention, duration]);
   // console.log(contractArticles);
 
   const handleContractArticleUpdate = (index, property, value) => {
