@@ -41,7 +41,7 @@ export default function AccessDataCard({ userPermissionsData = [], title, userId
           color={'secondary'}
           variant="contained"
           onClick={async () => {
-            syncUserPermissionsMutation.mutateAsync({
+            await syncUserPermissionsMutation.mutateAsync({
               id: userId,
               values: { resources: localPermissions }
             });

@@ -1,11 +1,10 @@
 // assets
-import { DescriptionRounded, HistoryRounded } from '@mui/icons-material';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
-import ReceiptRoundedIcon from '@mui/icons-material/ReceiptRounded';
-import { IconDashboard } from '@tabler/icons';
-import { FormattedMessage } from 'react-intl';
+import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
+import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
+import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
 const Crm = {
   id: 'crm',
   type: 'group',
@@ -15,21 +14,28 @@ const Crm = {
       title: 'Tableau de bord',
       type: 'item',
       url: '/dashboard/default',
-      icon: IconDashboard,
+      icon: AnalyticsOutlinedIcon,
       breadcrumbs: false
     },
     {
       id: 'leads-group',
       title: 'Leads',
       type: 'collapse',
-      icon: AccountCircleOutlinedIcon,
+      icon: GroupAddOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'leads',
-          title: 'Leads',
+          id: 'importer-lot-leads',
+          title: 'Importer Lot-Leads',
           type: 'item',
-          url: '/leads/list',
+          url: '/lot-leads/create',
+          breadcrumbs: false
+        },
+        {
+          id: 'new-leads',
+          title: 'Ajouter Leads',
+          type: 'item',
+          url: '/leads/create',
           breadcrumbs: false
         },
         {
@@ -42,102 +48,84 @@ const Crm = {
       ]
     },
     {
-      id: 'clients-group',
-      title: 'CRM BEAVER',
+      id: 'client-group',
+      title: 'Clients',
       type: 'collapse',
-      icon: AccountCircleOutlinedIcon,
-      // url: '/clients/list',
+      icon: GroupOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'lot-leads',
-          title: 'Lot-Leads',
+          id: 'new-clients',
+          title: 'Ajouter Client',
           type: 'item',
-          url: '/lot-leads/list',
+          url: '/clients/create',
           breadcrumbs: false
         },
         {
-          id: 'leads',
-          title: 'Nouveau Leads',
-          type: 'item',
-          url: '/leads/create',
-          breadcrumbs: false
-        },
-        {
-          id: 'clients',
-          title: 'Client',
+          id: 'clients-list',
+          title: 'Clients',
           type: 'item',
           url: '/clients/list',
           breadcrumbs: false
         },
         {
-          id: 'contrats',
+          id: 'new-contrats',
+          title: 'Ajouter contrat',
+          type: 'item',
+          url: '/contrats/create',
+          breadcrumbs: false
+        },
+        {
+          id: 'contrats-list',
           title: 'Contrats',
           type: 'item',
           url: '/contrats/list',
           breadcrumbs: false
+        }
+      ]
+    },
+    {
+      id: 'techniciens-group',
+      title: 'Collaborateurs',
+      type: 'collapse',
+      icon: EngineeringOutlinedIcon,
+      breadcrumbs: false,
+      children: [
+        {
+          id: 'new-techniciens',
+          title: 'Ajouter Collaborateur',
+          type: 'item',
+          url: '/techniciens/create',
+          breadcrumbs: false
         },
         {
-          id: 'techniciens',
+          id: 'list-techniciens',
           title: 'Collaborateurs',
           type: 'item',
           url: '/techniciens/list',
           breadcrumbs: false
         },
         {
-          id: 'techniciens',
-          title: 'Pointage',
+          id: 'list-pointage',
+          title: 'Historique Pointage',
           type: 'item',
-          url: '/techniciens/list',
+          url: '/pointage/list',
           breadcrumbs: false
         },
         {
-          id: 'techniciens',
+          id: 'maps',
           title: 'Maps',
           type: 'item',
-          url: '/techniciens/list',
+          url: '/maps',
           breadcrumbs: false
         }
       ]
     },
-    // {
-    //   id: 'techniciens-group',
-    //   title: 'Collaborateurs',
-    //   type: 'collapse',
-    //   icon: EngineeringOutlinedIcon,
-    //   // url: '/techniciens/list',
-    //   breadcrumbs: false,
-    //   children: [
-    //     {
-    //       id: 'techniciens',
-    //       title: 'Collaborateurs',
-    //       type: 'item',
-    //       url: '/techniciens/list',
-    //       breadcrumbs: false
-    //     },
-    //     {
-    //       id: 'techniciens',
-    //       title: 'Pointage',
-    //       type: 'item',
-    //       url: '/techniciens/list',
-    //       breadcrumbs: false
-    //     },
-    //     {
-    //       id: 'techniciens',
-    //       title: 'Maps',
-    //       type: 'item',
-    //       url: '/techniciens/list',
-    //       breadcrumbs: false
-    //     }
-    //   ]
-    // },
-
     {
       id: 'inspections-group',
       title: 'Intervention',
       type: 'collapse',
       icon: ContentPasteSearchIcon,
-      // url: '/inspections/inspections',
       breadcrumbs: false,
       children: [
         {
@@ -160,27 +148,6 @@ const Crm = {
           type: 'item',
           url: '/interventions/calendar',
           breadcrumbs: false
-        },
-        {
-          id: 'commandes',
-          title: 'Devis',
-          type: 'item',
-          url: '/devis/list',
-          breadcrumbs: false
-        },
-        {
-          id: 'nouvelle-facture',
-          title: 'Nouvelle Facture',
-          type: 'item',
-          url: '/factures/create',
-          breadcrumbs: false
-        },
-        {
-          id: 'factures',
-          title: 'Factures',
-          type: 'item',
-          url: '/factures/list',
-          breadcrumbs: false
         }
       ]
     },
@@ -189,15 +156,21 @@ const Crm = {
       id: 'facturation-group',
       title: 'Facturations',
       type: 'collapse',
-      icon: ReceiptRoundedIcon,
-      // url: '/techniciens/list',
+      icon: ReceiptOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'commandes',
+          id: 'list-devis',
+          title: 'Nouveau Devis',
+          type: 'item',
+          url: '/devis/list',
+          breadcrumbs: false
+        },
+        {
+          id: 'new-devis',
           title: 'Devis',
           type: 'item',
-          url: '/commandes/list',
+          url: '/devis/create',
           breadcrumbs: false
         },
         {

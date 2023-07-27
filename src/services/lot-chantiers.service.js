@@ -134,25 +134,25 @@ export function useEchantionner() {
   );
 }
 
-export function useChangePercentage(LotChantierId = '') {
-  const queryClient = useQueryClient();
+// export function useChangePercentage(LotChantierId = '') {
+//   const queryClient = useQueryClient();
 
-  return useMutation(
-    async (values) => {
-      const res = await axiosClient.put(`lot-chantiers/${LotChantierId}/change-percentage`, values);
-      return res.data;
-    },
-    {
-      onSuccess: (data) => {
-        toast.success(data?.message);
-        queryClient.invalidateQueries();
-      },
-      onError: (data) => {
-        // toast.error(data?.response?.data?.message);
-      }
-    }
-  );
-}
+//   return useMutation(
+//     async (values) => {
+//       const res = await axiosClient.put(`lot-chantiers/${LotChantierId}/change-percentage`, values);
+//       return res.data;
+//     },
+//     {
+//       onSuccess: (data) => {
+//         toast.success(data?.message);
+//         queryClient.invalidateQueries();
+//       },
+//       onError: (data) => {
+//         // toast.error(data?.response?.data?.message);
+//       }
+//     }
+//   );
+// }
 
 export const useGetInspectionsCalendar = (userId) => {
   return useQuery(

@@ -85,7 +85,7 @@ export default function AuthToggleCard({ toggleAuth, setToggleAuth, title, userD
                   color={'secondary'}
                   variant="contained"
                   onClick={async () => {
-                    changeLoginCredentialsMutation.mutateAsync(formInput);
+                    await changeLoginCredentialsMutation.mutateAsync(formInput);
                   }}
                 >
                   {'Sauvegarder'}

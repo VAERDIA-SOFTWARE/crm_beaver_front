@@ -467,7 +467,27 @@ const ProfileSection = () => {
                                     <ListItemText primary={<Typography variant="body2">Préférences</Typography>} />
                                   </ListItemButton>
                                 </Link>
-
+                                <Link
+                                  to={'/articles/list'}
+                                  style={{
+                                    textDecorationLine: 'none'
+                                  }}
+                                >
+                                  <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} selected={selectedIndex === 4}>
+                                    <ListItemIcon sx={{ my: 'auto', minWidth: 36 }}>
+                                      {
+                                        <FiberManualRecordIcon
+                                          sx={{
+                                            width: 6,
+                                            height: 6
+                                          }}
+                                          fontSize={'medium'}
+                                        />
+                                      }
+                                    </ListItemIcon>
+                                    <ListItemText primary={<Typography variant="body2">Articles</Typography>} />
+                                  </ListItemButton>
+                                </Link>
                                 <Link
                                   to={'/settings/mail'}
                                   style={{
