@@ -13,12 +13,16 @@ import MainCard from 'ui-component/cards/MainCard';
 import ClientDataCard from 'views/crm/clients/list/ClientDataCard';
 import AuthToggleCard from 'views/crm/users/list/AuthToggleCard';
 import AccessDataCard from 'views/crm/users/list/AccessDataCard';
+import PointageList from 'views/crm/pointage/list/PointageDataCard';
+import PointageListCol from 'views/crm/pointage/list';
+import PointageMaps from 'views/crm/pointage/maps';
 
 const TechnicienDetailsPage = () => {
   const { technicienId } = useParams();
 
   const getTechnicienQuery = useGetUser(technicienId);
   const technicienData = getTechnicienQuery.data?.user;
+  console.log(technicienData);
 
   const navigate = useNavigate();
 
@@ -26,6 +30,28 @@ const TechnicienDetailsPage = () => {
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
   };
+  const pointageList = [
+    {
+      id: 12,
+      status: 0,
+      date_debut: '2023-07-27 08:53:17',
+      date_fin: '2023-07-27 18:58:17',
+      emplacement: 'Sousse , Msaken',
+      description: 'D\u00e9but de travail',
+      created_at: '2023-07-27T08:53:17.000000Z',
+      updated_at: '2023-07-27T08:53:17.000000Z'
+    },
+    {
+      id: 11,
+      status: 0,
+      date_debut: '2023-07-28 08:00:17',
+      date_fin: '2023-07-28 18:05:17',
+      emplacement: 'Sousse , Msaken',
+      description: 'D\u00e9but de travail',
+      created_at: '2023-07-27T08:53:17.000000Z',
+      updated_at: '2023-07-27T08:53:17.000000Z'
+    }
+  ];
   const [toggleAuth, setToggleAuth] = useState(false);
   const getUserPermissionsQuery = useGetUserPermissions(technicienId);
   useEffect(() => {
@@ -79,9 +105,11 @@ const TechnicienDetailsPage = () => {
           variant="scrollable"
         >
           <Tab to="#" label="Collaborateur" {...a11yProps(0)} />
-          {/* <Tab to="#" label="Chantiers" {...a11yProps(1)} /> */}
+          <Tab to="#" label="Chantiers" {...a11yProps(1)} />
           <Tab to="#" label="Interventions" {...a11yProps(2)} />
           <Tab to="#" label="Accès" {...a11yProps(3)} />
+          <Tab to="#" label="Historique de pointage" {...a11yProps(4)} />
+          <Tab to="#" label="Maps" {...a11yProps(5)} />
         </Tabs>
 
         <TabPanel value={value} index={0}>
@@ -156,6 +184,12 @@ const TechnicienDetailsPage = () => {
           <Grid item xs={12}>
             {Array.isArray(userPermissionsData) && <AccessDataCard userPermissionsData={userPermissionsData} userId={technicienId} />}
           </Grid>
+        </TabPanel>
+        <TabPanel value={value} index={4}>
+          <PointageList pointageList={pointageList} />
+        </TabPanel>
+        <TabPanel value={value} index={5}>
+          <PointageMaps />
         </TabPanel>
         <div
           style={{
