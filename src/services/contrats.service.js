@@ -6,8 +6,17 @@ export const useGetClientsContrats = ({ clientId }) => {
   return useQuery(['clients-contrats', clientId], () => axiosClient.get(`clients/${clientId}/contrats`).then((res) => res.data), {});
 };
 
-export const useGetContrats = () => {
-  return useQuery(['contrats'], () => axiosClient.get(`/contrats`).then((res) => res.data), {});
+export const useGetContrats = ({ state = '', page = 1, searchFilter = '', paginated = false }) => {
+  return useQuery(
+    ['contrats', page, searchFilter, paginated, state],
+    () =>
+      axiosClient
+        .get(
+          `/contrats?page=${page}&search=${searchFilter}&${paginated ? `paginated=${paginated}&` : ''}&${state ? `state=${state}&` : ''}`
+        )
+        .then((res) => res.data),
+    {}
+  );
 };
 export const useGetMarquePAC = () => {
   return useQuery(['parent-operations'], () => axiosClient.get(`/parent-operations`).then((res) => res.data), {});
@@ -17,7 +26,7 @@ export const useGetModeFacturations = () => {
 };
 
 export const useGetContrat = (contratId) => {
-  return useQuery(['contrats', contratId], () => axiosClient.get(`contrats/${contratId ? contratId : ''}`).then((res) => res.data), {});
+  return useQuery(['contrats', contratId], () => axiosClient.get(`contrats/${contratId}`).then((res) => res.data), {});
 };
 
 export function useCreateContrat() {
@@ -26,6 +35,38 @@ export function useCreateContrat() {
   return useMutation(
     async (values) => {
       const res = await axiosClient.post(`contrats`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+export function useRenewContrat(id) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async () => {
+      const res = await axiosClient.post(`contrats/${id}/renouvellement-articles`);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+export function useChangeContractState(id) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.post(`contrats/${id}/contrat-change-state?_method=put`, values);
       return res.data;
     },
     {

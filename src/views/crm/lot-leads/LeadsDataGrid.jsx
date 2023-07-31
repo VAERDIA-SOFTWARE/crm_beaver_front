@@ -1,7 +1,14 @@
 import { AssignmentTurnedInOutlined, PendingActionsOutlined } from '@mui/icons-material';
-import { Fab, Grid, IconButton, TextField, Tooltip } from '@mui/material';
+import { Button, Fab, Grid, IconButton, TextField, Tooltip } from '@mui/material';
 import { Box } from '@mui/system';
-import { DataGrid } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarQuickFilter,
+  frFR
+} from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainCard from 'ui-component/cards/MainCard';
@@ -9,6 +16,7 @@ import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import AddIcon from '@mui/icons-material/AddTwoTone';
 import { LoadingButton } from '@mui/lab';
 import SendIcon from '@mui/icons-material/Send';
+import { useLeadsToClients } from 'services/users.service';
 
 function EditCell({ params }) {
   const navigate = useNavigate();
@@ -18,7 +26,7 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/leads/${params?.row?.id}/details`);
+          navigate(params?.row?.type === 0 ? `/leads/${params?.row?.id}/details` : `/clients/${params?.row?.id}/details`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
@@ -106,33 +114,48 @@ const columns = [
     headerName: 'Email',
     sortable: false,
     width: 160
+  },
+  {
+    field: 'action',
+    headerName: 'Action',
+    sortable: false,
+    hideable: false,
+    filterable: false,
+    disableExport: true,
+    renderCell: (params) => {
+      return <EditCell params={params} />;
+    }
   }
 ];
 
-function LeadsDataGrid(leadsData) {
-  const navigate = useNavigate();
+function LeadsDataGrid({ query, leadsData, title, generate, page, setPage, pageSize, setPageSize, searchFilter, setSearchFilter }) {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const leadsToClientMutation = useLeadsToClients();
   return (
     <MainCard
-      title={'Liste des Leads'}
+      title={title}
       secondary={
         <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-          <LoadingButton
-            disabled={rowSelectionModel?.length === 0}
-            loadingPosition="end"
-            endIcon={<SendIcon />}
-            loading={''}
-            variant="contained"
-            type="submit"
-          >
-            Convert
-          </LoadingButton>
+          {generate && (
+            <LoadingButton
+              disabled={rowSelectionModel?.length === 0}
+              loadingPosition="end"
+              endIcon={<SendIcon />}
+              loading={leadsToClientMutation?.isLoading}
+              variant="contained"
+              onClick={async () => {
+                await leadsToClientMutation.mutateAsync({ team_leads: rowSelectionModel });
+              }}
+            >
+              Convert
+            </LoadingButton>
+          )}
         </Grid>
       }
     >
       <Box sx={{ height: 650, width: '100%' }}>
         <DataGrid
-          density="compact"
+          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           componentsProps={{
             columnsPanel: {
               sx: {
@@ -146,7 +169,10 @@ function LeadsDataGrid(leadsData) {
               quickFilterProps: { debounceMs: 300 }
             }
           }}
-          rows={leadsData?.leadsData}
+          density="compact"
+          paginationMode="server"
+          filterMode="server"
+          rows={leadsData?.data || []}
           columns={columns}
           initialState={{
             pagination: {
@@ -156,12 +182,22 @@ function LeadsDataGrid(leadsData) {
             }
           }}
           rowsPerPageOptions={[5, 10, 25]}
-          checkboxSelection
-          disableRowSelectionOnClick
+          checkboxSelection={generate}
+          disableSelectionOnClick
           onSelectionModelChange={(newRowSelectionModel) => {
             setRowSelectionModel(newRowSelectionModel);
           }}
+          onFilterModelChange={(e) => {
+            setSearchFilter(e?.quickFilterValues);
+          }}
+          loading={query?.isLoading || query?.isFetching}
           selectionModel={rowSelectionModel}
+          onPageChange={(newPage) => setPage(newPage + 1)}
+          pageSize={parseInt(leadsData?.per_page) || 10}
+          components={{
+            Toolbar: () => <CustomToolbar page={page} searchFilter={searchFilter} />
+          }}
+          rowCount={leadsData?.total || 0}
         />
       </Box>
     </MainCard>
@@ -169,3 +205,37 @@ function LeadsDataGrid(leadsData) {
 }
 
 export default LeadsDataGrid;
+
+function CustomToolbar({ searchFilter, page }) {
+  return (
+    <GridToolbarContainer>
+      <div
+        style={{
+          width: '100%',
+          padding: 10,
+          display: 'flex',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 10
+        }}
+      >
+        <GridToolbarQuickFilter />
+
+        {/* <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Button
+            LinkComponent={'a'}
+            target="_blank"
+            href={`${process.env.REACT_APP_API_URL}lot-leads/export-excel?${paginated ? `paginated=${paginated}&` : ''}${
+              searchFilter ? `search=${searchFilter}&` : ''
+            }${userId ? `userId=${userId}&` : ''}`}
+          >
+            Exporter
+          </Button>
+
+          <GridToolbarColumnsButton />
+          <GridToolbarDensitySelector />
+        </div> */}
+      </div>
+    </GridToolbarContainer>
+  );
+}

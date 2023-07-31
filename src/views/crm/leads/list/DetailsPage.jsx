@@ -7,25 +7,21 @@ import { useState, useEffect } from 'react';
 
 // project imports
 import { useNavigate, useParams } from 'react-router-dom';
-import { useChangeLeadToClient, useDeleteUser, useGetUser } from 'services/users.service';
+import { useChangeLeadToClient, useDeleteUser, useGetUser, useLeadsToClients } from 'services/users.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 
 import LeadsDataCard from './LeadsDataCard';
 import { DeleteOutline } from '@mui/icons-material';
+import SendIcon from '@mui/icons-material/Send';
+import { LoadingButton } from '@mui/lab';
 
 const LeadsDetailsPage = () => {
   const { leadsId } = useParams();
-
   const getLeadsQuery = useGetUser(leadsId);
   const clientData = getLeadsQuery?.data?.user;
-  const leadToClientMutation = useChangeLeadToClient(leadsId);
+  const leadsToClientMutation = useLeadsToClients();
   const deleteMutation = useDeleteUser(leadsId);
-  const LotId = localStorage.getItem('LotId');
-
-  console.log('====================================');
-  console.log(LotId);
-  console.log('====================================');
 
   const [toggleAuth, setToggleAuth] = useState(false);
 
@@ -36,9 +32,9 @@ const LeadsDetailsPage = () => {
   }, [clientData, getLeadsQuery.isSuccess]);
   return (
     <MainCard
-      title={`Leads ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
+      title={`Lead ${clientData?.reference && '- ' + clientData?.reference}`}
       backButton
-      goBackLink="/lot-leads/list"
+      goBackLink={-1}
       secondary={
         <div
           style={{
@@ -57,26 +53,28 @@ const LeadsDetailsPage = () => {
           >
             <EditIcon sx={{ fontSize: '1.3rem' }} />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             color="secondary"
             size="large"
             onClick={async (e) => {
               await deleteMutation.mutateAsync();
-              navigate(`/lot-leads/${LotId}/details`);
+              navigate(`/leads/list`);
             }}
           >
             <DeleteOutline sx={{ fontSize: '1.3rem' }} />
-          </IconButton>
-          <Button
+          </IconButton> */}
+          <LoadingButton
             sx={{ marginX: '1rem' }}
             variant="contained"
-            onClick={async (e) => {
-              await leadToClientMutation.mutateAsync();
-              navigate(`/lot-leads/${LotId}/details`);
+            endIcon={<SendIcon />}
+            loading={leadsToClientMutation?.isLoading}
+            onClick={async () => {
+              await leadsToClientMutation.mutateAsync({ team_leads: [leadsId] });
+              navigate(`/leads/list`);
             }}
           >
             Convertir en client
-          </Button>
+          </LoadingButton>
         </div>
       }
     >

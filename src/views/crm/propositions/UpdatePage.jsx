@@ -7,31 +7,41 @@ import { Autocomplete, Grid, Skeleton, TextField } from '@mui/material';
 
 // project imports
 import { LoadingButton } from '@mui/lab';
-import { DateTimePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
-import { useGetProposition, useGetInspectionsTechniciens, useUpdateInspection } from 'services/inspections.service';
+import {
+  useGetProposition,
+  useGetInspectionsTechniciens,
+  useUpdateInspection,
+  useUpdateProposition,
+  useGetPropositionsTechniciens
+} from 'services/inspections.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
+import moment from 'moment/moment';
+import { date } from 'yup';
 
 const PropositionUpdatePage = () => {
   const { propositionId } = useParams();
-  const getPropsitionQuery = useGetProposition(propositionId);
-  const propositionData = getPropsitionQuery.data;
-  const getInspectionTechniciensQuery = useGetInspectionsTechniciens({ userId: propositionId });
-  const inspectionTechniciensData = getInspectionTechniciensQuery.data;
 
-  const updateInspectionMutation = useUpdateInspection();
+  const updateInspectionMutation = useUpdateProposition();
 
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
-    debut: null,
+    debut: new Date(),
     fin: null,
     user_id: null
   });
-
+  const getPropsitionQuery = useGetProposition(propositionId);
+  const propositionData = getPropsitionQuery.data;
+  const getInspectionTechniciensQuery = useGetPropositionsTechniciens({
+    interventionId: propositionId,
+    date: moment(formInput?.debut).format('YYYY/MM/DD')
+  });
+  const inspectionTechniciensData = getInspectionTechniciensQuery?.data?.data;
   useEffect(() => {
     if (getPropsitionQuery.isSuccess) {
       setFormInput((f) => {
@@ -39,7 +49,7 @@ const PropositionUpdatePage = () => {
           ...f,
           debut: propositionData?.deb_calendar,
           fin: propositionData?.fin_calendar,
-          user_id: propositionData?.technicien?.id
+          user_id: propositionData?.collaborator?.id
         };
       });
     }
@@ -69,9 +79,8 @@ const PropositionUpdatePage = () => {
             <Grid item xs={12} md={6}>
               <TextField variant="standard" fullWidth label="Référence*" value={propositionData?.reference || ''} disabled />
             </Grid>
-            <Grid item xs={12} md={6}></Grid>
             <Grid item xs={12} md={6}>
-              {propositionData?.technicien && Array.isArray(inspectionTechniciensData) ? (
+              {propositionData?.collaborator && Array.isArray(inspectionTechniciensData) ? (
                 <Autocomplete
                   // value={formInput?.user_id}
                   onChange={(event, newValue) => {
@@ -86,7 +95,7 @@ const PropositionUpdatePage = () => {
                     // const tech = inspectionTechniciensData?.find((e) => e?.id === option);
                     // return tech?.name;
                   }}
-                  defaultValue={inspectionTechniciensData?.find((e) => propositionData?.technicien?.id === e?.id)}
+                  defaultValue={inspectionTechniciensData?.find((e) => propositionData?.collaborator?.id === e?.id)}
                   renderInput={(params) => <TextField variant="standard" {...params} label="Sélectionner un technicien" />}
                   error={!!formErrors?.data?.user_id}
                   helperText={renderArrayMultiline(formErrors?.data?.user_id)}
@@ -95,14 +104,13 @@ const PropositionUpdatePage = () => {
                 <Skeleton variant="rounded" width={'100%'} height={40} />
               )}
             </Grid>
-            <Grid item xs={12} md={6}></Grid>
             <Grid item xs={12} md={6}>
               <LocalizationProvider
                 dateAdapter={AdapterDateFns}
                 // adapterLocale="fr"
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
-                <DateTimePicker
+                <DatePicker
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -111,8 +119,9 @@ const PropositionUpdatePage = () => {
                       helperText={renderArrayMultiline(formErrors?.data?.debut)}
                     />
                   )}
+                  inputFormat="dd/MM/yyyy"
                   label="Date début"
-                  value={formInput?.debut}
+                  value={moment(formInput?.debut).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
                       const formattedDate = format(v, 'yyyy-MM-dd hh:mm');
@@ -131,7 +140,8 @@ const PropositionUpdatePage = () => {
                 // adapterLocale="fr"
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
-                <DateTimePicker
+                <DatePicker
+                  inputFormat="dd/MM/yyyy"
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -141,7 +151,7 @@ const PropositionUpdatePage = () => {
                     />
                   )}
                   label="Date fin"
-                  value={formInput?.fin}
+                  value={moment(formInput?.fin).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
                       const formattedDate = format(v, 'yyyy-MM-dd hh:mm');

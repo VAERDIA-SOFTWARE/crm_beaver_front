@@ -26,20 +26,22 @@ import FormulaireCard from './FormulaireCard';
 import InspectionDataCard from './InspectionDataCard';
 import InfoIcon from '@mui/icons-material/Info';
 import useAuth from 'hooks/useAuth';
+import ClientDataCard from '../clients/list/ClientDataCard';
+import { useGetStateByModel } from 'services/state.service';
 
 const InspectionDetailsPage = () => {
-  const { inspectionId } = useParams();
+  const { interventionId } = useParams();
 
-  const getInspectionFormulaireQuery = useGetInspectionFormulaire({ inspectionId });
+  const getInspectionFormulaireQuery = useGetInspectionFormulaire({ interventionId });
   const inspectionFormulaireData = getInspectionFormulaireQuery.data;
 
-  const getInspectionQuery = useGetInspection(inspectionId);
-  const inspectionData = getInspectionQuery.data?.inspection;
+  const getInspectionQuery = useGetInspection(interventionId);
+  const inspectionData = getInspectionQuery?.data;
   const [pdfPath, setPdfPath] = useState(`${process.env.REACT_APP_API_URL}rapports/default`);
 
-  const inspectionsEtatData = getInspectionQuery.data?.etats;
-  const inspectionsStatutData = getInspectionQuery.data?.status;
   const { user } = useAuth();
+  const getStatusQuery = useGetStateByModel('DIntervention');
+  const statusData = getStatusQuery?.data;
   useEffect(() => {
     setPdfPath(
       inspectionData?.etat !== 3
@@ -47,7 +49,6 @@ const InspectionDetailsPage = () => {
         : `${process.env.REACT_APP_API_URL}rapports/${inspectionData?.id}/download-pdf`
     );
   }, [inspectionData]);
-  console.log(pdfPath);
   // const [fetchedRapport, setFetchedRapport] = useState(null);
 
   // useEffect(() => {
@@ -73,17 +74,10 @@ const InspectionDetailsPage = () => {
   const handleRapportTabChange = (event, newValue) => {
     setActiveRapportTab(newValue);
   };
-  const toggleDrawer = (open) => (event) => {
-    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
-
-    setTogleState(open);
-  };
 
   return (
     <MainCard
-      title={`Inspection ${inspectionData?.reference ? '- ' + inspectionData?.reference : ''}`}
+      title={`Intervention ${inspectionData?.reference ? '- ' + inspectionData?.reference : ''}`}
       backButton
       goBackLink="/inspections/list"
       secondary={
@@ -103,7 +97,7 @@ const InspectionDetailsPage = () => {
                       loadingPosition="end"
                       endIcon={<AssignmentReturnedIcon />}
                       loading={generateInspectionsRapportMutation.isLoading}
-                      onClick={() => generateInspectionsRapportMutation.mutate({ inspectionId })}
+                      onClick={() => generateInspectionsRapportMutation.mutate({ interventionId })}
                       variant="contained"
                       type="submit"
                     >
@@ -131,7 +125,7 @@ const InspectionDetailsPage = () => {
                       loadingPosition="start"
                       startIcon={<AssignmentTurnedInIcon />}
                       loading={validateInspectionsMutation.isLoading}
-                      onClick={() => validateInspectionsMutation.mutate({ inspectionId })}
+                      onClick={() => validateInspectionsMutation.mutate({ interventionId })}
                       variant="contained"
                       type="submit"
                     >
@@ -180,7 +174,7 @@ const InspectionDetailsPage = () => {
                   loadingPosition="end"
                   // endIcon={<AssignmentReturnedIcon />}
                   onClick={(e) => {
-                    navigate(`/inspections/${inspectionId}/formulaire`);
+                    navigate(`/interventions/${interventionId}/formulaire`);
                   }}
                   variant="contained"
                   type="subnmit"
@@ -195,7 +189,7 @@ const InspectionDetailsPage = () => {
               color="secondary"
               size="large"
               onClick={(e) => {
-                navigate(`/inspections/${inspectionId}/update`);
+                navigate(`/interventions/${interventionId}/update`);
               }}
             >
               <EditIcon sx={{ fontSize: '1.3rem' }} />
@@ -232,20 +226,6 @@ const InspectionDetailsPage = () => {
           <Tab to="#" label="Interventions" />
           <Tab to="#" label="Rapport" />
         </Tabs>
-        <Fragment key="right">
-          <Button
-            sx={{
-              alignSelf: 'center',
-              marginBottom: '24px'
-            }}
-            onClick={toggleDrawer(true)}
-          >
-            <InfoIcon />
-          </Button>
-          <SwipeableDrawer anchor="right" open={togleState} onClose={toggleDrawer(false)} onOpen={toggleDrawer(true)}>
-            <EtatStaus inspectionsStatutData={inspectionsStatutData} inspectionsEtatData={inspectionsEtatData} />
-          </SwipeableDrawer>
-        </Fragment>
       </div>
       <TabPanel value={activeTab} index={0}>
         <Grid container spacing={gridSpacing} rowSpacing={5}>
@@ -253,9 +233,12 @@ const InspectionDetailsPage = () => {
             {/* <EtatStaus inspectionsStatutData={inspectionsStatutData} inspectionsEtatData={inspectionsEtatData} /> */}
             <InspectionDataCard
               data={inspectionData}
-              inspectionsStatutData={inspectionsStatutData}
-              inspectionsEtatData={inspectionsEtatData}
+              // inspectionsStatutData={inspectionsStatutData}
+              inspectionsEtatData={statusData?.find((item) => item?.etat === inspectionData?.etat)}
             />
+          </Grid>
+          <Grid item xs={12}>
+            <ClientDataCard clientData={inspectionData?.client} title={'Informations du client'} />
           </Grid>
           {/* <Grid
           container
@@ -298,7 +281,7 @@ const InspectionDetailsPage = () => {
           )} */}
 
           <Grid item xs={12}>
-            <TechnicienDataCard data={inspectionData?.technicien} />
+            <TechnicienDataCard data={inspectionData?.collaborator} />
           </Grid>
           {/* <Grid item xs={12}>
           <LotChantierDataCard lotChantierData={formInput?.lot_chantier} />

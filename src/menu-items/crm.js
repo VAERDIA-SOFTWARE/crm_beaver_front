@@ -17,6 +17,7 @@ const Crm = {
       icon: AnalyticsOutlinedIcon,
       breadcrumbs: false
     },
+
     {
       id: 'leads-group',
       title: 'Leads',
@@ -32,6 +33,13 @@ const Crm = {
           breadcrumbs: false
         },
         {
+          id: 'lot-leads',
+          title: 'Lot-Leads',
+          type: 'item',
+          url: '/lot-leads/list',
+          breadcrumbs: false
+        },
+        {
           id: 'new-leads',
           title: 'Ajouter Leads',
           type: 'item',
@@ -39,10 +47,33 @@ const Crm = {
           breadcrumbs: false
         },
         {
-          id: 'lot-leads',
-          title: 'Lot-Leads',
+          id: 'list-leads',
+          title: 'List Leads',
           type: 'item',
-          url: '/lot-leads/list',
+          url: '/leads/list',
+          breadcrumbs: false
+        }
+      ]
+    },
+    {
+      id: 'articles-group',
+      title: 'Articles',
+      type: 'collapse',
+      icon: GroupOutlinedIcon,
+      breadcrumbs: false,
+      children: [
+        {
+          id: 'new-articles',
+          title: 'Ajouter Article',
+          type: 'item',
+          url: '/articles/create',
+          breadcrumbs: false
+        },
+        {
+          id: 'articles-list',
+          title: 'List des articles',
+          type: 'item',
+          url: '/articles/list',
           breadcrumbs: false
         }
       ]

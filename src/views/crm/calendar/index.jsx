@@ -33,17 +33,25 @@ import useAuth from 'hooks/useAuth';
 import { useGetUsers } from 'services/users.service';
 import MaterialUISwitch from './SwitchMui';
 import AdjustIcon from '@mui/icons-material/Adjust';
+// import { useGetClients } from 'services/clients.service';
+import { useGetSettingsPreferences } from 'services/settings.service';
+import { useUpdateProposition } from 'services/inspections.service';
+import { useGetStateByModel } from 'services/state.service';
 
 const Calendar = () => {
   // const dispatch = useDispatch();
   const calendarRef = useRef(null);
   const matchSm = useMediaQuery((theme) => theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
-  const updateInspectionMutation = useUpdateInspection();
+  const updateInspectionMutation = useUpdateProposition();
   const { logout, user } = useAuth();
   const [userId, setUserId] = useState({
-    id: ' ',
-    name: ' '
+    id: '',
+    name: ''
+  });
+  const [clientId, setClientId] = useState({
+    id: '',
+    entitled: ''
   });
   const [isEditModeOn, setIsEditModeOn] = useState(false);
   const [localInspections, setLocalInspections] = useState(null);
@@ -52,30 +60,47 @@ const Calendar = () => {
   const [selectedRange, setSelectedRange] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [enableFilter, setEnableFilter] = useState(false);
-  const getTechniciensQuery = useGetUsers({ role: 'technicien', paginated: false });
-  const getClientsQuery = useGetUsers({ role: 'client', paginated: false });
+  const getTechniciensQuery = useGetUsers({ role: 'collaborator', paginated: false });
+  const getClientsQuery = useGetUsers({ paginated: false, role: 'client' });
+  // const interventionCOlor = ['#229954', '#f1c40f'];
 
-  const getInspectionsCalendarQuery = useGetInspectionsCalendar(userId?.id);
+  const getInspectionsCalendarQuery = useGetInspectionsCalendar({ userId: userId?.id, clientId: clientId?.id });
   const updateInspectionsMutation = useUpdateInspections(localInspectionUpdates);
+  const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
+  const settingsPreferencesData = useGetSettingsPreferencesQuery.data;
+  const getStatusQueryIntervention = useGetStateByModel('DIntervention');
+  const statusDataIntervention = getStatusQueryIntervention?.data;
+  const getStatusQueryProposition = useGetStateByModel('DInterventionProposer');
+  const statusDataProposition = getStatusQueryProposition?.data;
   useEffect(() => {
-    if (getInspectionsCalendarQuery.isSuccess) {
+    if ((getInspectionsCalendarQuery.isSuccess, getStatusQueryProposition.isSuccess, getStatusQueryIntervention.isSuccess)) {
       const d = getInspectionsCalendarQuery.data?.map((e) => {
         return {
           ...e,
           id: e?.id,
           allDay: false,
-          color: e?.color,
-          description: e?.chantier?.ville,
+          // color: e?.p_status_id === 1 ? interventionCOlor[1] : interventionCOlor[0],
+          color: e?.collaborator?.couleur,
+          bgColor: e?.state?.couleur,
           // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
           start: e?.deb_calendar,
           end: e?.fin_calendar,
           // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
-          title: e?.chantier?.reference
+          title: e?.client?.name,
+          startEditable: isEditModeOn && e?.p_status_id === 1 ? true : false,
+          editable: isEditModeOn && e?.p_status_id === 1 ? true : false
         };
       });
       setLocalInspections(d);
     }
-  }, [getInspectionsCalendarQuery.data, getInspectionsCalendarQuery.isSuccess, userId]);
+  }, [
+    getInspectionsCalendarQuery.data,
+    settingsPreferencesData,
+    useGetSettingsPreferencesQuery.isSuccess,
+    getInspectionsCalendarQuery.isSuccess,
+    userId,
+    isEditModeOn
+  ]);
 
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState(matchSm ? 'listWeek' : 'dayGridMonth');
@@ -91,8 +116,14 @@ const Calendar = () => {
       setDate(calendarApi.getDate());
     }
   };
-  const handleSelectedUser = (event, newValue) => {
-    setUserId(newValue);
+  const handleSelectedUser = (name, newValue) => {
+    if (name === 'technicien') {
+      setUserId(newValue);
+      setClientId(null);
+      return 0;
+    }
+    setClientId(newValue);
+    setUserId(null);
   };
   const handleViewChange = (newView) => {
     const calendarEl = calendarRef.current;
@@ -151,6 +182,7 @@ const Calendar = () => {
         ...selectEvent
         //  end: selectEvent?.fin_calendar, start: selectEvent?.date
       });
+      // console.log(selectEvent);
       setIsModalOpen(true);
     } else {
       setSelectedEvent(null);
@@ -194,7 +226,7 @@ const Calendar = () => {
 
   const handleUpdateEvent = async (eventId, data) => {
     // dispatch(updateEvent({ eventId, data }));
-    await updateInspectionMutation.mutateAsync({ id: eventId, values: data });
+    await updateInspectionMutation.mutateAsync({ id: eventId, values: { ...data, files: [] } });
     queryClient.invalidateQueries();
 
     handleModalClose();
@@ -235,7 +267,6 @@ const Calendar = () => {
 
     setTogleState(open);
   };
-
   return (
     <MainCard
       sx={
@@ -243,7 +274,7 @@ const Calendar = () => {
           // backgroundColor: isEditModeOn ? '#dcfce7' : 'initial'
         }
       }
-      title="Calendrier des Interventions"
+      title="Calendrier des interventions"
       secondary={
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           {/* <Button color="secondary" variant="contained" onClick={handleAddClick}>
@@ -280,19 +311,22 @@ const Calendar = () => {
               color={'secondary'}
               variant="contained"
               onClick={async () => {
-                const d = await getInspectionsCalendarQuery.data?.map((e) => {
+                const d = getInspectionsCalendarQuery.data?.map((e) => {
                   return {
                     ...e,
 
                     id: e?.id,
                     allDay: false,
-                    color: e?.color,
+                    color: e?.collaborator?.couleur,
+                    bgColor: e?.state?.couleur,
                     description: e?.chantier?.ville,
                     // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
                     start: e?.deb_calendar,
                     end: e?.fin_calendar,
                     // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
-                    title: e?.chantier?.reference
+                    title: e?.client?.name,
+                    startEditable: isEditModeOn && e?.p_status_id === 1 ? true : false,
+                    editable: isEditModeOn && e?.p_status_id === 1 ? true : false
                   };
                 });
 
@@ -324,7 +358,7 @@ const Calendar = () => {
             alignItems: 'center'
           }}
         >
-          <div
+          {/* <div
             style={{
               display: 'flex',
               gap: 5,
@@ -335,11 +369,28 @@ const Calendar = () => {
               style={{
                 height: 14,
                 width: 14,
-                backgroundColor: '#229954',
+                backgroundColor: settingsPreferencesData?.proposition_color,
                 borderRadius: 9999
               }}
             />
-            Interventions Validées
+            Intervention Proposées
+          </div> */}
+          <div
+            style={{
+              display: 'flex',
+              gap: 6,
+              alignItems: 'center'
+            }}
+          >
+            <div
+              style={{
+                height: 14,
+                width: 14,
+                backgroundColor: settingsPreferencesData?.proposition_color,
+                borderRadius: 9999
+              }}
+            />
+            Intervention planifiée
           </div>
           <div
             style={{
@@ -352,11 +403,28 @@ const Calendar = () => {
               style={{
                 height: 14,
                 width: 14,
-                backgroundColor: '#f1c40f',
+                backgroundColor: '#FF7900',
                 borderRadius: 9999
               }}
             />
-            Interventions Proposées
+            Intervention Encour
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              gap: 6,
+              alignItems: 'center'
+            }}
+          >
+            <div
+              style={{
+                height: 14,
+                width: 14,
+                backgroundColor: settingsPreferencesData?.intervention_terminer_color,
+                borderRadius: 9999
+              }}
+            />
+            Intervention Terminée
           </div>
         </div>
         {/* {enableFilter} */}
@@ -377,8 +445,9 @@ const Calendar = () => {
                   <Autocomplete
                     key="Client"
                     sx={{ width: '13rem' }}
+                    name="Client"
                     onChange={(event, newValue) => {
-                      handleSelectedUser(event, newValue);
+                      handleSelectedUser('client', newValue);
                     }}
                     options={getClientsQuery?.data || []}
                     getOptionLabel={(option) => {
@@ -388,10 +457,11 @@ const Calendar = () => {
                   />
                 ) : (
                   <Autocomplete
+                    name="Technicien"
                     key="Technicien"
                     sx={{ width: '13rem' }}
                     onChange={(event, newValue) => {
-                      handleSelectedUser(event, newValue);
+                      handleSelectedUser('technicien', newValue);
                     }}
                     options={getTechniciensQuery?.data || []}
                     getOptionLabel={(option) => {
@@ -444,16 +514,15 @@ const Calendar = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  {event?.event.extendedProps?.technicien?.couleur && (
-                    <div
-                      style={{
-                        height: 10,
-                        width: 10,
-                        borderRadius: 9999,
-                        backgroundColor: event?.event.extendedProps?.technicien?.couleur
-                      }}
-                    ></div>
-                  )}
+                  <div
+                    style={{
+                      height: 10,
+                      width: 10,
+                      borderRadius: 9999,
+                      backgroundColor: event?.event?._def?.extendedProps?.state?.couleur
+                    }}
+                  ></div>
+                  {/* <input type="button" onClick={() => console.log()} /> */}
                   <b>{event.timeText}</b>
                   <div>{event.event.title}</div>
                 </div>
@@ -479,13 +548,16 @@ const Calendar = () => {
                     ...e,
                     id: e?.id,
                     allDay: false,
-                    color: e?.color,
+                    color: e?.collaborator?.couleur,
+                    bgColor: e?.state?.couleur,
                     description: e?.chantier?.ville,
                     // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
                     start: e?.deb_calendar,
                     end: e?.fin_calendar,
                     // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
-                    title: e?.chantier?.reference
+                    title: e?.client?.name,
+                    startEditable: isEditModeOn && e?.p_status_id === 1 ? true : false,
+                    editable: isEditModeOn && e?.p_status_id === 1 ? true : false
                   };
                 })) ||
               []
@@ -512,7 +584,22 @@ const Calendar = () => {
             allDayMaintainDuration
             eventResizableFromStart
             select={false && isEditModeOn && handleRangeSelect}
-            eventDrop={isEditModeOn && handleEventUpdate}
+            // eventDrop={isEditModeOn && handleEventUpdate}
+            eventDrop={(info) => {
+              if (isEditModeOn) {
+                let dateNow = new Date();
+
+                // remove the time part from current date
+                dateNow.setHours(0, 0, 0, 0);
+
+                if (info.event.start < dateNow) {
+                  info.revert();
+                } else {
+                  // if the event is moved to the future, handle the update
+                  handleEventUpdate(info);
+                }
+              }
+            }}
             eventClick={(arg) => handleEventSelect({ arg })}
             eventResize={isEditModeOn && handleEventUpdate}
             height={matchSm ? 'auto' : 720}

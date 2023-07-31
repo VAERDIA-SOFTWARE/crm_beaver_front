@@ -6,7 +6,7 @@ export const useGetModeInterventions = () => {
   return useQuery(['mode-interventions'], () => axiosClient.get(`/mode-interventions`).then((res) => res.data), {});
 };
 
-export const useGetInterventionsProposes = ({ searchFilter = '', userId = '', page = 1 }) => {
+export const useGetInterventionsProposes = ({ paginated = false, searchFilter = '', userId = '', page = 1 }) => {
   return useQuery(
     ['interventions-proposer', searchFilter, userId, page],
     () =>
@@ -14,7 +14,7 @@ export const useGetInterventionsProposes = ({ searchFilter = '', userId = '', pa
         .get(
           `interventions-proposer?${searchFilter ? `search=${searchFilter}&` : ''}${userId ? `userId=${userId}&` : ''}${
             page ? `page=${page}&` : ''
-          }`
+          }${paginated ? `paginated=${paginated}&` : ''}`
         )
         .then((res) => res.data),
     {}

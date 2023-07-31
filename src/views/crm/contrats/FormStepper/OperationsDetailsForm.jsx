@@ -28,7 +28,7 @@ const DetailsInterventions = ({ handleNext, handleBack, contractForm, setContrac
   // const location = useLocation();
   // const clientId = location.state?.clientId;
   const [formErrors, setFormErrors] = useState({});
-  const articlesQuery = useGetArticles();
+  const articlesQuery = useGetArticles({});
   const articleData = articlesQuery?.data;
   const updateClientMutation = useUpdateContrat();
 
@@ -65,6 +65,7 @@ const DetailsInterventions = ({ handleNext, handleBack, contractForm, setContrac
     updatedArticles[index]['remise'] = value?.remise;
     updatedArticles[index]['prix_unitaire'] = value?.prix_unitaire;
     updatedArticles[index]['category'] = value?.category;
+    updatedArticles[index]['unite'] = value?.unite;
     updatedArticles[index]['unite_id'] = value?.unite?.id;
     setContractForm({ ...contractForm, operations: updatedArticles });
   };
@@ -79,19 +80,19 @@ const DetailsInterventions = ({ handleNext, handleBack, contractForm, setContrac
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ width: 200 }}>Intervention</TableCell>
-                      <TableCell sx={{ width: 150 }}>Date Intervention</TableCell>
-                      <TableCell sx={{ width: 250 }}>Article</TableCell>
-                      <TableCell sx={{ width: 50 }}>Prix Unitaire</TableCell>
+                      <TableCell sx={{ width: 250 }}>Intervention</TableCell>
+                      <TableCell sx={{ width: 200 }}>Date Intervention</TableCell>
+                      <TableCell sx={{ width: 300 }}>Article</TableCell>
+                      <TableCell sx={{ width: 100 }}>Prix U</TableCell>
+                      <TableCell sx={{ width: 100 }}>Remise</TableCell>
                       <TableCell sx={{ width: 80 }}>Unité</TableCell>
                       <TableCell>Catégorie</TableCell>
-                      <TableCell>Remise</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {contractForm?.operations.map((contractArticle, index) => (
                       <TableRow key={index}>
-                        <TableCell>{contractArticle.title}</TableCell>
+                        <TableCell>{contractArticle?.designation}</TableCell>
                         <TableCell>
                           <LocalizationProvider
                             dateAdapter={AdapterDateFns}
@@ -103,7 +104,7 @@ const DetailsInterventions = ({ handleNext, handleBack, contractForm, setContrac
                               inputFormat="dd/MM/yyyy"
                               renderInput={(params) => <TextField fullWidth variant="standard" {...params} />}
                               label="Date de fin Prévu"
-                              value={moment(contractArticle.date_prevu).format('YYYY-MM-DD HH:mm:ss')}
+                              value={moment(contractArticle?.date_prevu).format('YYYY-MM-DD HH:mm:ss')}
                               onChange={(v) => {
                                 try {
                                   const formattedDate = moment(v).format('YYYY-MM-DD HH:mm:ss');
@@ -140,8 +141,18 @@ const DetailsInterventions = ({ handleNext, handleBack, contractForm, setContrac
                             fullWidth
                             variant="standard"
                             margin="normal"
-                            value={contractArticle.prix_unitaire}
+                            value={contractArticle?.prix_unitaire}
                             onChange={(e) => handleContractArticleUpdate(index, 'prix_unitaire', e.target.value)}
+                            // Additional props for the TextField component
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <TextField
+                            fullWidth
+                            variant="standard"
+                            margin="normal"
+                            value={contractArticle.remise}
+                            onChange={(e) => handleContractArticleUpdate(index, 'remise', e.target.value)}
                             // Additional props for the TextField component
                           />
                         </TableCell>
@@ -162,16 +173,6 @@ const DetailsInterventions = ({ handleNext, handleBack, contractForm, setContrac
                             margin="normal"
                             value={contractArticle?.category?.intitule}
                             disabled
-                            // Additional props for the TextField component
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <TextField
-                            fullWidth
-                            variant="standard"
-                            margin="normal"
-                            value={contractArticle.remise}
-                            onChange={(e) => handleContractArticleUpdate(index, 'remise', e.target.value)}
                             // Additional props for the TextField component
                           />
                         </TableCell>

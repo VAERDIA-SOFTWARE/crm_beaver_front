@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
+import { FALSE } from 'sass';
 
 export function useCreateArticleContrat(contratId) {
   const queryClient = useQueryClient();
@@ -22,8 +23,15 @@ export function useCreateArticleContrat(contratId) {
 export const useGetNewArticles = (id) => {
   return useQuery(['contracts-new-articles'], () => axiosClient.get(`contrats/${id}/new-articles`).then((res) => res.data), {});
 };
-export const useGetArticles = () => {
-  return useQuery(['operations'], () => axiosClient.get(`operations`).then((res) => res.data), {});
+export const useGetArticles = ({ page = 1, searchFilter = '', paginated = false }) => {
+  return useQuery(
+    ['operations', page, searchFilter, paginated],
+    () =>
+      axiosClient
+        .get(`operations?page=${page}&search=${searchFilter}&${paginated ? `paginated=${paginated}&` : ''}`)
+        .then((res) => res.data),
+    {}
+  );
 };
 
 export const useGetArticle = (articleId = '') => {

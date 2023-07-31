@@ -2,15 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-export const useGetInspections = ({ searchFilter = '', userId = '', page = 1, etat = '' }) => {
+export const useGetInspections = ({ paginated = false, searchFilter = '', userId = '', page = 1, etat = '' }) => {
   return useQuery(
-    ['inspections', searchFilter, userId, page, etat],
+    ['interventions', searchFilter, userId, page, etat, paginated],
     () =>
       axiosClient
         .get(
-          `inspections?${searchFilter ? `search=${searchFilter}&` : ''}${userId ? `userId=${userId}&` : ''}${page ? `page=${page}&` : ''}${
-            etat !== -1 ? `etat=${etat}&` : ''
-          }`
+          `interventions?${searchFilter ? `search=${searchFilter}&` : ''}${userId ? `userId=${userId}&` : ''}${
+            page ? `page=${page}&` : ''
+          }${etat !== -1 ? `etat=${etat}&` : ''}${paginated !== -1 ? `paginated=${paginated}&` : ''}`
         )
         .then((res) => res.data),
     {}
@@ -34,8 +34,8 @@ export const useGetInspectionsProposes = ({ searchFilter = '', userId = '', page
 
 export const useGetInspection = (inspectionId = '', isInspection, isChantierFetching) => {
   return useQuery(
-    ['inspections', inspectionId, isInspection, isChantierFetching],
-    () => axiosClient.get(`inspections/${inspectionId}`).then((res) => res.data),
+    ['interventions', inspectionId, isInspection, isChantierFetching],
+    () => axiosClient.get(`interventions/${inspectionId}`).then((res) => res.data),
     {
       enabled: !!inspectionId
       // enabled: !!inspectionId && !!isInspection && !isChantierFetching
@@ -44,8 +44,8 @@ export const useGetInspection = (inspectionId = '', isInspection, isChantierFetc
 };
 
 export const useGetProposition = (propositionId = '') => {
-  return useQuery(['inspections-proposer', propositionId], () =>
-    axiosClient.get(`inspections-proposer/${propositionId}`).then((res) => res.data)
+  return useQuery(['interventions-proposer', propositionId], () =>
+    axiosClient.get(`interventions-proposer/${propositionId}`).then((res) => res.data)
   );
 };
 
@@ -53,6 +53,19 @@ export function useUpdateInspection() {
   return useMutation(
     async ({ id = '', values }) => {
       const res = await axiosClient.put(`inspections/${id}`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+      }
+    }
+  );
+}
+export function useUpdateProposition() {
+  return useMutation(
+    async ({ id = '', values }) => {
+      const res = await axiosClient.put(`interventions-proposer/${id}`, values);
       return res.data;
     },
     {
@@ -119,13 +132,14 @@ export const useGetInspectionsStatistics = ({ yearFilter = 0, userId = 1 }) => {
   );
 };
 
-export const useGetInspectionsTechniciens = ({ userId = '' }) => {
-  return useQuery(
-    ['inspections-techniciens', userId],
-    () => axiosClient.get(`inspections/${userId}/techniciens-disponibles`).then((res) => res.data),
-    {
-      enabled: !!userId
-    }
+export const useGetInspectionsTechniciens = ({ interventionId = '' }) => {
+  return useQuery(['inspections-techniciens', interventionId], () =>
+    axiosClient.get(`interventions/${interventionId}/collaborators-disponibles`).then((res) => res.data)
+  );
+};
+export const useGetPropositionsTechniciens = ({ interventionId = '', date }) => {
+  return useQuery(['inspections-techniciens', interventionId, date], () =>
+    axiosClient.get(`users/free-collaborators-intervention-proposer?date=${date}&proposition=${interventionId}`).then((res) => res.data)
   );
 };
 export const useGetInspectionsStatsByCommande = (commandeId = '') => {
@@ -142,8 +156,8 @@ export function useValiderPropositions() {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async ({ values }) => {
-      const res = await axiosClient.post(`inspections/validate-propositions`, values);
+    async (values) => {
+      const res = await axiosClient.post(`interventions-proposer/propositions-to-interventions`, values);
       return res.data;
     },
     {

@@ -154,10 +154,13 @@ export function useEchantionner() {
 //   );
 // }
 
-export const useGetInspectionsCalendar = (userId) => {
+export const useGetInspectionsCalendar = ({ userId = '', clientId = '' }) => {
   return useQuery(
-    ['inspections-calendar', userId],
-    () => axiosClient.get(`inspections/calendar?${userId ? `userIdFilter=${userId}&` : ''}`).then((res) => res.data),
+    ['interventions-calendar', userId, clientId],
+    () =>
+      axiosClient
+        .get(`interventions/calendar?${userId && `collaborator=${userId}&`}${clientId && `client=${clientId}`}`)
+        .then((res) => res.data),
     {}
   );
 };

@@ -7,12 +7,13 @@ import { Box, Grid, IconButton, Typography } from '@mui/material';
 // project imports
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetChantier } from 'services/chantier.service';
-import {
-  useGetProposition,
-} from 'services/inspections.service';
+import { useGetProposition } from 'services/inspections.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import TechnicienDataCard from '../techniciens/list/TechnicienDataCard';
+import InspectionDataCard from '../interventions/InspectionDataCard';
+import PropostionDataCard from './PropostionDataCard';
+import ClientDataCard from '../clients/list/ClientDataCard';
 
 const PropositionDetailsPage = () => {
   const { propositionId } = useParams();
@@ -22,9 +23,7 @@ const PropositionDetailsPage = () => {
 
   const getChantierQuery = useGetChantier(inspectionData?.d_chantier_id);
 
-
   const navigate = useNavigate();
-  
 
   return (
     <MainCard
@@ -46,12 +45,7 @@ const PropositionDetailsPage = () => {
       <Grid container spacing={gridSpacing} rowSpacing={5}>
         <Grid item xs={12}>
           {/* <EtatStaus inspectionsStatutData={inspectionsStatutData} inspectionsEtatData={inspectionsEtatData} /> */}
-          {/* <InspectionDataCard
-            showEtat={false}
-            data={inspectionData}
-            inspectionsStatutData={inspectionsStatutData}
-            inspectionsEtatData={inspectionsEtatData}
-          /> */}
+          <PropostionDataCard showEtat={false} data={inspectionData} inspectionsEtatData={inspectionData} />
         </Grid>
         {/* <Grid
           container
@@ -87,14 +81,12 @@ const PropositionDetailsPage = () => {
             />
           </Grid>
         </Grid> */}
-        {getChantierQuery.isSuccess && (
-          <Grid item xs={12}>
-            {/* <ChantierDataCard data={chantierData} showButton /> */}
-          </Grid>
-        )}
+        <Grid item xs={12}>
+          <ClientDataCard clientData={inspectionData?.client} title={'Informations du client'} />
+        </Grid>
 
         <Grid item xs={12}>
-          <TechnicienDataCard data={inspectionData?.technicien} />
+          <TechnicienDataCard data={inspectionData?.collaborator} />
         </Grid>
         {/* <Grid item xs={12}>
           <LotChantierDataCard lotChantierData={formInput?.lot_chantier} />

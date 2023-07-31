@@ -2,18 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-export const useGetCategories = ({ page = 1, searchFilter = '', paginted = false }) => {
+export const useGetUnites = ({ page = 1, searchFilter = '', paginated = false }) => {
   return useQuery(
-    ['categories', page, searchFilter, paginted],
-    () =>
-      axiosClient.get(`settings/categorie-articles?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}`).then((res) => res.data),
+    ['unites', page, searchFilter, paginated],
+    () => axiosClient.get(`settings/unites?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}`).then((res) => res.data),
     {}
   );
 };
 
 export const useGetCategorieVersions = ({ categorieId, page = 1, searchFilter = '' }) => {
   return useQuery(
-    ['categories-versions', categorieId, page, searchFilter],
+    ['categories', categorieId, 'versions', page, searchFilter],
     () =>
       axiosClient
         .get(`categories/${categorieId}/versions?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}`)

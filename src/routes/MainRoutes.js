@@ -53,7 +53,7 @@ const AppCrmTechniciensDetails = Loadable(lazy(() => import('views/crm/technicie
 const AppCrmTechnicienCreate = Loadable(lazy(() => import('views/crm/techniciens/list/CreatePage')));
 
 const AppCrmClientsList = Loadable(lazy(() => import('views/crm/clients/list/index')));
-const AppCrmClientUpdate = Loadable(lazy(() => import('views/crm/clients/list/UpdatePage')));
+const AppCrmClientUpdate = Loadable(lazy(() => import('views/crm/leads/list/UpdatePage')));
 const AppCrmClientDetails = Loadable(lazy(() => import('views/crm/clients/list/DetailsPage')));
 const AppCrmClientCreate = Loadable(lazy(() => import('views/crm/clients/list/CreatePage')));
 const AppCrmClientImportChantiers = Loadable(lazy(() => import('views/crm/clients/list/UploadChantiersPage')));
@@ -656,7 +656,7 @@ const MainRoutes = {
       element: <AppCrmClientDetails />
     },
     {
-      path: '/clients/:clientId/update',
+      path: '/clients/:leadsId/update',
       element: <AppCrmClientUpdate />
     },
     {

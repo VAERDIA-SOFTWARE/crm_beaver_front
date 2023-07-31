@@ -35,11 +35,9 @@ const PropositionsList = ({ title, userId = '' }) => {
   const [selectedRows, setSelectedRows] = React.useState([]);
   const { logout, user } = useAuth();
 
-  const getInterventionsQuery = useGetInterventionsProposes({ searchFilter, userId, page });
-  const propositionData = getInterventionsQuery?.data?.listInterventions?.data;
-  console.log('====================================');
-  console.log(propositionData);
-  console.log('====================================');
+  const getInterventionsQuery = useGetInterventionsProposes({ searchFilter, userId, page, paginated: true });
+  const propositionData = getInterventionsQuery?.data;
+
   const useValiderPropositionsMutation = useValiderPropositions();
 
   return (
@@ -52,21 +50,20 @@ const PropositionsList = ({ title, userId = '' }) => {
             user?.role.includes('admin') && (
               <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
                 <LoadingButton
-                  disabled={!propositionData?.length}
+                  disabled={!selectedRows?.length}
                   loadingPosition="end"
                   endIcon={<SendIcon />}
                   loading={useValiderPropositionsMutation.isLoading}
                   variant="contained"
                   onClick={async () => {
                     try {
-                      await useValiderPropositionsMutation.mutateAsync({
-                        values: { propositions: selectedRows }
-                      });
+                      console.log(selectedRows);
+                      await useValiderPropositionsMutation.mutateAsync({ propositions: selectedRows });
                       setSelectedRows([]);
                     } catch (error) {}
                   }}
                 >
-                  {selectedRows?.length ? 'Valider' : 'Valider tout'}
+                  Valider
                 </LoadingButton>
               </Grid>
             )
@@ -76,6 +73,7 @@ const PropositionsList = ({ title, userId = '' }) => {
             selectedRows={selectedRows}
             setSelectedRows={setSelectedRows}
             getInspectionsQuery={getInterventionsQuery}
+            propositionData={propositionData}
             setPage={setPage}
             setSearchFilter={setSearchFilter}
           />
@@ -103,7 +101,7 @@ function EditCell({ params }) {
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
-      <IconButton
+      {/* <IconButton
         color="secondary"
         size="large"
         onClick={async (e) => {
@@ -111,19 +109,16 @@ function EditCell({ params }) {
         }}
       >
         <DeleteIcon sx={{ fontSize: '1.3rem' }} />
-      </IconButton>
+      </IconButton> */}
     </div>
   );
 }
 
-function TableDataGrid({ setSearchFilter, getInspectionsQuery, setPage, setSelectedRows, selectedRows }) {
+function TableDataGrid({ setSearchFilter, propositionData, getInspectionsQuery, setPage, setSelectedRows, selectedRows }) {
   const theme = useTheme();
-  const inspectionsData = getInspectionsQuery?.data?.listInterventions;
+  // const inspectionsData = getInspectionsQuery?.data?.listInterventions;
   const navigate = useNavigate();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
-  console.log('==============aaa======================');
-  console.log(inspectionsData);
-  console.log('====================================');
 
   const columns = [
     {
@@ -155,10 +150,10 @@ function TableDataGrid({ setSearchFilter, getInspectionsQuery, setPage, setSelec
               cursor: 'pointer'
             }}
             onClick={(e) => {
-              navigate(`/chantiers/${params?.row?.chantier?.id}/details`);
+              navigate(`/clients/${params?.row?.client?.id}/details`);
             }}
           >
-            {params?.row?.chantier?.reference}
+            {params?.row?.client?.name}
           </div>
         );
       }
@@ -206,7 +201,7 @@ function TableDataGrid({ setSearchFilter, getInspectionsQuery, setPage, setSelec
       filterable: false,
       disableExport: true,
       renderCell: (params) => {
-        return <div>{params?.row?.technicien?.name}</div>;
+        return <div>{params?.row?.collaborator?.name}</div>;
       }
     },
     {
@@ -217,7 +212,7 @@ function TableDataGrid({ setSearchFilter, getInspectionsQuery, setPage, setSelec
       minWidth: 100,
       flex: 1,
       renderCell: (params) => {
-        return <div>{params?.row?.chantier?.code_postal + ' - ' + params?.row?.chantier?.ville}</div>;
+        return <div>{params?.row?.client?.address}</div>;
       }
     },
     // {
@@ -290,13 +285,13 @@ function TableDataGrid({ setSearchFilter, getInspectionsQuery, setPage, setSelec
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={inspectionsData?.data || []}
+        rows={propositionData?.data || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
         onPageSizeChange={(e) => console.log(e)}
         disableSelectionOnClick={true}
-        rowCount={inspectionsData?.total || 0}
+        rowCount={propositionData?.total || 0}
         loading={getInspectionsQuery.isLoading || getInspectionsQuery.isFetching}
         pagination
         filterMode="server"

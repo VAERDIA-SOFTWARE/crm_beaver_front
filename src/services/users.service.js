@@ -2,15 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-export const useGetUsers = ({ role = '', type = '', page = 1, searchFilter = '', paginated = true }) => {
+export const useGetUsers = ({ role = '', lot = '', type = '', page = 1, searchFilter = '', paginated = true }) => {
   return useQuery(
     ['users', role, type, page, searchFilter],
     () =>
       axiosClient
         .get(
-          `users?role_user=${role}${type !== '' ? `&type=${type}` : ''}&page=${page}&search=${searchFilter}&${
-            paginated ? `paginated=${paginated}&` : ''
-          }`
+          `users?role_user=${role}${type !== '' ? `&type=${type}` : ''}${
+            lot !== '' ? `&lot=${lot}` : ''
+          }&page=${page}&search=${searchFilter}&${paginated ? `paginated=${paginated}&` : ''}`
         )
         .then((res) => res.data),
     {}
@@ -66,7 +66,6 @@ export function useChangeLeadToClient(userId) {
     }
   );
 }
-
 
 export function useUpdateUser(id = '') {
   return useMutation(
@@ -150,6 +149,22 @@ export function useChangeMyLoginCredentials() {
   return useMutation(
     async (values) => {
       const res = await axiosClient.post(`user/credentials`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+export function useLeadsToClients() {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.put(`users/leads-to-clients`, values);
       return res.data;
     },
     {

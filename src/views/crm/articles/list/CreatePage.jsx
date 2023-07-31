@@ -1,73 +1,60 @@
 import PropTypes from 'prop-types';
-import { useState, useRef } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
 // material-ui
+import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import {
-  Autocomplete,
-  Divider,
-  Box,
-  FormControl,
-  FormHelperText,
-  Grid,
-  IconButton,
-  Input,
-  InputAdornment,
-  InputLabel,
-  TextField
-} from '@mui/material';
+import { Autocomplete, Divider, Grid, Skeleton, TextField } from '@mui/material';
 
 // project imports
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { useNavigate } from 'react-router-dom';
-import { useCreateArticle } from 'services/articles.service';
+import { useConfirm } from 'material-ui-confirm';
+import { useNavigate, useParams } from 'react-router-dom';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
-import { toast } from 'react-toastify';
-import { useGetSettingsRoles } from 'services/settings.service';
 
-const UserCreatePage = () => {
+import {
+  useDeleteArticle,
+  useGetArticle,
+  useUpdateArticle,
+  useToggleArticleStatus,
+  useCreateArticleContrat,
+  useCreateArticle
+} from 'services/articles.service';
+import { useGetUnites } from 'services/unite.service';
+import { useGetCategories } from 'services/categorie.service';
+
+const ArticleCreatePage = () => {
+  const { articleId } = useParams();
+  const navigate = useNavigate();
+
   const createArticleMutation = useCreateArticle();
-
+  const getArticleQuery = useGetArticle(articleId);
+  const articleData = getArticleQuery.data;
+  const unitiesQuery = useGetUnites({});
+  const unitiesData = unitiesQuery?.data;
+  const categoriesQuery = useGetCategories({});
+  const categoriesData = categoriesQuery?.data;
   const [formErrors, setFormErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const fileRef = useRef();
-
-  const methods = useForm({
-    // resolver: zodResolver(imageUploadSchema),
-  });
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-  const GetSettingsRolesQuery = useGetSettingsRoles();
   const [formInput, setFormInput] = useState({
     nom: '',
     reference: '',
-    prix_unitaire: '',
-    remise: '',
+    prix_unitaire: 0,
+    remise: 0,
     unite_id: '',
-    parent: '',
+    parent: 1,
     p_category_article_id: ''
   });
 
-  const navigate = useNavigate();
-
-  const handleFilesChange = (files) => {
-    // Update chosen files
-    setFormInput((f) => {
-      return { ...f, file_name: files[0] };
-    });
-  };
-
+  useEffect(() => {
+    if (getArticleQuery.isSuccess) {
+      setFormInput((f) => {
+        return { ...f, ...articleData };
+      });
+    }
+  }, [articleData, getArticleQuery.isSuccess]);
   const handleChange = (e) => {
-    console.log('====================================');
-    console.log(e.target.value);
-    console.log('====================================');
     setFormInput({
       ...formInput,
       [e.target.name]: e.target.value
@@ -79,11 +66,8 @@ const UserCreatePage = () => {
     setFormErrors({});
 
     try {
-      const formData = new FormData();
-      for (let key in formInput) {
-        formData.append(key, formInput[key]);
-      }
-      await createArticleMutation.mutateAsync(formData);
+      await createArticleMutation.mutateAsync(formInput);
+
       navigate('/articles/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
@@ -91,64 +75,23 @@ const UserCreatePage = () => {
     }
   };
 
-  const onFileDelete = () => {
-    // setSheetActualRowCount(null);
-    methods.reset();
-    fileRef.current.value = null;
-  };
-  const onSubmitHandler = (values) => {
-    const formData = new FormData();
-    formData.append('image', values.image);
-
-    if (values.images.length > 0) {
-      values.images.forEach((el) => formData.append('images', el));
-    }
-
-    // Call the Upload API
-    // uploadImage(formData);
-  };
-  const [isAlertShown, setIsAlertShown] = useState(false);
-
-  const handlePhoneChange = (event) => {
-    const phoneNumber = event.target.value;
-    const sanitizedPhoneNumber = phoneNumber.replace('+', ''); // Remove the "+" symbol
-
-    // Update the form input state with the sanitized phone number
-    setFormInput((prevState) => ({
-      ...prevState,
-      phone_number: sanitizedPhoneNumber
-    }));
-  };
-  const showInputErrorToast = (message) => {
-    toast.error(message, { autoClose: 3000 }); // Display the error toast with a timeout of 3000 milliseconds
-  };
-  const [selectedRole, setSelectedRole] = useState(null);
-
-  const handleRoleChange = (event, value) => {
-    setSelectedRole(value);
-    setFormInput((prevFormInput) => ({
-      ...prevFormInput,
-      role_id: value ? value.id : ''
-    }));
-  };
   return (
-    <MainCard title="Ajouter Article" backButton goBackLink="/articles/list">
+    <MainCard
+      title={`Ajouter Article`}
+      // backButton
+      // goBackLink={`/articles/${articleId}/details`}
+    >
       <div>
         <form onSubmit={handleSubmit} noValidate>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-            {/* <Grid item xs={12} md={6}>
-              <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
-            </Grid> */}
             <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
-                fullWidth
-                label="Identifient*"
-                value={formInput?.identifient || ''}
-                name="identifient"
                 onChange={handleChange}
-                error={!!formErrors?.data?.identifient}
-                helperText={renderArrayMultiline(formErrors?.data?.identifient)}
+                fullWidth
+                name="reference"
+                label="Référence*"
+                value={formInput?.reference || ''}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -156,176 +99,98 @@ const UserCreatePage = () => {
                 variant="standard"
                 fullWidth
                 label="Nom*"
-                value={formInput?.name || ''}
-                name="name"
+                value={formInput?.nom || ''}
+                name="nom"
                 onChange={handleChange}
-                error={!!formErrors?.data?.name}
-                helperText={renderArrayMultiline(formErrors?.data?.name)}
+                error={!!formErrors?.data?.nom}
+                helperText={renderArrayMultiline(formErrors?.data?.nom)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
                 fullWidth
-                label="E-mail*"
-                value={formInput?.email || ''}
-                name="email"
-                onChange={handleChange}
-                error={!!formErrors?.data?.email}
-                helperText={renderArrayMultiline(formErrors?.data?.email)}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                variant="standard"
-                name="address"
-                onChange={handleChange}
-                fullWidth
-                label="Adresse"
-                value={formInput?.address || ''}
-                error={!!formErrors?.data?.address}
-                helperText={renderArrayMultiline(formErrors?.data?.address)}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                variant="standard"
-                name="city"
-                onChange={handleChange}
-                fullWidth
-                label="Ville"
-                value={formInput?.city || ''}
-                error={!!formErrors?.data?.city}
-                helperText={renderArrayMultiline(formErrors?.data?.city)}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                variant="standard"
-                name="postal_code"
-                onChange={handleChange}
-                fullWidth
-                label="Code Postale"
-                value={formInput?.postal_code || ''}
-                error={!!formErrors?.data?.postal_code}
-                helperText={renderArrayMultiline(formErrors?.data?.postal_code)}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
                 required
-                type="number"
-                inputProps={{
-                  pattern: '^\\d{8,17}$', // Specify the pattern for 8 to 17 digits
-                  onChange: handlePhoneChange // Custom function to handle phone number change
-                }}
-                variant="standard"
-                name="phone_number"
-                fullWidth
-                label="Numéro de téléphone"
-                value={formInput?.phone_number || ''}
+                label="Prix Unitaire"
+                value={formInput?.prix_unitaire || ''}
+                name="prix_unitaire"
+                onChange={handleChange}
+                error={!!formErrors?.data?.prix_unitaire}
+                helperText={renderArrayMultiline(formErrors?.data?.prix_unitaire)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
-                name="gender"
+                name="remise"
                 onChange={handleChange}
                 fullWidth
-                label="Genre"
-                value={formInput?.gender || ''}
-                error={!!formErrors?.data?.gender}
-                helperText={renderArrayMultiline(formErrors?.data?.gender)}
+                label="Remise*"
+                value={formInput?.remise || ''}
+                error={!!formErrors?.data?.remise}
+                helperText={renderArrayMultiline(formErrors?.data?.remise)}
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <FormControl error={!!!!formErrors?.data?.password} sx={{ width: '100%' }} variant="standard">
-                <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
-                <Input
-                  name="password"
-                  id="standard-adornment-password"
-                  type={showPassword ? 'text' : 'password'}
-                  onChange={handleChange}
-                  fullWidth
-                  label="Mot de passe*"
-                  defaultValue=""
-                  error={!!formErrors?.data?.password}
-                  helperText={renderArrayMultiline(formErrors?.data?.password)}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-                <FormHelperText>{renderArrayMultiline(formErrors?.data?.password)}</FormHelperText>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Autocomplete
-                id="autocomplete"
-                options={GetSettingsRolesQuery.data}
-                getOptionLabel={(role) => role.name}
-                value={selectedRole}
-                onChange={handleRoleChange}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Selectionner Role*"
-                    variant="standard"
-                    fullWidth
-                    value={selectedRole ? selectedRole?.id : ''}
-                    onChange={(event) => setSelectedRole({ id: event.target.value })}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <div
-                style={{
-                  marginBottom: 4
-                }}
-              >
-                <label htmlFor="color">Choisir un indicateur</label>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '10px',
-                  alignItems: 'center',
-                  flexWrap: 'wrap'
-                }}
-              >
-                <input id="color" onChange={handleChange} name="color" type="color" />
-                <p
-                  style={{
-                    color: '#f44336',
-                    fontSize: '0.75rem',
-                    fontWeight: '400',
-                    fontFamily: "'Inter',sans-serif",
-                    lineHeight: '1.66',
-                    textAlign: 'left',
-                    marginTop: '3px',
-                    marginRight: '0',
-                    marginBottom: '0',
-                    marginLeft: '0'
+              {unitiesData ? (
+                <Autocomplete
+                  onChange={(event, newValue) => {
+                    setFormInput((formData) => {
+                      return { ...formData, unite_id: newValue?.id };
+                    });
                   }}
-                >
-                  {formErrors?.data?.color}
-                </p>
-              </div>
+                  multiple={false}
+                  // defaultValue={unitiesData?.find((item) => item?.id === formInput?.unite_id)}
+                  options={unitiesData || []}
+                  getOptionLabel={(option) => option?.intitule}
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      variant="standard"
+                      {...params}
+                      label="Unité"
+                      error={!!formErrors?.data?.unite_id}
+                      helperText={renderArrayMultiline(formErrors?.data?.unite_id)}
+                    />
+                  )}
+                />
+              ) : (
+                <Skeleton variant="rounded" width={'100%'} height={40} />
+              )}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {categoriesData ? (
+                <Autocomplete
+                  onChange={(event, newValue) => {
+                    setFormInput((formData) => {
+                      return { ...formData, p_category_article_id: newValue?.id };
+                    });
+                  }}
+                  multiple={false}
+                  // defaultValue={categoriesData?.find((item) => item?.id === formInput?.p_category_article_id)}
+                  options={categoriesData || []}
+                  getOptionLabel={(option) => option?.intitule}
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      variant="standard"
+                      {...params}
+                      label="Categorie"
+                      error={!!formErrors?.data?.p_category_article_id}
+                      helperText={renderArrayMultiline(formErrors?.data?.p_category_article_id)}
+                    />
+                  )}
+                />
+              ) : (
+                <Skeleton variant="rounded" width={'100%'} height={40} />
+              )}
             </Grid>
 
             <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
               <LoadingButton
-                loadingPosition="end"
-                endIcon={<SendIcon />}
+                disabled={createArticleMutation.isLoading}
+                loadingPosition="start"
+                startIcon={<SendIcon />}
                 loading={createArticleMutation.isLoading}
                 variant="contained"
                 type="submit"
@@ -335,19 +200,14 @@ const UserCreatePage = () => {
             </Grid>
           </Grid>
         </form>
-        <Divider
-          style={{
-            margin: 20
-          }}
-        />
       </div>
     </MainCard>
   );
 };
 
-UserCreatePage.propTypes = {
+ArticleCreatePage.propTypes = {
   open: PropTypes.bool,
   handleCloseDialog: PropTypes.func
 };
 
-export default UserCreatePage;
+export default ArticleCreatePage;

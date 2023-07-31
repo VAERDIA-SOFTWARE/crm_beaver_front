@@ -54,7 +54,7 @@ const stepContent = (contractForm, setContractForm, step, handleNext, handleBack
         />
       );
     case 3:
-      return <ContratSquelette handleNext={handleNext} contractId={contractId} handleBack={handleBack} setErrorIndex={setErrorIndex} />;
+      return <ContratSquelette handleNext={handleNext} contractForm={contractForm} handleBack={handleBack} setErrorIndex={setErrorIndex} />;
     default:
       return <></>;
   }
@@ -65,6 +65,8 @@ const CreatePage = () => {
   const [errorIndex, setErrorIndex] = React.useState(null);
   const location = useLocation();
   const clientId = location.state?.clientId;
+  const contractId = location.state?.contratId;
+  console.log(contractId);
   const handleNext = () => {
     setActiveStep(activeStep + 1);
     setErrorIndex(null);
@@ -74,7 +76,7 @@ const CreatePage = () => {
     setActiveStep(activeStep - 1);
   };
   const [contractForm, setContractForm] = useState({
-    id: null,
+    id: contractId || null,
     titre: '',
     description: '',
     date_debut: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
@@ -91,17 +93,18 @@ const CreatePage = () => {
   const getContractQuery = useGetContrat(contractForm?.id);
   const ContractData = getContractQuery?.data;
   useEffect(() => {
-    if (getContractQuery?.isSuccess && activeStep) {
+    if (getContractQuery?.isSuccess && !getContractQuery?.isFetching) {
       setContractForm((f) => {
         return {
           ...f,
-          ...ContractData
+          ...ContractData,
+          operations: [...ContractData?.operations]
         };
       });
     }
-  }, [getContractQuery?.isSuccess, ContractData, activeStep]);
+  }, [getContractQuery?.isSuccess, ContractData, activeStep, getContractQuery?.isFetching]);
   return (
-    <MainCard title="Crée Contrat">
+    <MainCard title={contractForm?.id ? `Editer Contrat - ${contractForm?.reference}` : 'Crée Contrat'}>
       <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
         {steps.map((label, index) => {
           const labelProps = {};

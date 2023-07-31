@@ -30,9 +30,17 @@ import { useGetSettingsPreferences } from 'services/settings.service';
 const LeadsList = (data) => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
+  const [pageSize, setPageSize] = React.useState(10);
 
-  const getClientsQuery = useGetUsers({ role: 'client', page, searchFilter });
-
+  const getClientsQuery = useGetUsers({
+    paginated: true,
+    pageSize: pageSize,
+    searchFilter: searchFilter,
+    page: page,
+    role: 'client',
+    type: 0
+  });
+  const leadsData = getClientsQuery?.data;
   const navigate = useNavigate();
 
   return (
@@ -54,7 +62,7 @@ const LeadsList = (data) => {
         </Grid>
       }
     >
-      <TableDataGrid getClientsQuery={data} setPage={setPage} setSearchFilter={setSearchFilter} />
+      <TableDataGrid data={leadsData} query={getClientsQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
 };
@@ -77,15 +85,15 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/clients/${params?.row?.id}/details`);
+          navigate(`/leads/${params?.row?.id}/details`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
-      <IconButton onClick={handleMenuClick} size="large">
+      {/* <IconButton onClick={handleMenuClick} size="large">
         <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
-      </IconButton>
-      <Menu
+      </IconButton> */}
+      {/* <Menu
         id="menu-popular-card-1"
         anchorEl={anchorEl}
         keepMounted={true}
@@ -108,43 +116,43 @@ function EditCell({ params }) {
         >
           Importer
         </MenuItem>
-      </Menu>
+      </Menu> */}
     </div>
   );
 }
 
-function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
+function TableDataGrid({ setSearchFilter, data, query, setPage }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
-    {
-      field: 'active_status',
-      headerName: 'Statut',
-      sortable: false,
-      hideable: false,
-      filterable: false,
-      disableExport: true,
-      renderCell: (params) => {
-        return (
-          <>
-            {params?.row?.active_status ? (
-              <AccountCircleIcon
-                sx={{
-                  color: '#16a34a'
-                }}
-              />
-            ) : (
-              <NoAccountsIcon
-                sx={{
-                  color: '#dc2626'
-                }}
-              />
-            )}
-          </>
-        );
-      }
-    },
+    // {
+    //   field: 'active_status',
+    //   headerName: 'Statut',
+    //   sortable: false,
+    //   hideable: false,
+    //   filterable: false,
+    //   disableExport: true,
+    //   renderCell: (params) => {
+    //     return (
+    //       <>
+    //         {params?.row?.active_status ? (
+    //           <AccountCircleIcon
+    //             sx={{
+    //               color: '#16a34a'
+    //             }}
+    //           />
+    //         ) : (
+    //           <NoAccountsIcon
+    //             sx={{
+    //               color: '#dc2626'
+    //             }}
+    //           />
+    //         )}
+    //       </>
+    //     );
+    //   }
+    // },
     { field: 'reference', headerName: 'Référence', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'name', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     {
@@ -222,15 +230,16 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getClientsQuery.data?.data || []}
+        rows={data?.data || []}
         columns={columns}
-        pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
-        rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
+        pageSize={parseInt(data?.per_page) || 10}
+        // rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
+        rowsPerPageOptions={[5, 10, 25]}
         onPageSizeChange={(e) => console.log(e)}
         checkboxSelection={false}
         disableSelectionOnClick={true}
-        rowCount={getClientsQuery.data?.total || 0}
-        loading={getClientsQuery.isLoading || getClientsQuery.isFetching}
+        rowCount={data?.total || 0}
+        loading={query.isLoading || query.isFetching}
         pagination
         paginationMode="server"
         filterMode="server"

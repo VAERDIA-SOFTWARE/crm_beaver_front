@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 // material-ui
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import { Divider, Grid, TextField } from '@mui/material';
+import { Autocomplete, Divider, Grid, Skeleton, TextField } from '@mui/material';
 
 // project imports
 import { LoadingButton } from '@mui/lab';
@@ -15,16 +15,22 @@ import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
 
 import { useDeleteArticle, useGetArticle, useUpdateArticle, useToggleArticleStatus } from 'services/articles.service';
+import { useGetUnites } from 'services/unite.service';
+import { useGetCategories } from 'services/categorie.service';
 
 const UserUpdatePage = () => {
   const { articleId } = useParams();
+  const navigate = useNavigate();
 
   const toggleArticleStatusMutation = useToggleArticleStatus(articleId);
   const deleteArticle = useDeleteArticle(articleId);
   const updateArticle = useUpdateArticle(articleId);
   const getArticleQuery = useGetArticle(articleId);
   const articleData = getArticleQuery.data;
-
+  const unitiesQuery = useGetUnites({});
+  const unitiesData = unitiesQuery?.data;
+  const categoriesQuery = useGetCategories({});
+  const categoriesData = categoriesQuery?.data;
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     nom: '',
@@ -35,8 +41,6 @@ const UserUpdatePage = () => {
     parent: '',
     p_category_article_id: ''
   });
-
-  const navigate = useNavigate();
 
   const confirm = useConfirm();
   useEffect(() => {
@@ -116,6 +120,60 @@ const UserUpdatePage = () => {
                   error={!!formErrors?.data?.remise}
                   helperText={renderArrayMultiline(formErrors?.data?.remise)}
                 />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                {unitiesData ? (
+                  <Autocomplete
+                    onChange={(event, newValue) => {
+                      setFormInput((formData) => {
+                        return { ...formData, unite_id: newValue?.id };
+                      });
+                    }}
+                    multiple={false}
+                    defaultValue={unitiesData?.find((item) => item?.id === formInput?.unite_id)}
+                    options={unitiesData || []}
+                    getOptionLabel={(option) => option?.intitule}
+                    renderInput={(params) => (
+                      <TextField
+                        required
+                        variant="standard"
+                        {...params}
+                        label="Unité"
+                        error={!!formErrors?.data?.unite_id}
+                        helperText={renderArrayMultiline(formErrors?.data?.unite_id)}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Skeleton variant="rounded" width={'100%'} height={40} />
+                )}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                {categoriesData ? (
+                  <Autocomplete
+                    onChange={(event, newValue) => {
+                      setFormInput((formData) => {
+                        return { ...formData, p_category_article_id: newValue?.id };
+                      });
+                    }}
+                    multiple={false}
+                    defaultValue={categoriesData?.find((item) => item?.id === formInput?.p_category_article_id)}
+                    options={categoriesData || []}
+                    getOptionLabel={(option) => option?.intitule}
+                    renderInput={(params) => (
+                      <TextField
+                        required
+                        variant="standard"
+                        {...params}
+                        label="Categorie"
+                        error={!!formErrors?.data?.p_category_article_id}
+                        helperText={renderArrayMultiline(formErrors?.data?.p_category_article_id)}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Skeleton variant="rounded" width={'100%'} height={40} />
+                )}
               </Grid>
 
               <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>

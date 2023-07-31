@@ -32,7 +32,7 @@ const ClientsDetailsPage = () => {
     <MainCard
       title={`Client ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
       backButton
-      goBackLink="/clients/list"
+      goBackLink={-1}
       secondary={
         <div
           style={{
@@ -51,7 +51,7 @@ const ClientsDetailsPage = () => {
           >
             <EditIcon sx={{ fontSize: '1.3rem' }} />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             color="secondary"
             size="large"
             onClick={async (e) => {
@@ -60,7 +60,7 @@ const ClientsDetailsPage = () => {
             }}
           >
             <DeleteOutline sx={{ fontSize: '1.3rem' }} />
-          </IconButton>
+          </IconButton> */}
         </div>
       }
     >

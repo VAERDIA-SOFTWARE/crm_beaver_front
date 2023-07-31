@@ -93,7 +93,7 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId, contract
             />
           </Grid>
           <Grid item xs={12} md={4}>
-            {getClientsQuery?.data ? (
+            {getClientsQuery?.data && getClientsQuery?.isSuccess ? (
               <Autocomplete
                 onChange={(event, newValue) => {
                   setContractForm((formData) => {
@@ -120,7 +120,7 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId, contract
             )}
           </Grid>
           <Grid item xs={12} md={4}>
-            {getMarquePACQuery?.data ? (
+            {getMarquePACQuery?.data && getMarquePACQuery?.isSuccess ? (
               <Autocomplete
                 onChange={(event, newValue) => {
                   setContractForm((formData) => {
@@ -148,7 +148,7 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId, contract
             )}
           </Grid>
           <Grid item xs={12} md={4}>
-            {getModeFacturationsQuery?.data ? (
+            {getModeFacturationsQuery?.data && getModeFacturationsQuery?.isSuccess ? (
               <Autocomplete
                 onChange={(event, newValue) => {
                   setContractForm((formData) => {

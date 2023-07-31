@@ -23,17 +23,16 @@ import { useNavigate } from 'react-router-dom';
 import { useGetSettingsPreferences } from 'services/settings.service';
 import { useGetArticles } from 'services/articles.service';
 import { AccountCircleOutlined, NoAccountsOutlined } from '@mui/icons-material';
-
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import SignalCellularNoSimOutlinedIcon from '@mui/icons-material/SignalCellularNoSimOutlined';
 const UsersList = () => {
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getArticlesQuery = useGetArticles();
+  const getArticlesQuery = useGetArticles({ page: page, searchFilter: searchFilter, paginated: true });
   const articlesData = getArticlesQuery?.data;
-  console.log('====================================');
-  console.log(articlesData);
-  console.log('====================================');
+
   const navigate = useNavigate();
 
   return (
@@ -55,7 +54,13 @@ const UsersList = () => {
         </Grid>
       }
     >
-      <TableDataGrid setPageSize={setPageSize} getusersQuery={articlesData} setPage={setPage} setSearchFilter={setSearchFilter} />
+      <TableDataGrid
+        setPageSize={setPageSize}
+        getArticlesQuery={getArticlesQuery}
+        articlesData={articlesData}
+        setPage={setPage}
+        setSearchFilter={setSearchFilter}
+      />
     </MainCard>
   );
 };
@@ -87,7 +92,7 @@ function EditCell({ params }) {
   );
 }
 
-function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage }) {
+function TableDataGrid({ setSearchFilter, setPageSize, getArticlesQuery, articlesData, setPage }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
@@ -103,13 +108,13 @@ function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage })
         return (
           <>
             {params?.row?.active ? (
-              <AccountCircleOutlined
+              <ArticleOutlinedIcon
                 sx={{
                   color: '#16a34a'
                 }}
               />
             ) : (
-              <NoAccountsOutlined
+              <SignalCellularNoSimOutlinedIcon
                 sx={{
                   color: '#dc2626'
                 }}
@@ -142,7 +147,7 @@ function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage })
       minWidth: 100,
       flex: 1,
       renderCell: (params) => {
-        return <>{params?.row?.unite?.intitule}</>;
+        return <>{params?.row?.category?.intitule}</>;
       }
     },
     {
@@ -199,17 +204,17 @@ function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage })
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getusersQuery || []}
+        rows={articlesData?.data || []}
         columns={columns}
-        loading={getusersQuery?.isLoading || getusersQuery?.isFetching}
+        loading={getArticlesQuery?.isLoading || getArticlesQuery?.isFetching}
         rowsPerPageOptions={[5, 10, 25]}
         paginationMode="server"
         filterMode="server"
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        pageSize={parseInt(getusersQuery?.data?.per_page) || 10}
+        pageSize={parseInt(articlesData?.per_page) || 10}
         pagination
         checkboxSelection={false}
-        rowCount={getusersQuery?.data?.total || 0}
+        rowCount={articlesData?.total || 0}
         onPageChange={(newPage) => setPage(newPage + 1)}
         initialState={[]}
       />

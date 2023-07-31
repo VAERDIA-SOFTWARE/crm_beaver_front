@@ -22,26 +22,25 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUpdateUser, useGetUser } from 'services/users.service';
+import { useUpdateUser, useGetUser, useDeleteUser } from 'services/users.service';
 import { useGetVilleCodePostals, useGetVilles } from 'services/zone-villes.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
 import AutoComplete from 'views/forms/components/AutoComplete';
 import { useGetSettingsCategoryClient } from 'services/settings.service';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useConfirm } from 'material-ui-confirm';
 
 const LeadsUpdatePage = () => {
   const { leadsId } = useParams();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const confirm = useConfirm();
 
   const getLeadsQuery = useGetUser(leadsId);
   const clientData = getLeadsQuery?.data?.user;
   const getCategoryClient = useGetSettingsCategoryClient();
   const categoryData = getCategoryClient?.data;
-
-  console.log('====================================');
-  console.log(clientData);
-  console.log('====================================');
-
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     name: '',
@@ -60,6 +59,7 @@ const LeadsUpdatePage = () => {
   });
 
   const createClientMutation = useUpdateUser(leadsId);
+  const deleteMutation = useDeleteUser(leadsId);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -86,20 +86,18 @@ const LeadsUpdatePage = () => {
     try {
       await createClientMutation.mutateAsync(formInput);
 
-      // navigate('/leads/list');
+      navigate('/leads/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
     }
   };
 
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
   return (
     <MainCard
-      title={`Modifier Leads ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
+      title={`Modifier ${clientData?.type === 0 ? 'Leads' : 'Client'} ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
       backButton
-      goBackLink={`/lot-leads/${clientData?.d_lot_id}/details`}
+      goBackLink={-1}
     >
       <div>
         <>
@@ -229,7 +227,44 @@ const LeadsUpdatePage = () => {
                   )}
                 />
               </Grid> */}
-              <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
+              <Grid item sx={{ display: 'flex', justifyContent: 'space-between' }} xs={12}>
+                {/* <LoadingButton
+                  loadingPosition="end"
+                  endIcon={<SendIcon />}
+                  loading={createClientMutation.isLoading}
+                  variant="contained"
+                  onClick={async (e) => {
+                    await deleteMutation.mutateAsync();
+                    navigate(`/leads/list`);
+                  }}
+                >
+                  Suppirmer
+                </LoadingButton> */}
+                <LoadingButton
+                  disabled={deleteMutation.isLoading}
+                  loadingPosition="start"
+                  startIcon={<DeleteIcon />}
+                  loading={deleteMutation.isLoading}
+                  variant="outlined"
+                  color="error"
+                  onClick={() =>
+                    confirm({
+                      description: `Êtes-vous sûr de vouloir supprimer: ${formInput?.name}.`,
+                      title: `Veuillez confirmer la suppression`
+                    })
+                      .then(async () => {
+                        try {
+                          await deleteMutation.mutateAsync();
+                          navigate('/leads/list', {
+                            replace: true
+                          });
+                        } catch (error) {}
+                      })
+                      .catch(() => console.log('Utilisateur supprimé avec succès.'))
+                  }
+                >
+                  {'Supprimer'}
+                </LoadingButton>
                 <LoadingButton
                   loadingPosition="end"
                   endIcon={<SendIcon />}

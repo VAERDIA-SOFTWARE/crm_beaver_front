@@ -3,7 +3,7 @@ import * as React from 'react';
 // material-ui
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import { Box, Button, IconButton, Menu, MenuItem, SwipeableDrawer, Tab, Tabs } from '@mui/material';
+import { Autocomplete, Avatar, Box, Button, IconButton, Menu, MenuItem, SwipeableDrawer, Tab, Tabs, TextField } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 // project imports
@@ -27,30 +27,33 @@ import EtatStaus from 'ui-component/cards/EtatStatus';
 import InfoIcon from '@mui/icons-material/Info';
 import useAuth from 'hooks/useAuth';
 import { useGetSettingsPreferences } from 'services/settings.service';
+import { useGetStateByModel } from 'services/state.service';
+import IconifyIcon from 'ui-component/icon';
 
 const InspectionsList = ({ title, userId = '', overrideData, disableAdresse, disableEtat, disableAffectationDate }) => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
-  const [etat, setEtat] = useState(-1);
+  const [etat, setEtat] = useState('');
   const { logout, user } = useAuth();
 
-  const getInspectionsQuery = useGetInspections({ searchFilter, userId, page, etat });
+  const getInspectionsQuery = useGetInspections({ searchFilter, userId, page, etat, paginated: true });
   const inspectionsEtatData = getInspectionsQuery.data?.etats;
   const inspectionsStatutData = getInspectionsQuery.data?.status;
-
+  const inspectionsData = getInspectionsQuery?.data;
+  const getStatusQuery = useGetStateByModel('DIntervention');
+  const statusData = getStatusQuery?.data;
   // const getInspectionsProposesQuery = useGetInspectionsProposes({ searchFilter, userId, page });
   // const inspectionsProposesEtatData = getInspectionsProposesQuery.data?.etats;
 
-  const [tabValue, setTabValue] = useState(1);
   React.useEffect(() => {
-    if (user?.role.includes('admin')) {
-      setTabValue(2);
-      setEtat(1);
-    }
-    if (user?.role.includes('technicien')) {
-      setTabValue(1);
-      setEtat(0);
-    }
+    // if (user?.role.includes('admin')) {
+    //   setTabValue(2);
+    //   setEtat(1);
+    // }
+    // if (user?.role.includes('technicien')) {
+    //   setTabValue(1);
+    //   setEtat(0);
+    // }
   }, [user]);
 
   return (
@@ -65,8 +68,12 @@ const InspectionsList = ({ title, userId = '', overrideData, disableAdresse, dis
           inspectionsStatusData={inspectionsStatutData}
           inspectionsEtatData={inspectionsEtatData}
           getInspectionsQuery={getInspectionsQuery}
+          inspectionsData={inspectionsData}
           setPage={setPage}
           setSearchFilter={setSearchFilter}
+          setEtat={setEtat}
+          etat={etat}
+          statusData={statusData}
         />
       </MainCard>
     </MainCard>
@@ -104,7 +111,7 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/inspections/${params?.row?.id}/details`, { test: 'test' });
+          navigate(`/interventions/${params?.row?.id}/details`, { test: 'test' });
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
@@ -240,12 +247,15 @@ function TableDataGrid({
   disableStatut,
   disableAdresse,
   disableEtat,
-  disableAffectationDate
+  disableAffectationDate,
+  inspectionsData,
+  setEtat,
+  etat,
+  statusData
 }) {
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
   const navigate = useNavigate();
   const theme = useTheme();
-  const inspectionsData = getInspectionsQuery.data?.listInspections;
 
   let columns = [
     !disableEtat && {
@@ -254,12 +264,13 @@ function TableDataGrid({
       sortable: false,
       hideable: true,
       filterable: false,
-      renderCell: (params) => {
-        const currentEtat = inspectionsEtatData?.find((e) => params?.row?.etat === e?.etat);
+      renderCell: ({ row }) => {
+        const state = statusData?.find((item) => item?.etat === row?.etat);
+        console.log(state);
         return (
-          <div>
-            <div style={{ width: 10, height: 10, backgroundColor: currentEtat?.couleur, borderRadius: 9999 }} />
-          </div>
+          <Avatar sx={{ width: 30, height: 30 }} skin="light" color={state?.couleur} variant="rounded">
+            <IconifyIcon icon={state?.icon} />
+          </Avatar>
         );
       }
     },
@@ -469,16 +480,16 @@ function TableDataGrid({
         }}
         disableColumnSelector={false}
         components={{
-          Toolbar: CustomToolbar || GridToolbar
+          Toolbar: () => <CustomToolbar setEtat={setEtat} states={statusData} etat={etat} />
         }}
-        rows={overrideData?.data || inspectionsData?.data || []}
+        rows={inspectionsData?.data || []}
         columns={columns}
         pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
         rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
         onPageSizeChange={(e) => console.log(e)}
         checkboxSelection={false}
         disableSelectionOnClick={true}
-        rowCount={overrideData?.total || inspectionsData?.total || 0}
+        rowCount={inspectionsData?.total || 0}
         loading={getInspectionsQuery.isLoading || getInspectionsQuery.isFetching}
         pagination
         filterMode="server"
@@ -495,7 +506,7 @@ function TableDataGrid({
   );
 }
 
-function CustomToolbar() {
+function CustomToolbar({ setEtat, states, etat }) {
   return (
     <GridToolbarContainer>
       <div
@@ -505,17 +516,38 @@ function CustomToolbar() {
           display: 'flex',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: 10
+          gap: 10,
+          alignItems: 'center'
         }}
       >
         <GridToolbarQuickFilter />
-
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {/* <GridToolbarExport /> */}
-          {/* <GridToolbarFilterButton /> */}
-          <GridToolbarColumnsButton />
-          <GridToolbarDensitySelector />
-          {/* <div>
+        {states && (
+          <Autocomplete
+            sx={{ marginBottom: 2 }}
+            onChange={(event, newValue) => {
+              setEtat(newValue?.etat);
+            }}
+            options={[{ id: '', nom: 'Tous' }, ...states] || []}
+            getOptionLabel={(option) => option.nom}
+            defaultValue={[{ id: '', nom: 'Tous' }, ...states]?.find((item) => item?.etat === etat)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Etat*"
+                sx={{
+                  width: 200
+                }}
+              />
+            )}
+          />
+        )}
+        {/* <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}> */}
+        {/* <GridToolbarExport /> */}
+        {/* <GridToolbarFilterButton /> */}
+        {/* <GridToolbarColumnsButton />
+          <GridToolbarDensitySelector /> */}
+        {/* <div>
             <Button onClick={handleClickOpenDialog}>
               <UploadFileIcon
                 fontSize="small"
@@ -527,7 +559,7 @@ function CustomToolbar() {
             </Button>
             <UploadExcel getZonesVillesQuery={getZonesVillesQuery} open={open} handleCloseDialog={handleCloseDialog} />
           </div> */}
-        </div>
+        {/* </div> */}
       </div>
     </GridToolbarContainer>
   );

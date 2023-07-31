@@ -20,7 +20,7 @@ import {
 // project imports
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetContrat, useValidateContrats } from 'services/contrats.service';
+import { useChangeContractState, useGetContrat, useRenewContrat, useValidateContrats } from 'services/contrats.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import SubCard from 'ui-component/cards/SubCard';
@@ -33,6 +33,10 @@ import { LoadingButton } from '@mui/lab';
 import renderArrayMultiline from 'utilities/utilities';
 import ContentPasteRoundedIcon from '@mui/icons-material/ContentPasteRounded';
 import ContentPasteOffRoundedIcon from '@mui/icons-material/ContentPasteOffRounded';
+import { useGetStateByModel } from 'services/state.service';
+import Avatar from 'ui-component/avatar';
+import IconifyIcon from 'ui-component/icon';
+import { useConfirm } from 'material-ui-confirm';
 // import { Document, Page, pdfjs } from 'react-pdf/dist/esm/entry.webpack';
 
 const ContratDetailsPage = () => {
@@ -40,7 +44,7 @@ const ContratDetailsPage = () => {
   //   pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
   //   return () => {};
   // }, []);
-
+  const [etat, setEtat] = useState('');
   const navigate = useNavigate();
   const { logout, user } = useAuth();
   const { contratId } = useParams();
@@ -50,70 +54,32 @@ const ContratDetailsPage = () => {
   // function onDocumentLoadSuccess({ numPages }) {
   //   setNumPages(numPages);
   // }
+  const getStatusQuery = useGetStateByModel('DContrat');
+  const statusData = getStatusQuery?.data;
 
   const getContratQuery = useGetContrat(contratId);
-  const contratData = getContratQuery.data?.contrat;
+  const contratData = getContratQuery.data;
   const chantierStatsData = getContratQuery.data?.chantierStatsArray;
-  const validateLotMutation = useValidateContrats(contratId);
+  const changeContractStateMutation = useChangeContractState(contratId);
+  const renewContractMutation = useRenewContrat(contratId);
   // diloag state
-  const [formInput, setFormInput] = useState({
-    comment: ''
-  });
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
-  const [validated, setValidated] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormErrors({});
-
-    try {
-      await validateLotMutation.mutateAsync({ ...formInput, validated: 0 });
-      setConfirmOpen(false);
-    } catch (error) {
-      const errorsObject = error?.response?.data;
-      setFormErrors(errorsObject);
-    }
-  };
 
   // const [fetchedRapport, setFetchedRapport] = useState('');
 
-  // useEffect(() => {
-  //   async function fetchRapport(params) {
-  //     const res = await axiosClient.get(`${contratData?.pdf_download_link}`);
-  //     return res.data;
-  //   }
-  //   // Fetch the content using the method of your choice
-  //   fetchRapport().then((e) => {
-  //     console.log(e);
-  //     return setFetchedRapport(e);
-  //   });
-  // }, [contratData?.pdf_download_link]);
+  useEffect(() => {
+    if ((statusData, contratData)) {
+      const state = statusData?.find((item) => item?.etat === contratData?.state);
+      setEtat(state);
+    }
+  }, [statusData, contratData]);
 
   const [activeTab, setActiveTab] = useState(0);
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-  const circle = (item, title) => {
-    return (
-      <div>
-        <div
-          style={{
-            width: 'auto',
-            height: 'auto',
-            padding: '0.2rem',
-            paddingLeft: '0.4rem',
-            paddingRight: '0.4rem',
-            color: 'white',
-            backgroundColor: item,
-            borderRadius: 9999
-          }}
-        >
-          {title}
-        </div>
-      </div>
-    );
-  };
+
+  const confirm = useConfirm();
+
   return (
     <MainCard
       title={`Contrat ${contratData?.reference ? '- ' + contratData?.reference : ''}`}
@@ -127,15 +93,30 @@ const ContratDetailsPage = () => {
             gap: 5
           }}
         >
-          {user?.role.includes('admin') && contratData?.validated === -1 && (
+          {contratData?.state !== 0 && !((contratData?.state === 4 || contratData?.state === 2) && contratData?.has_clone === 0) && (
+            <Avatar sx={{ width: 30, height: 30 }} skin="light" color={etat?.couleur} variant="rounded">
+              <IconifyIcon icon={etat?.icon} />
+            </Avatar>
+          )}
+          {user?.role.includes('admin') && contratData?.state === 0 && (
             <>
               <LoadingButton
                 loadingPosition="end"
                 // endIcon={<AssignmentReturnedIcon />}
-                loading={validateLotMutation.isLoading}
-                onClick={() => validateLotMutation.mutate({ validated: 1 })}
+                loading={changeContractStateMutation.isLoading}
+                onClick={() =>
+                  confirm({
+                    description: `Êtes-vous sûr de vouloir Valider: ${contratData?.reference}.`,
+                    title: `Veuillez confirmer la vadilation`
+                  })
+                    .then(async () => {
+                      try {
+                        await changeContractStateMutation.mutateAsync({ state: 1 });
+                      } catch (error) {}
+                    })
+                    .catch(() => console.log('Utilisateur supprimé avec succès.'))
+                }
                 variant="contained"
-                type="submit"
               >
                 Valider Contrat
               </LoadingButton>
@@ -145,47 +126,59 @@ const ContratDetailsPage = () => {
                 }}
                 loadingPosition="end"
                 // endIcon={<AssignmentReturnedIcon />}
-                loading={validateLotMutation.isLoading}
-                onClick={
-                  () => setConfirmOpen(true)
-                  // confirm({
-                  //   description: `Êtes-vous sûr de vouloir supprimer .`,
-                  //   title: `Veuillez confirmer la suppression`
-                  // })
-                  //   .then(async () => {
-                  //     await validateLotMutation.mutate({ validated: 0 });
-                  //   })
-                  //   .catch(() => console.log('Utilisateur supprimé avec succès.'))
+                loading={changeContractStateMutation.isLoading}
+                onClick={() =>
+                  confirm({
+                    description: `Êtes-vous sûr de vouloir annuler: ${contratData?.reference}.`,
+                    title: `Veuillez confirmer l'annulation`
+                  })
+                    .then(async () => {
+                      try {
+                        await changeContractStateMutation.mutateAsync({ state: 3 });
+                      } catch (error) {}
+                    })
+                    .catch(() => console.log('Utilisateur supprimé avec succès.'))
                 }
                 variant="contained"
-                type="submit"
               >
-                Non-Valider Contrat
+                Annuler Contrat
               </LoadingButton>
-              <ConfirmDialog
-                setValidated={setValidated}
-                setFormInput={setFormInput}
-                formInput={formInput}
-                formErrors={formErrors}
-                handleSubmit={handleSubmit}
-                open={confirmOpen}
-                setOpen={setConfirmOpen}
-              ></ConfirmDialog>
             </>
           )}
-          {!user?.role.includes('admin') && contratData?.validated === -1 && <ContentPasteRoundedIcon sx={{ color: '#ffa500' }} />}
-          {contratData?.validated !== -1 && (
-            <div style={{ marginRight: '2rem' }}>
-              {contratData?.validated === 1 && <ContentPasteRoundedIcon sx={{ color: '#16a34a' }} />}
-              {contratData?.validated === 0 && <ContentPasteOffRoundedIcon sx={{ color: '#dc2626' }} />}
-            </div>
+
+          {user?.role.includes('admin') && (contratData?.state === 2 || contratData?.state === 4) && (
+            <LoadingButton
+              loadingPosition="end"
+              // endIcon={<AssignmentReturnedIcon />}
+              loading={renewContractMutation.isLoading}
+              onClick={() =>
+                confirm({
+                  description: `Êtes-vous sûr de vouloir renouveler: ${contratData?.reference}.`,
+                  title: `Veuillez confirmer la renouvellement`
+                })
+                  .then(async () => {
+                    try {
+                      const response = await renewContractMutation.mutateAsync();
+                      navigate(`/contrats/create`, {
+                        state: { contratId: response?.data?.id }
+                      });
+                    } catch (error) {}
+                  })
+                  .catch(() => console.log('Utilisateur supprimé avec succès.'))
+              }
+              variant="contained"
+            >
+              renouveler Contrat
+            </LoadingButton>
           )}
-          {user?.role.includes('admin') && (
+          {user?.role.includes('admin') && contratData?.state === 0 && (
             <IconButton
               color="secondary"
               size="large"
               onClick={(e) => {
-                navigate(`/contrats/${contratId}/update`);
+                navigate(`/contrats/create`, {
+                  state: { contratId: contratId }
+                });
               }}
             >
               <EditIcon sx={{ fontSize: '1.3rem' }} />

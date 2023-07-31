@@ -6,7 +6,7 @@ import SubCard from 'ui-component/cards/SubCard';
 
 export default function TechnicienDataCard({ data }) {
   return (
-    <MainCard title="Informations du technicien">
+    <MainCard title="Informations du collaborator">
       {/* <Typography
         variant="h3"
         style={{
