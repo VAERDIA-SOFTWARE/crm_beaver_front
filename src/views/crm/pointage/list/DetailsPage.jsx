@@ -12,7 +12,8 @@ import MainCard from 'ui-component/cards/MainCard';
 import { useGetArticle } from 'services/articles.service';
 import PointageDataCard from './PointageDataCard';
 
-const UserDetailsPage = () => {
+const UserDetailsPage = ({ pointageList }) => {
+  console.log(pointageList);
   const { devisId } = useParams();
 
   const getUserQuery = useGetArticle(devisId);

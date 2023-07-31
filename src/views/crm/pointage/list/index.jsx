@@ -20,19 +20,18 @@ import {
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { useGetSettingsPreferences } from 'services/settings.service';
-import { useGetArticles } from 'services/articles.service';
-import { AccountCircleOutlined, NoAccountsOutlined } from '@mui/icons-material';
+import { useGetpointages } from 'services/rh.service';
 
-const PointageList = () => {
+const PointageListCol = () => {
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getArticlesQuery = useGetArticles();
-  const articlesData = getArticlesQuery?.data;
+  const getArticlesQuery = useGetpointages();
+
+  const Pointages = getArticlesQuery?.data;
   console.log('====================================');
-  console.log(articlesData);
+  console.log(Pointages);
   console.log('====================================');
   const navigate = useNavigate();
 
@@ -42,12 +41,12 @@ const PointageList = () => {
       Techniciens"
       content={false}
     >
-      <TableDataGrid setPageSize={setPageSize} getusersQuery={articlesData} setPage={setPage} setSearchFilter={setSearchFilter} />
+      <TableDataGrid setPageSize={setPageSize} getusersQuery={Pointages} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
 };
 
-export default PointageList;
+export default PointageListCol;
 
 function EditCell({ params }) {
   const navigate = useNavigate();
@@ -76,62 +75,14 @@ function EditCell({ params }) {
 
 function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage }) {
   const theme = useTheme();
-  const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
-    {
-      field: 'active',
-      headerName: 'Statut',
-      sortable: false,
-      hideable: false,
-      filterable: false,
-      disableExport: true,
-      renderCell: (params) => {
-        return (
-          <>
-            {params?.row?.active ? (
-              <AccountCircleOutlined
-                sx={{
-                  color: '#16a34a'
-                }}
-              />
-            ) : (
-              <NoAccountsOutlined
-                sx={{
-                  color: '#dc2626'
-                }}
-              />
-            )}
-          </>
-        );
-      }
-    },
-    { field: 'reference', headerName: 'Référence', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'nom', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'prix_unitaire', headerName: 'Prix Unitaire', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'remise', headerName: 'Remise', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    {
-      field: 'unite_id',
-      headerName: 'Unité',
-      sortable: false,
-      filterable: false,
-      minWidth: 100,
-      flex: 1,
-      renderCell: (params) => {
-        return <>{params?.row?.unite?.intitule}</>;
-      }
-    },
-    {
-      field: 'p_category_article_id',
-      headerName: 'Catégorie',
-      sortable: false,
-      filterable: false,
-      minWidth: 100,
-      flex: 1,
-      renderCell: (params) => {
-        return <>{params?.row?.unite?.intitule}</>;
-      }
-    },
+    { field: 'date_debut', headerName: 'Debut du journée ', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'date_fin', headerName: 'Fin du journée', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'description', headerName: 'Description', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'emplacement_debut', headerName: 'Emplacement Debut Journée', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'emplacement_end', headerName: 'Emplacement Fin Journée', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+
     {
       field: 'action',
       headerName: 'Action',
@@ -220,22 +171,8 @@ function CustomToolbar() {
         <GridToolbarQuickFilter />
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {/* <GridToolbarExport /> */}
-          {/* <GridToolbarFilterButton /> */}
           <GridToolbarColumnsButton />
           <GridToolbarDensitySelector />
-          {/* <div>
-            <Button onClick={handleClickOpenDialog}>
-              <UploadFileIcon
-                fontSize="small"
-                sx={{
-                  marginRight: '8px'
-                }}
-              />
-              Importer
-            </Button>
-            <UploadExcel getZonesVillesQuery={getZonesVillesQuery} open={open} handleCloseDialog={handleCloseDialog} />
-          </div> */}
         </div>
       </div>
     </GridToolbarContainer>
