@@ -13,8 +13,7 @@ import { useCreateSociete, useDeleteSociete, useGetSocieteSettingsById, useUpdat
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
-import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import moment from 'moment';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const SocieteUpdatePage = () => {
@@ -282,18 +281,6 @@ const SocieteUpdatePage = () => {
                     helperText={renderArrayMultiline(formErrors?.data?.ville)}
                   />
                 </Grid>
-                {/* <Grid item xs={12} md={6}>
-                  <TextField
-                    variant="standard"
-                    name="location"
-                    onChange={handleChange}
-                    fullWidth
-                    label="Location"
-                    value={formInput?.location || ''}
-                    error={!!formErrors?.data?.location}
-                    helperText={renderArrayMultiline(formErrors?.data?.location)}
-                  />
-                </Grid> */}
                 <Grid item xs={12} md={6}>
                   <TextField
                     variant="standard"

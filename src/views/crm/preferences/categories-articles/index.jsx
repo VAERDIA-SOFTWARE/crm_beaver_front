@@ -3,7 +3,7 @@ import * as React from 'react';
 // material-ui
 import AddIcon from '@mui/icons-material/AddTwoTone';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import { Box, Fab, Grid, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
+import { Box, Fab, Grid, IconButton, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 // project imports
@@ -31,29 +31,8 @@ const CategoriesList = ({ userId, goBackLink = `/categories-articles`, disableTo
   const navigate = useNavigate();
 
   const { logout, user } = useAuth();
-  // const [state, setState] = React.useState(1);
   const [validated, setValidated] = React.useState(-1);
   const [tabValue, setTabValue] = React.useState(0);
-
-  const handleTabChange = (event, newValue) => {
-    setPage(1);
-    setTabValue(newValue);
-    if (newValue === 1) {
-      setValidated(-1);
-      return;
-    }
-    if (newValue === 2) {
-      setValidated(0);
-
-      return;
-    }
-    if (newValue === 3) {
-      setValidated(1);
-
-      return;
-    }
-    setValidated(-2);
-  };
 
   React.useEffect(() => {
     if (user?.role.includes('admin')) {
@@ -65,9 +44,6 @@ const CategoriesList = ({ userId, goBackLink = `/categories-articles`, disableTo
       setValidated(1);
     }
   }, [user]);
-
-  // console.log(user?.role?.includes('admin'));
-
   return (
     <>
       <MainCard
@@ -191,7 +167,7 @@ function TableDataGrid({ setSearchFilter, searchFilter, setPage, page }) {
     },
     {
       field: 'created_at',
-      headerName: 'Créé le',
+      headerName: 'Crée le',
       sortable: false,
       filterable: false,
       width: 100,
@@ -202,7 +178,7 @@ function TableDataGrid({ setSearchFilter, searchFilter, setPage, page }) {
     },
     {
       field: 'updated_at',
-      headerName: 'Mis à jour le',
+      headerName: 'Mise à jour le',
       sortable: false,
       filterable: false,
       width: 100,
@@ -282,7 +258,6 @@ function TableDataGrid({ setSearchFilter, searchFilter, setPage, page }) {
           setSearchFilter(e?.quickFilterValues);
         }}
         onPageChange={(newPage) => setPage(newPage + 1)}
-        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         initialState={[]}
       />
     </Box>
@@ -305,22 +280,8 @@ function CustomToolbar() {
         <GridToolbarQuickFilter />
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {/* <GridToolbarExport /> */}
-          {/* <GridToolbarFilterButton /> */}
           <GridToolbarColumnsButton />
           <GridToolbarDensitySelector />
-          {/* <div>
-            <Button onClick={handleClickOpenDialog}>
-              <UploadFileIcon
-                fontSize="small"
-                sx={{
-                  marginRight: '8px'
-                }}
-              />
-              Importer
-            </Button>
-            <UploadExcel getZonesVillesQuery={getZonesVillesQuery} open={open} handleCloseDialog={handleCloseDialog} />
-          </div> */}
         </div>
       </div>
     </GridToolbarContainer>

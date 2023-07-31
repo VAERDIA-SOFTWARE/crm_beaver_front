@@ -467,7 +467,7 @@ const ProfileSection = () => {
                                     <ListItemText primary={<Typography variant="body2">Préférences</Typography>} />
                                   </ListItemButton>
                                 </Link>
-                                <Link
+                                {/* <Link
                                   to={'/articles/list'}
                                   style={{
                                     textDecorationLine: 'none'
@@ -487,7 +487,7 @@ const ProfileSection = () => {
                                     </ListItemIcon>
                                     <ListItemText primary={<Typography variant="body2">Articles</Typography>} />
                                   </ListItemButton>
-                                </Link>
+                                </Link> */}
                                 <Link
                                   to={'/settings/mail'}
                                   style={{

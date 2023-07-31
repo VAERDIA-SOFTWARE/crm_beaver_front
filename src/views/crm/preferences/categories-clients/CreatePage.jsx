@@ -14,6 +14,7 @@ import { useCreateSettingsCategoryClient } from 'services/settings.service';
 
 const CategorieCreatePage = () => {
   const location = useLocation();
+  console.log(location);
   const goBackLink = location.state?.goBackLink;
   const createCategorieMutation = useCreateSettingsCategoryClient();
   const [formErrors, setFormErrors] = useState({});
@@ -51,7 +52,7 @@ const CategorieCreatePage = () => {
   };
 
   return (
-    <MainCard title="Ajouter Catégorie ClieuseCreateSettingsCategoryClient" backButton goBackLink={goBackLink}>
+    <MainCard title="Ajouter Catégorie ClieuseCreateSettingsCategoryClient" backButton goBackLink="/admin/categories-clients">
       <div
         style={{
           maxWidth: 2000,

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // material-ui
 import SendIcon from '@mui/icons-material/Send';
@@ -11,6 +11,7 @@ import { useGetSettingsPreferences, useUpdateSettingsPreferences } from 'service
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
+import { useEffect } from 'react';
 
 const SettingsPreferencesPage = () => {
   const [formErrors, setFormErrors] = useState({});
@@ -23,25 +24,22 @@ const SettingsPreferencesPage = () => {
     intervention_color: '',
     validated_intervention_color: '',
     taux_tva: '',
-    contract_notice_days: '',
-    echantillonnage: ''
+    contract_notice_days: ''
   });
 
-  const updateSettingsPreferencesMutation = useUpdateSettingsPreferences();
-  const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
-  const settingsPreferencesData = useGetSettingsPreferencesQuery;
-  // console.log('====================================');
-  // console.log(useGetSettingsPreferencesQuery);
-  // console.log('====================================');
-
+  const settingsPreferencesQuery = useGetSettingsPreferences();
+  console.log(settingsPreferencesQuery);
+  const settingsPreferencesData = settingsPreferencesQuery.data;
   useEffect(() => {
-    if (useGetSettingsPreferencesQuery.isSuccess) {
+    if (settingsPreferencesQuery.isSuccess) {
       setFormInput((f) => {
         return { ...f, ...settingsPreferencesData };
       });
     }
-  }, [settingsPreferencesData, useGetSettingsPreferencesQuery.isSuccess]);
+  }, [settingsPreferencesData, settingsPreferencesQuery.isSuccess]);
   console.log(formInput);
+
+  const updateSettingsPreferencesMutation = useUpdateSettingsPreferences();
   const handleChange = (e) => {
     setFormInput({
       ...formInput,
@@ -68,9 +66,6 @@ const SettingsPreferencesPage = () => {
       <div>
         <form onSubmit={handleSubmit} noValidate>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-            {/* <Grid item xs={12} md={6}>
-                <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
-              </Grid> */}
             <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
@@ -83,32 +78,18 @@ const SettingsPreferencesPage = () => {
                 helperText={renderArrayMultiline(formErrors?.data?.default_pagination)}
               />
             </Grid>
-
             <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
                 name="max_interventions"
                 onChange={handleChange}
                 fullWidth
-                label="Max inspections par jour"
+                label="Max interventions par jour"
                 value={formInput?.max_interventions ?? ''}
                 error={!!!!formErrors?.data?.max_interventions}
                 helperText={renderArrayMultiline(formErrors?.data?.max_interventions)}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                variant="standard"
-                name="max_interventions_par"
-                onChange={handleChange}
-                fullWidth
-                label="Max inspections par"
-                value={formInput?.max_interventions_par ?? ''}
-                error={!!!!formErrors?.data?.max_interventions_par}
-                helperText={renderArrayMultiline(formErrors?.data?.max_interventions_par)}
-              />
-            </Grid>
-
             <Grid item xs={12} md={6}>
               <TextField
                 variant="standard"
@@ -133,7 +114,7 @@ const SettingsPreferencesPage = () => {
                 helperText={renderArrayMultiline(formErrors?.data?.taux_tva)}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={12}>
               <TextField
                 variant="standard"
                 name="percentage"

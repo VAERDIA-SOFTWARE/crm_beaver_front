@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-
 // material-ui
 import SendIcon from '@mui/icons-material/Send';
 import { FormControl, FormControlLabel, FormGroup, Grid, Switch, TextField } from '@mui/material';
-
 // project imports
 import { LoadingButton } from '@mui/lab';
 import { useParams } from 'react-router-dom';
@@ -11,13 +9,10 @@ import { useGetSettingsCalendrierEmploiDetailsSingle, useUpdateSettingsCalendrie
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
-import { LocalizationProvider, StaticTimePicker, TimePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-
 const SettingsCurrentPiecesUpdatePage = () => {
   const { calendrierId } = useParams();
-
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     date_deb: '',
@@ -41,7 +36,6 @@ const SettingsCurrentPiecesUpdatePage = () => {
       });
     }
   }, [settingsCurrentPiecesDetailsData, useGetSettingsCurrentPiecesDetailsQuery.isSuccess]);
-  console.log(startDate);
   const handleChange = (e, type) => {
     let hours = e.getHours().toString();
     let minutes = e.getMinutes().toString();
@@ -82,25 +76,10 @@ const SettingsCurrentPiecesUpdatePage = () => {
         {useGetSettingsCurrentPiecesDetailsQuery.isSuccess && (
           <form onSubmit={handleSubmit} noValidate>
             <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-              {/* <Grid item xs={12} md={6}>
-                <TextField variant="standard" fullWidth label="Référence*" value={formInput?.reference || ''} disabled />
-              </Grid> */}
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <Grid item xs={12} md={6}>
-                  {/* <TextField
-                variant="standard"
-                fullWidth
-                label="Date Début"
-                value={formInput?.date_deb ?? ''}
-                name="date_deb"
-                onChange={handleChange}
-                error={!!formErrors?.data?.date_deb}
-                helperText={renderArrayMultiline(formErrors?.data?.date_deb)}
-              /> */}
-
                   <TimePicker
                     views={['hours', 'minutes']}
-                    // format="hh:mm"
                     ampm={false}
                     label="Date Début"
                     value={startDate}
@@ -113,7 +92,6 @@ const SettingsCurrentPiecesUpdatePage = () => {
                 <Grid item xs={12} md={6}>
                   <TimePicker
                     views={['hours', 'minutes']}
-                    // format="hh:mm"
                     ampm={false}
                     label="Date fin"
                     value={endDate}
@@ -122,16 +100,6 @@ const SettingsCurrentPiecesUpdatePage = () => {
                     helperText={renderArrayMultiline(formErrors?.data?.date_fin)}
                     renderInput={(params) => <TextField {...params} />}
                   />
-                  {/* <TextField
-                variant="standard"
-                fullWidth
-                label="Date Fin"
-                value={formInput?.date_fin ?? ''}
-                name="date_fin"
-                onChange={handleChange}
-                error={!!formErrors?.data?.date_fin}
-                helperText={renderArrayMultiline(formErrors?.data?.date_fin)}
-              /> */}
                 </Grid>
               </LocalizationProvider>
 

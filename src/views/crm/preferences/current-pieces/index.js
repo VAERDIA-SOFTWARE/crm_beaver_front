@@ -1,18 +1,9 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import NoAccountsIcon from '@mui/icons-material/NoAccounts';
-import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import * as React from 'react';
-
 // material-ui
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
-import { Box, Fab, Grid, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
-
-// assets
-import AddIcon from '@mui/icons-material/AddTwoTone';
 import {
   DataGrid,
   frFR,
@@ -20,101 +11,38 @@ import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
-  GridToolbarExport,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
-import { useGetUsers } from 'services/users.service';
 import { useGetSettingsCurrentPieces, useGetSettingsPreferences, useUpdateSettingsCurrentPiecesDetails } from 'services/settings.service';
 import { useQueryClient } from '@tanstack/react-query';
 
 const ClientsList = () => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
-
   const getSettingsCurrentPiecesQuery = useGetSettingsCurrentPieces({ page });
-
-  const navigate = useNavigate();
-
   return (
-    <MainCard
-      title="Liste des Références"
-      content={false}
-      // secondary={
-      //   <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-      //     <Tooltip title="Ajouter Client">
-      //       <Fab
-      //         color="primary"
-      //         size="small"
-      //         onClick={() => navigate(`/clients/create`)}
-      //         // onClick={handleClickOpenDialog}
-      //         sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
-      //       >
-      //         <AddIcon fontSize="small" />
-      //       </Fab>
-      //     </Tooltip>
-      //   </Grid>
-      // }
-      // secondary={<SecondaryAction link="https://material-ui.com/components/data-grid/" />}
-    >
+    <MainCard title="Liste des Références" content={false}>
       <TableDataGrid getSettingsCurrentPiecesQuery={getSettingsCurrentPiecesQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
 };
-
 export default ClientsList;
-
-function EditCell({ params }) {
-  const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleMenuClick = (event) => {
-    setAnchorEl(event?.currentTarget);
-  };
-
-  return (
-    <div>
-      <IconButton
-        color="secondary"
-        size="large"
-        onClick={(e) => {
-          navigate(`/settings/current-pieces/${params?.row?.id}`);
-        }}
-      >
-        <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
-      </IconButton>
-      {/* <IconButton onClick={handleMenuClick} size="large">
-        <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
-      </IconButton>
-      <Menu
-        id="menu-popular-card-1"
-        anchorEl={anchorEl}
-        keepMounted={true}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        variant="selectedMenu"
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: '{{ righ }}t'
-        }}
-      >
-        <MenuItem
-          onClick={(e) => {
-            navigate(`/clients/${params.row?.id}/import-chantiers`);
-          }}
-        >
-          Importer
-        </MenuItem>
-      </Menu> */}
-    </div>
-  );
-}
+// function EditCell({ params }) {
+//   const navigate = useNavigate();
+//   return (
+//     <div>
+//       <IconButton
+//         color="secondary"
+//         size="large"
+//         onClick={(e) => {
+//           navigate(`/settings/current-pieces/${params?.row?.id}`);
+//         }}
+//       >
+//         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
+//       </IconButton>
+//     </div>
+//   );
+// }
 
 function TableDataGrid({ setSearchFilter, getSettingsCurrentPiecesQuery, setPage }) {
   const theme = useTheme();
@@ -146,24 +74,11 @@ function TableDataGrid({ setSearchFilter, getSettingsCurrentPiecesQuery, setPage
         } catch (error) {
           return { ...params.row, prefix: params.row?.prefix };
         } finally {
-          // return { ...params.row, prefix: params.value.toString() };
         }
       }
     },
     { field: 'format', headerName: 'Format', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'updated_at', headerName: 'Modifié le', sortable: false, filterable: false, minWidth: 100, flex: 1 }
-
-    // {
-    //   field: 'action',
-    //   headerName: 'Action',
-    //   sortable: false,
-    //   hideable: false,
-    //   filterable: false,
-    //   disableExport: true,
-    //   renderCell: (params) => {
-    //     return <EditCell params={params} />;
-    //   }
-    // }
   ];
 
   return (
@@ -223,7 +138,6 @@ function TableDataGrid({ setSearchFilter, getSettingsCurrentPiecesQuery, setPage
           setSearchFilter(e?.quickFilterValues);
         }}
         onPageChange={(newPage) => setPage(newPage + 1)}
-        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         initialState={[]}
       />
     </Box>
@@ -246,22 +160,8 @@ function CustomToolbar() {
         <GridToolbarQuickFilter />
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {/* <GridToolbarExport /> */}
-          {/* <GridToolbarFilterButton /> */}
           <GridToolbarColumnsButton />
           <GridToolbarDensitySelector />
-          {/* <div>
-            <Button onClick={handleClickOpenDialog}>
-              <UploadFileIcon
-                fontSize="small"
-                sx={{
-                  marginRight: '8px'
-                }}
-              />
-              Importer
-            </Button>
-            <UploadExcel getZonesVillesQuery={getZonesVillesQuery} open={open} handleCloseDialog={handleCloseDialog} />
-          </div> */}
         </div>
       </div>
     </GridToolbarContainer>
