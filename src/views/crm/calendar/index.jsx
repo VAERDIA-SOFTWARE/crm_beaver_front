@@ -24,7 +24,7 @@ import Toolbar from './Toolbar';
 // assets
 import { LoadingButton } from '@mui/lab';
 import { useDeleteInspection, useUpdateInspection } from 'services/inspections.service';
-import { useGetInspectionsCalendar, useUpdateInspections } from 'services/lot-chantiers.service';
+import { useGetInspectionsCalendar, useUpdateCalendarInspections, useUpdateInspections } from 'services/lot-chantiers.service';
 import { useQueryClient } from '@tanstack/react-query';
 import EtatStaus from 'ui-component/cards/EtatStatus';
 import InfoIcon from '@mui/icons-material/Info';
@@ -37,13 +37,15 @@ import AdjustIcon from '@mui/icons-material/Adjust';
 import { useGetSettingsPreferences } from 'services/settings.service';
 import { useUpdateProposition } from 'services/inspections.service';
 import { useGetStateByModel } from 'services/state.service';
+import moment from 'moment/moment';
 
 const Calendar = () => {
   // const dispatch = useDispatch();
   const calendarRef = useRef(null);
   const matchSm = useMediaQuery((theme) => theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
-  const updateInspectionMutation = useUpdateProposition();
+  const updatePropisitionMutation = useUpdateProposition();
+  const updateInspectionMutation = useUpdateInspection();
   const { logout, user } = useAuth();
   const [userId, setUserId] = useState({
     id: '',
@@ -65,7 +67,7 @@ const Calendar = () => {
   // const interventionCOlor = ['#229954', '#f1c40f'];
 
   const getInspectionsCalendarQuery = useGetInspectionsCalendar({ userId: userId?.id, clientId: clientId?.id });
-  const updateInspectionsMutation = useUpdateInspections(localInspectionUpdates);
+  const updateInspectionsMutation = useUpdateCalendarInspections(localInspectionUpdates);
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
   const settingsPreferencesData = useGetSettingsPreferencesQuery.data;
   const getStatusQueryIntervention = useGetStateByModel('DIntervention');
@@ -83,12 +85,12 @@ const Calendar = () => {
           color: e?.collaborator?.couleur,
           bgColor: e?.state?.couleur,
           // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
-          start: e?.deb_calendar,
-          end: e?.fin_calendar,
+          start: moment(e?.debut).format('YYYY-MM-DD HH:mm:ss'),
+          end: moment(e?.fin).format('YYYY-MM-DD HH:mm:ss'),
           // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
           title: e?.client?.name,
-          startEditable: isEditModeOn && e?.p_status_id === 1 ? true : false,
-          editable: isEditModeOn && e?.p_status_id === 1 ? true : false
+          startEditable: isEditModeOn && e?.etat === 0 ? true : false,
+          editable: isEditModeOn && e?.etat === 0 ? true : false
         };
       });
       setLocalInspections(d);
@@ -188,16 +190,17 @@ const Calendar = () => {
       setSelectedEvent(null);
     }
   };
+  console.log("'zeazeazeaz");
   const handleEventUpdate = async ({ event }) => {
     try {
+      console.log(event);
+      const start = moment(event?._def?.extendedProps?.start).format('YYYY-MM-DD HH:mm:ss');
+      const end = moment(event?._def?.extendedProps?.fin).format('YYYY-MM-DD HH:mm:ss');
       const selectedEvent = getInspectionsCalendarQuery.data?.find((_event) => _event.id === +event.id);
-      const a = [
-        ...localInspectionUpdates,
-        { ...selectedEvent, debut: event?.start, fin: event?.end, start: event?.start, end: event?.end }
-      ].filter((v, i, a) => a.findLastIndex((v2) => v2.id === v.id) === i);
-
+      const a = [...localInspectionUpdates, { ...selectedEvent, debut: start, fin: end, start: event?.start, end: event?.end }].filter(
+        (v, i, a) => a.findLastIndex((v2) => v2.id === v.id) === i
+      );
       setLocalInspectionUpdates(a);
-
       // dispatch(
       //   updateEvent({
       //     eventId: event.id,
@@ -209,10 +212,9 @@ const Calendar = () => {
       //   })
       // );
     } catch (err) {
-      console.error(err);
+      console.error(err, 'event');
     }
   };
-
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedEvent(null);
@@ -225,14 +227,15 @@ const Calendar = () => {
   };
 
   const handleUpdateEvent = async (eventId, data) => {
+    console.log(data);
     // dispatch(updateEvent({ eventId, data }));
-    await updateInspectionMutation.mutateAsync({ id: eventId, values: { ...data, files: [] } });
+    if (data?.intervention === 1) await updateInspectionMutation.mutateAsync({ id: eventId, values: { ...data } });
+    if (data?.intervention === 0) await updatePropisitionMutation.mutateAsync({ id: eventId, values: { ...data } });
     queryClient.invalidateQueries();
-
     handleModalClose();
-    setLocalInspections(null);
+    setLocalInspections([]);
     setIsEditModeOn(false);
-    setLocalInspectionUpdates(null);
+    setLocalInspectionUpdates([]);
   };
 
   const deleteInspectionMutation = useDeleteInspection();
@@ -257,16 +260,16 @@ const Calendar = () => {
       name: ''
     });
   };
-  const handleAddClick = () => {
-    setIsModalOpen(true);
-  };
-  const toggleDrawer = (open) => (event) => {
-    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
+  // const handleAddClick = () => {
+  //   setIsModalOpen(true);
+  // };
+  // const toggleDrawer = (open) => (event) => {
+  //   if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+  //     return;
+  //   }
 
-    setTogleState(open);
-  };
+  //   setTogleState(open);
+  // };
   return (
     <MainCard
       sx={
@@ -293,6 +296,7 @@ const Calendar = () => {
                   await updateInspectionsMutation.mutateAsync();
                   queryClient.invalidateQueries();
                   setIsEditModeOn((e) => !isEditModeOn);
+                  setLocalInspectionUpdates([]);
                 } catch (error) {}
               }}
             >
@@ -321,12 +325,12 @@ const Calendar = () => {
                     bgColor: e?.state?.couleur,
                     description: e?.chantier?.ville,
                     // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
-                    start: e?.deb_calendar,
-                    end: e?.fin_calendar,
+                    start: moment(e?.debut).format('YYYY-MM-DD HH:mm:ss'),
+                    end: moment(e?.fin).format('YYYY-MM-DD HH:mm:ss'),
                     // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
                     title: e?.client?.name,
-                    startEditable: isEditModeOn && e?.p_status_id === 1 ? true : false,
-                    editable: isEditModeOn && e?.p_status_id === 1 ? true : false
+                    startEditable: isEditModeOn && e?.etat === 0 ? true : false,
+                    editable: isEditModeOn && e?.etat === 0 ? true : false
                   };
                 });
 
@@ -375,57 +379,44 @@ const Calendar = () => {
             />
             Intervention Proposées
           </div> */}
-          <div
-            style={{
-              display: 'flex',
-              gap: 6,
-              alignItems: 'center'
-            }}
-          >
+          {statusDataProposition?.map((item) => (
             <div
               style={{
-                height: 14,
-                width: 14,
-                backgroundColor: settingsPreferencesData?.proposition_color,
-                borderRadius: 9999
+                display: 'flex',
+                gap: 6,
+                alignItems: 'center'
               }}
-            />
-            Intervention planifiée
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              gap: 6,
-              alignItems: 'center'
-            }}
-          >
+            >
+              <div
+                style={{
+                  height: 14,
+                  width: 14,
+                  backgroundColor: item?.couleur,
+                  borderRadius: 9999
+                }}
+              />
+              {item?.nom}
+            </div>
+          ))}
+          {statusDataIntervention?.map((item) => (
             <div
               style={{
-                height: 14,
-                width: 14,
-                backgroundColor: '#FF7900',
-                borderRadius: 9999
+                display: 'flex',
+                gap: 6,
+                alignItems: 'center'
               }}
-            />
-            Intervention Encour
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              gap: 6,
-              alignItems: 'center'
-            }}
-          >
-            <div
-              style={{
-                height: 14,
-                width: 14,
-                backgroundColor: settingsPreferencesData?.intervention_terminer_color,
-                borderRadius: 9999
-              }}
-            />
-            Intervention Terminée
-          </div>
+            >
+              <div
+                style={{
+                  height: 14,
+                  width: 14,
+                  backgroundColor: item?.couleur,
+                  borderRadius: 9999
+                }}
+              />
+              {item?.nom}
+            </div>
+          ))}
         </div>
         {/* {enableFilter} */}
 
@@ -552,12 +543,12 @@ const Calendar = () => {
                     bgColor: e?.state?.couleur,
                     description: e?.chantier?.ville,
                     // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
-                    start: e?.deb_calendar,
-                    end: e?.fin_calendar,
+                    start: moment(e?.debut).format('YYYY-MM-DD HH:mm:ss'),
+                    end: moment(e?.fin).format('YYYY-MM-DD HH:mm:ss'),
                     // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
                     title: e?.client?.name,
-                    startEditable: isEditModeOn && e?.p_status_id === 1 ? true : false,
-                    editable: isEditModeOn && e?.p_status_id === 1 ? true : false
+                    startEditable: isEditModeOn && e?.etat === 0 ? true : false,
+                    editable: isEditModeOn && e?.etat === 0 ? true : false
                   };
                 })) ||
               []

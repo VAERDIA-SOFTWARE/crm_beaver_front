@@ -66,7 +66,6 @@ const CreatePage = () => {
   const location = useLocation();
   const clientId = location.state?.clientId;
   const contractId = location.state?.contratId;
-  console.log(contractId);
   const handleNext = () => {
     setActiveStep(activeStep + 1);
     setErrorIndex(null);
@@ -80,7 +79,7 @@ const CreatePage = () => {
     titre: '',
     description: '',
     date_debut: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-    date_fin: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+    date_fin: moment(new Date()).add(1, 'year').format('YYYY-MM-DD HH:mm:ss'),
     client_id: clientId || null,
     marque_pac_parents: '',
     mise_en_place_date: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),

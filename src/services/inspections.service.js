@@ -52,7 +52,7 @@ export const useGetProposition = (propositionId = '') => {
 export function useUpdateInspection() {
   return useMutation(
     async ({ id = '', values }) => {
-      const res = await axiosClient.put(`inspections/${id}`, values);
+      const res = await axiosClient.put(`interventions/${id}`, values);
       return res.data;
     },
     {
@@ -137,9 +137,9 @@ export const useGetInspectionsTechniciens = ({ interventionId = '' }) => {
     axiosClient.get(`interventions/${interventionId}/collaborators-disponibles`).then((res) => res.data)
   );
 };
-export const useGetPropositionsTechniciens = ({ interventionId = '', date }) => {
-  return useQuery(['inspections-techniciens', interventionId, date], () =>
-    axiosClient.get(`users/free-collaborators-intervention-proposer?date=${date}&proposition=${interventionId}`).then((res) => res.data)
+export const useGetPropositionsTechniciens = ({ reference = '', date }) => {
+  return useQuery(['inspections-techniciens', reference, date], () =>
+    axiosClient.get(`users/free-collaborators-intervention-proposer?date=${date}&reference=${reference}`).then((res) => res.data)
   );
 };
 export const useGetInspectionsStatsByCommande = (commandeId = '') => {
