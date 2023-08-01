@@ -54,7 +54,7 @@ export function useDeleteReglementMutation(id = '') {
 
   return useMutation(
     async (values) => {
-      const res = await axiosClient.delete(`reglement/${id}`, values);
+      const res = await axiosClient.delete(`reglements/${id}`, values);
       return res.data;
     },
     {
