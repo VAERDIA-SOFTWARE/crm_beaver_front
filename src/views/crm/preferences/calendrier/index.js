@@ -1,18 +1,13 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import * as React from 'react';
 
 // material-ui
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
-import { Box, Fab, Grid, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
-
 // assets
-import AddIcon from '@mui/icons-material/AddTwoTone';
 import {
   DataGrid,
   frFR,
@@ -20,48 +15,17 @@ import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
-  GridToolbarExport,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
-import { useGetUsers } from 'services/users.service';
-import {
-  useGetCalendrierTypeDetails,
-  useGetSettingsCurrentPieces,
-  useGetSettingsPreferences,
-  useUpdateSettingsCurrentPiecesDetails
-} from 'services/settings.service';
-import { useQueryClient } from '@tanstack/react-query';
-
+import { useGetCalendrierTypeDetails, useGetSettingsPreferences } from 'services/settings.service';
 const CalendrierList = () => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
   const getSettingsCalendrierTypeQuery = useGetCalendrierTypeDetails();
-
-  const navigate = useNavigate();
-
   return (
-    <MainCard
-      title="Liste calendrier"
-      content={false}
-      // secondary={
-      //   <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-      //     <Tooltip title="Ajouter Client">
-      //       <Fab
-      //         color="primary"
-      //         size="small"
-      //         onClick={() => navigate(`/clients/create`)}
-      //         // onClick={handleClickOpenDialog}
-      //         sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
-      //       >
-      //         <AddIcon fontSize="small" />
-      //       </Fab>
-      //     </Tooltip>
-      //   </Grid>
-      // }
-      // secondary={<SecondaryAction link="https://material-ui.com/components/data-grid/" />}
-    >
+    <MainCard title="Liste calendrier" content={false}>
       <TableDataGrid getSettingsCurrentPiecesQuery={getSettingsCalendrierTypeQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
@@ -72,12 +36,6 @@ export default CalendrierList;
 function EditCell({ params }) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleMenuClick = (event) => {
-    setAnchorEl(event?.currentTarget);
-  };
 
   return (
     <div>
@@ -90,71 +48,16 @@ function EditCell({ params }) {
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
-      {/* <IconButton onClick={handleMenuClick} size="large">
-        <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
-      </IconButton>
-      <Menu
-        id="menu-popular-card-1"
-        anchorEl={anchorEl}
-        keepMounted={true}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        variant="selectedMenu"
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: '{{ righ }}t'
-        }}
-      >
-        <MenuItem
-          onClick={(e) => {
-            navigate(`/clients/${params.row?.id}/import-chantiers`);
-          }}
-        >
-          Importer
-        </MenuItem>
-      </Menu> */}
     </div>
   );
 }
 
 function TableDataGrid({ setSearchFilter, getSettingsCurrentPiecesQuery, setPage }) {
   const theme = useTheme();
-  const queryClient = useQueryClient();
-  const updateSettingsCurrentPiecesMutation = useUpdateSettingsCurrentPiecesDetails();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
     { field: 'intitule', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    // {
-    //   field: 'prefix',
-    //   headerName: 'Prefix',
-    //   sortable: false,
-    //   filterable: false,
-    //   minWidth: 100,
-    //   flex: 1,
-    //   editable: true,
-    //   valueGetter: (params) => {
-    //     return params.row.prefix || '';
-    //   },
-    //   valueSetter: async (params) => {
-    //     try {
-    //       await updateSettingsCurrentPiecesMutation.mutateAsync({
-    //         id: params.row?.id,
-    //         values: { prefix: params.value, format: params.row?.format }
-    //       });
-    //       queryClient.invalidateQueries();
-    //       return { ...params.row, prefix: params.value };
-    //     } catch (error) {
-    //       return { ...params.row, prefix: params.row?.prefix };
-    //     } finally {
-    //       // return { ...params.row, prefix: params.value.toString() };
-    //     }
-    //   }
-    // },
     { field: 'updated_at', headerName: 'Modifié le', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     {
       field: 'action',
@@ -226,7 +129,6 @@ function TableDataGrid({ setSearchFilter, getSettingsCurrentPiecesQuery, setPage
           setSearchFilter(e?.quickFilterValues);
         }}
         onPageChange={(newPage) => setPage(newPage + 1)}
-        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         initialState={[]}
       />
     </Box>
@@ -249,22 +151,8 @@ function CustomToolbar() {
         <GridToolbarQuickFilter />
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {/* <GridToolbarExport /> */}
-          {/* <GridToolbarFilterButton /> */}
           <GridToolbarColumnsButton />
           <GridToolbarDensitySelector />
-          {/* <div>
-            <Button onClick={handleClickOpenDialog}>
-              <UploadFileIcon
-                fontSize="small"
-                sx={{
-                  marginRight: '8px'
-                }}
-              />
-              Importer
-            </Button>
-            <UploadExcel getZonesVillesQuery={getZonesVillesQuery} open={open} handleCloseDialog={handleCloseDialog} />
-          </div> */}
         </div>
       </div>
     </GridToolbarContainer>

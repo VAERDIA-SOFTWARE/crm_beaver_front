@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-
 export const useGetSettingsCategoryClient = () => {
   return useQuery(['categorie-clients'], () => axiosClient.get(`settings/categorie-clients`).then((res) => res.data), {});
 };
@@ -187,6 +186,10 @@ export function useUpdateSettingsPreferences() {
     {
       onSuccess: (data) => {
         toast.success(data?.message);
+      },
+      onError: (err) => {
+        console.log(err);
+        toast.error(err.message);
       }
     }
   );

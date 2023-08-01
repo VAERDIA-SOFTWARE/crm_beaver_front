@@ -219,6 +219,29 @@ const Crm = {
           breadcrumbs: false
         }
       ]
+    },
+    {
+      id: 'reglements-group',
+      title: 'Reglements ',
+      type: 'collapse',
+      icon: ReceiptOutlinedIcon,
+      breadcrumbs: false,
+      children: [
+        {
+          id: 'list-Reglements',
+          title: 'Liste des Reglements',
+          type: 'item',
+          url: '/reglements/list',
+          breadcrumbs: false
+        },
+        {
+          id: 'new-reglement',
+          title: 'Ajouter Reglements',
+          type: 'item',
+          url: '/reglement/create',
+          breadcrumbs: false
+        }
+      ]
     }
   ]
 };

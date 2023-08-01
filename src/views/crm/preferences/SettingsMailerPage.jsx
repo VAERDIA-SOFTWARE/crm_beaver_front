@@ -26,7 +26,8 @@ const SettingsMailerPage = () => {
     MAIL_PASSWORD: '',
     MAIL_ENCRYPTION: '',
     MAIL_FROM_ADDRESS: '',
-    MAIL_FROM_NAME: ''
+    MAIL_FROM_NAME: '',
+    Smtp: ''
   });
 
   const updateSettingsPreferencesMutation = useUpdateSettingsMailer();
@@ -47,6 +48,7 @@ const SettingsMailerPage = () => {
       [e.target.name]: e.target.value
     });
   };
+  console.log(formInput);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -11,7 +11,6 @@ export default function CategorieDataCard({ data }) {
       title="Informations générales"
     >
       <Stack spacing={2}>
-        {/* <Typography variant="h4">Informations du contrat</Typography> */}
         <Stack>
           <Stack direction="row" spacing={1}>
             <Typography variant="subtitle1">Intitulé :</Typography>

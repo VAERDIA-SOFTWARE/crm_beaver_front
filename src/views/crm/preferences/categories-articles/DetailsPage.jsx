@@ -2,18 +2,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import PropTypes from 'prop-types';
 
 // material-ui
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Grid, IconButton, Typography } from '@mui/material';
 
 // project imports
 import ContentPasteOffRoundedIcon from '@mui/icons-material/ContentPasteOffRounded';
 import ContentPasteRoundedIcon from '@mui/icons-material/ContentPasteRounded';
-import { LoadingButton } from '@mui/lab';
 import { format } from 'date-fns';
 import useAuth from 'hooks/useAuth';
 import { useNavigate, useParams } from 'react-router-dom';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
-import renderArrayMultiline from 'utilities/utilities';
 import CategorieDataCard from './CategorieDataCard';
 import { useGetSettingsCategoryArticleById } from 'services/settings.service';
 
@@ -92,49 +90,3 @@ CategorieDetailsPage.propTypes = {
 };
 
 export default CategorieDetailsPage;
-
-function TabPanel({ children, value, index, ...other }) {
-  return (
-    <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
-      {value === index && <Box sx={{ p: 0 }}>{children}</Box>}
-    </div>
-  );
-}
-const ConfirmDialog = (props) => {
-  const { open, setOpen, formInput, formErrors, setFormInput, handleSubmit } = props;
-  const handleChange = (e) => {
-    setFormInput({
-      ...formInput,
-      [e.target.name]: e.target.value
-    });
-  };
-  return (
-    <Dialog open={open} onClose={() => setOpen(false)} aria-labelledby="confirm-dialog">
-      <div style={{ maxWidth: '37rem', width: '37rem' }}>
-        <DialogTitle id="confirm-dialog">Confirmeé</DialogTitle>
-        <DialogContent>
-          <TextField
-            multiline
-            rows={4}
-            variant="standard"
-            fullWidth
-            label="commentaire"
-            value={formInput?.comment || ''}
-            name="comment"
-            onChange={handleChange}
-            error={!!formErrors?.comment}
-            helperText={renderArrayMultiline(formErrors?.comment)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <LoadingButton variant="contained" onClick={() => setOpen(false)}>
-            Non
-          </LoadingButton>
-          <LoadingButton variant="contained" onClick={handleSubmit}>
-            Oui
-          </LoadingButton>
-        </DialogActions>
-      </div>
-    </Dialog>
-  );
-};

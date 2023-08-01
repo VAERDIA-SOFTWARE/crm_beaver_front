@@ -18,12 +18,68 @@ import { useConfirm } from 'material-ui-confirm';
 import { useAnnulerFacture, useGetFacture, useValiderFacture } from 'services/facture.service';
 import { LoadingButton } from '@mui/lab';
 import CreateFacture from './CreateFacture';
+import DetailsFacture from './DetailsFacture';
 
 const FactureDetailsPage = () => {
   const { factureId } = useParams();
 
   const getFactureQuery = useGetFacture(factureId);
-  const factureData = getFactureQuery.data;
+  // const facture = getFactureQuery.data;
+  const facture = {
+    casted_date_facture: '12-06-2023',
+    client_id: 3,
+    commentaire: null,
+    created_at: '27-07-2023 12:07',
+    createur_id: 1,
+    d_lot_id: 1,
+    date_facture: '12-06-2023',
+    facture_lignes: [
+      {
+        TauxTva: '20.00',
+        benificiaire: null,
+        commentaire: null,
+        created_at: '2023-07-27T12:06:47.000000Z',
+        createur_id: 1,
+        d_client_id: null,
+        d_facture_entete_id: 14,
+        d_operation_contrat_id: 1,
+        designation_article: 'svsvsvsvs A',
+        id: 10,
+        montant_HT: '100.00',
+        montant_HTNet: '400.00',
+        montant_TTC: '280.00',
+        montant_TVA: '5.00',
+        prix_unitaire_HT: '250.00',
+        prix_unitaire_HTNet: '200.00',
+        prix_unitaire_TTC: '300.00',
+        qte: '2.00',
+        reference_operation: null,
+        remise: '0.00',
+        unite: null,
+        unite_ligne: null,
+        updated_at: '2023-07-27T12:06:47.000000Z'
+      }
+    ],
+    facture_parent_id: null,
+    file_path: null,
+    id: 14,
+    montant_HTNet_total: '1.00',
+    montant_HT_total: '300.00',
+    montant_NetaPayer: '0.00',
+    montant_Remise: '-900.00',
+    montant_TTC_total: '840.00',
+    montant_TVA_total: '15.00',
+    montant_total: 0,
+    montant_total_negatif: 0,
+    nature: '0',
+    payer: 0,
+    reference: 'PRF00004',
+    status: '0',
+    status_detaille: { etat: null, status: 0, nom: 'Préfacture saisie', couleur: '#AFAFAF' },
+    type: '0',
+    updated_at: '27-07-2023 12:07',
+    user: { nom: 'Test' }
+  };
 
   const navigate = useNavigate();
 
@@ -32,127 +88,8 @@ const FactureDetailsPage = () => {
     setValue(newValue);
   };
 
-  const validerFactureMutation = useValiderFacture();
-  const annulerFactureMutation = useAnnulerFacture();
-
-  const confirm = useConfirm();
-
   return (
-    <MainCard
-      title={`Facture ${factureData?.reference ? '- ' + factureData?.reference : ''}`}
-      // title={
-      //   <div
-      //     style={{
-      //       display: 'flex',
-      //       alignItems: 'center',
-      //       gap: 5
-      //     }}
-      //   >
-      //     <Typography variant="subtitle1">Client - {clientData?.reference}</Typography>
-      //     {/* <Tooltip title={`Créé à ${clientData?.created_at}`}>
-      //       <IconButton>
-      //         <InfoIcon fontSize="small" />
-      //       </IconButton>
-      //     </Tooltip> */}
-      //   </div>
-      // }
-      backButton
-      // goBackLink="/factures/list"
-      secondary={
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 15
-          }}
-        >
-          {factureData?.status == 0 && (
-            <LoadingButton
-              disabled={annulerFactureMutation.isLoading}
-              loadingPosition="start"
-              loading={validerFactureMutation.isLoading}
-              variant="contained"
-              startIcon={<CheckIcon />}
-              color="secondary"
-              size="large"
-              onClick={(e) => {
-                confirm({
-                  description: `Êtes-vous sûr de vouloir de valider ${factureData?.reference}.`,
-                  title: `Veuillez confirmer la validation`
-                })
-                  .then(() => validerFactureMutation.mutateAsync({ factureId }))
-                  .catch(() => console.log('Deactivation cancelled.'));
-              }}
-            >
-              Valider
-            </LoadingButton>
-          )}
-
-          {factureData?.status == 0 && (
-            <LoadingButton
-              disabled={validerFactureMutation.isLoading}
-              loadingPosition="start"
-              loading={annulerFactureMutation.isLoading}
-              variant="outlined"
-              startIcon={<RemoveIcon />}
-              color="error"
-              size="large"
-              onClick={async (e) => {
-                confirm({
-                  description: `Êtes-vous sûr de vouloir d'annuler ${factureData?.reference}.`,
-                  title: `Veuillez confirmer l'annulation`
-                })
-                  .then(() =>
-                    annulerFactureMutation.mutateAsync({
-                      factureId
-                    })
-                  )
-                  .catch(() => console.log('Deactivation cancelled.'));
-              }}
-            >
-              Annuler
-            </LoadingButton>
-          )}
-
-          {factureData?.status == 1 && (
-            <LoadingButton
-              startIcon={<ReceiptRoundedIcon />}
-              loadingIndicator="start"
-              variant="outlined"
-              color="secondary"
-              size="large"
-              onClick={(e) => {
-                // handleOpenEditDialog(e);
-                navigate(`/factures/${factureId}/generer-avoir`);
-              }}
-            >
-              Facture d'avoir
-            </LoadingButton>
-          )}
-
-          {'factureData?.status == 1' && (
-            <Link to={`${process.env.REACT_APP_API_URL}commandes/factures/${factureId}/pdf`} target="_blank">
-              <LoadingButton variant="contained" color="secondary" size="large" startIcon={<LocalPrintshopRoundedIcon />}>
-                Imprimer
-              </LoadingButton>
-            </Link>
-          )}
-
-          {factureData?.status == 0 && (
-            <IconButton
-              color="secondary"
-              size="large"
-              onClick={(e) => {
-                navigate(`/factures/${factureId}/update`);
-              }}
-            >
-              <EditIcon sx={{ fontSize: '1.3rem' }} />
-            </IconButton>
-          )}
-          {/* <Typography variant="subtitle1">Created at {clientData?.created_at}</Typography> */}
-        </div>
-      }
-    >
+    <MainCard title={`Facture ${facture?.reference ? '- ' + facture?.reference : ''}`} backButton>
       <div>
         <Tabs
           value={value}
@@ -185,7 +122,8 @@ const FactureDetailsPage = () => {
         <TabPanel value={value} index={0}>
           <Grid container spacing={gridSpacing}>
             <Grid item xs={12} md={12}>
-              <CreateFacture readOnly hideTitle />
+              {/* <CreateFacture readOnly hideTitle /> */}
+              <DetailsFacture facture={facture} />
             </Grid>
           </Grid>
         </TabPanel>
@@ -219,7 +157,7 @@ const FactureDetailsPage = () => {
           marginTop: 40
         }}
       >
-        <Typography variant="h5">Créé le {factureData?.created_at}</Typography>
+        <Typography variant="h5">Créé le {facture?.created_at}</Typography>
       </div>
     </MainCard>
   );
