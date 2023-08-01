@@ -166,7 +166,7 @@ function TableDataGrid({ setSearchFilter, propositionData, getInspectionsQuery, 
       minWidth: 100,
       flex: 1,
       renderCell: (params) => {
-        return <div>{moment(params?.row?.date).format('LLL')}</div>;
+        return <div>{moment(params?.row?.created_at).format('LL')}</div>;
       }
     },
     {

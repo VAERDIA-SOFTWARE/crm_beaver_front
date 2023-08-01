@@ -324,26 +324,26 @@ function TableDataGrid({
               cursor: 'pointer'
             }}
             onClick={(e) => {
-              navigate(`/chantiers/${params?.row?.chantier?.id}/details`);
+              navigate(`/clients/${params?.row?.client?.id}/details`);
             }}
           >
-            {params?.row?.technicien?.name}
+            {params?.row?.client?.name}
           </div>
         );
       }
     },
-    // {
-    //   field: 'chantier_beneficiaire',
-    //   headerName: 'Contrat Bénéficiaire',
-    //   sortable: false,
-    //   hideable: true,
-    //   minWidth: 100,
-    //   flex: 1,
-    //   filterable: false,
-    //   renderCell: (params) => {
-    //     return <div>{params?.row?.chantier?.nom_benificiaire + params?.row?.chantier?.prenom_benificiary}</div>;
-    //   }
-    // },
+    {
+      field: 'collaborator',
+      headerName: 'Collaborator',
+      sortable: false,
+      hideable: true,
+      minWidth: 100,
+      flex: 1,
+      filterable: false,
+      renderCell: (params) => {
+        return <div>{params?.row?.collaborator?.name}</div>;
+      }
+    },
     {
       field: 'operation',
       headerName: 'Opération',

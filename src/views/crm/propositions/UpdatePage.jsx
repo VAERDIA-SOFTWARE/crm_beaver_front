@@ -7,7 +7,7 @@ import { Autocomplete, Grid, Skeleton, TextField } from '@mui/material';
 
 // project imports
 import { LoadingButton } from '@mui/lab';
-import { DatePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, DateTimePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
@@ -29,6 +29,7 @@ const PropositionUpdatePage = () => {
 
   const updateInspectionMutation = useUpdateProposition();
 
+  const [interventionReference, setInterventionReference] = useState('');
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     debut: new Date(),
@@ -38,7 +39,7 @@ const PropositionUpdatePage = () => {
   const getPropsitionQuery = useGetProposition(propositionId);
   const propositionData = getPropsitionQuery.data;
   const getInspectionTechniciensQuery = useGetPropositionsTechniciens({
-    interventionId: propositionId,
+    reference: interventionReference,
     date: moment(formInput?.debut).format('YYYY/MM/DD')
   });
   const inspectionTechniciensData = getInspectionTechniciensQuery?.data?.data;
@@ -52,6 +53,7 @@ const PropositionUpdatePage = () => {
           user_id: propositionData?.collaborator?.id
         };
       });
+      setInterventionReference(propositionData?.reference);
     }
   }, [getPropsitionQuery.isSuccess, propositionData]);
 
@@ -110,7 +112,8 @@ const PropositionUpdatePage = () => {
                 // adapterLocale="fr"
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
-                <DatePicker
+                <DateTimePicker
+                  ampm={false}
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -119,12 +122,12 @@ const PropositionUpdatePage = () => {
                       helperText={renderArrayMultiline(formErrors?.data?.debut)}
                     />
                   )}
-                  inputFormat="dd/MM/yyyy"
+                  inputFormat="dd/MM/yyyy HH:mm"
                   label="Date début"
                   value={moment(formInput?.debut).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
-                      const formattedDate = format(v, 'yyyy-MM-dd hh:mm');
+                      const formattedDate = moment(v).format('YYYY-MM-DD HH:mm:ss');
                       setFormInput((f) => {
                         return { ...f, debut: formattedDate };
                       });
@@ -140,8 +143,9 @@ const PropositionUpdatePage = () => {
                 // adapterLocale="fr"
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
-                <DatePicker
-                  inputFormat="dd/MM/yyyy"
+                <DateTimePicker
+                  ampm={false}
+                  inputFormat="dd/MM/yyyy HH:mm"
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -154,7 +158,7 @@ const PropositionUpdatePage = () => {
                   value={moment(formInput?.fin).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
-                      const formattedDate = format(v, 'yyyy-MM-dd hh:mm');
+                      const formattedDate = moment(v).format('YYYY-MM-DD HH:mm:ss');
                       setFormInput((f) => {
                         return { ...f, fin: formattedDate };
                       });

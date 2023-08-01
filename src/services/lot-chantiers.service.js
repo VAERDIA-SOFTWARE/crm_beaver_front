@@ -170,7 +170,27 @@ export function useUpdateInspections(data) {
 
   return useMutation(
     async () => {
-      const res = await axiosClient.put(`inspections/update`, data);
+      const res = await axiosClient.put(`interventions/update`, data);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      },
+      onError: (data) => {
+        // console.log(data);
+        // toast.error(data?.response?.data?.message);
+      }
+    }
+  );
+}
+export function useUpdateCalendarInspections(data) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async () => {
+      const res = await axiosClient.put(`interventions/calendar/update`, data);
       return res.data;
     },
     {

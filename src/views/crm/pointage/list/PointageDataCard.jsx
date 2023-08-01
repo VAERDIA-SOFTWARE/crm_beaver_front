@@ -21,13 +21,22 @@ import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { gridSpacing } from 'store/constant';
 
-const TimeLineCol = ({ Pointages, paper }) => {
+const TimeLineCol = ({ searchFilter, setSearchFilter, pointages }) => {
+  const theme = useTheme();
+
+  const paper = {
+    p: 2.5,
+    boxShadow: 'none',
+    background: theme.palette.mode === 'dark' ? theme.palette.dark.main : theme.palette.primary.light,
+    border: '1px dashed',
+    borderColor: theme.palette.mode === 'dark' ? theme.palette.dark.dark : theme.palette.primary.dark
+  };
   return (
     <>
-      {Pointages && Pointages.length > 0 ? (
+      {pointages && pointages.length > 0 ? (
         <Timeline position="alternate">
           {/* <MainCard> */}
-          {Pointages.map((element) => (
+          {pointages.map((element) => (
             <div key={element.id}>
               <TimelineItem>
                 <TimelineOppositeContent>
@@ -77,25 +86,7 @@ const TimeLineCol = ({ Pointages, paper }) => {
     </>
   );
 };
-export default function PointageList({ pointageList }) {
-  const [searchFilter, setSearchFilter] = useState({
-    date_debut: moment().subtract(6, 'days').format('YYYY-MM-DD : hh:mm:ss'),
-    date_fin: moment().format('YYYY-MM-DD : hh:mm:ss')
-  });
-
-  const getArticlesQuery = useGetpointages({ date_debut: searchFilter.date_debut, date_fin: searchFilter.date_fin });
-
-  const Pointages = getArticlesQuery?.data;
-  console.log(Pointages);
-  const theme = useTheme();
-
-  const paper = {
-    p: 2.5,
-    boxShadow: 'none',
-    background: theme.palette.mode === 'dark' ? theme.palette.dark.main : theme.palette.primary.light,
-    border: '1px dashed',
-    borderColor: theme.palette.mode === 'dark' ? theme.palette.dark.dark : theme.palette.primary.dark
-  };
+export default function PointageList({ pointageList, searchFilter, setSearchFilter, pointages }) {
   return (
     <MainCard title="Liste de pointage" content={false} secondary={<Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}></Grid>}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -105,11 +96,13 @@ export default function PointageList({ pointageList }) {
               <DesktopDatePicker
                 label="Date de début"
                 inputFormat="dd/MM/yyyy"
-                value={moment(searchFilter?.date_debut).format('YYYY-MM-DD HH:mm:ss')}
+                value={moment(searchFilter?.date_debut).format('YYYY-MM-DD')}
                 onChange={(v) => {
                   try {
+                    const date = moment(v).format('YYYY/MM/DD');
+                    console.log(date);
                     setSearchFilter((f) => {
-                      return { ...f, date_debut: v };
+                      return { ...f, date_debut: date };
                     });
                   } catch (error) {}
                 }}
@@ -130,11 +123,12 @@ export default function PointageList({ pointageList }) {
               <DesktopDatePicker
                 label="Fin du journée"
                 inputFormat="dd/MM/yyyy"
-                value={moment(searchFilter?.date_fin).format('YYYY-MM-DD HH:mm:ss')}
+                value={moment(searchFilter?.date_fin).format('YYYY-MM-DD')}
                 onChange={(v) => {
                   try {
+                    const date = moment(v).format('YYYY/MM/DD');
                     setSearchFilter((f) => {
-                      return { ...f, date_fin: v };
+                      return { ...f, date_fin: date };
                     });
                   } catch (error) {}
                 }}
@@ -153,7 +147,7 @@ export default function PointageList({ pointageList }) {
           </Grid>
         </>
       </LocalizationProvider>
-      <TimeLineCol Pointages={pointageList} paper={paper} />
+      <TimeLineCol searchFilter={searchFilter} setSearchFilter={setSearchFilter} pointages={pointages} />
     </MainCard>
   );
 }

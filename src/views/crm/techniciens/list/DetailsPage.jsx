@@ -16,6 +16,8 @@ import AccessDataCard from 'views/crm/users/list/AccessDataCard';
 import PointageList from 'views/crm/pointage/list/PointageDataCard';
 import PointageListCol from 'views/crm/pointage/list';
 import PointageMaps from 'views/crm/pointage/maps';
+import moment from 'moment/moment';
+import { useGetpointages } from 'services/rh.service';
 
 const TechnicienDetailsPage = () => {
   const { technicienId } = useParams();
@@ -26,6 +28,7 @@ const TechnicienDetailsPage = () => {
 
   const navigate = useNavigate();
 
+  const [toggleAuth, setToggleAuth] = useState(false);
   const [value, setValue] = useState(0);
   const handleTabChange = (event, newValue) => {
     setValue(newValue);
@@ -37,6 +40,7 @@ const TechnicienDetailsPage = () => {
       date_debut: '2023-07-27 08:53:17',
       date_fin: '2023-07-27 18:58:17',
       emplacement: 'Sousse , Msaken',
+      emplacement_fin: 'Sousse , Msaken',
       description: 'D\u00e9but de travail',
       created_at: '2023-07-27T08:53:17.000000Z',
       updated_at: '2023-07-27T08:53:17.000000Z'
@@ -47,19 +51,26 @@ const TechnicienDetailsPage = () => {
       date_debut: '2023-07-28 08:00:17',
       date_fin: '2023-07-28 18:05:17',
       emplacement: 'Sousse , Msaken',
+      emplacement_fin: 'Sousse , Msaken',
       description: 'D\u00e9but de travail',
       created_at: '2023-07-27T08:53:17.000000Z',
       updated_at: '2023-07-27T08:53:17.000000Z'
     }
   ];
-  const [toggleAuth, setToggleAuth] = useState(false);
   const getUserPermissionsQuery = useGetUserPermissions(technicienId);
   useEffect(() => {
     setToggleAuth(technicienData?.auth);
   }, [technicienData, getTechnicienQuery.isSuccess]);
 
   const userPermissionsData = getUserPermissionsQuery?.data;
+  const [searchFilter, setSearchFilter] = useState({
+    date_debut: moment().subtract(6, 'days').format('YYYY/MM/DD'),
+    date_fin: moment().format('YYYY/MM/DD')
+  });
+  console.log(searchFilter);
+  const getArticlesQuery = useGetpointages({ date_debut: searchFilter?.date_debut, date_fin: searchFilter?.date_fin });
 
+  const pointages = getArticlesQuery?.data;
   return (
     <MainCard
       title={`Collaborateur ${technicienData?.reference ? '- ' + technicienData?.reference : ''}`}
@@ -186,7 +197,7 @@ const TechnicienDetailsPage = () => {
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={4}>
-          <PointageList pointageList={pointageList} />
+          <PointageList searchFilter={searchFilter} setSearchFilter={setSearchFilter} pointages={pointages} />
         </TabPanel>
         <TabPanel value={value} index={5}>
           <PointageMaps />

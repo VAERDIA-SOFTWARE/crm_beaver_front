@@ -101,7 +101,7 @@ const DetailsInterventions = ({ handleNext, handleBack, contractForm, setContrac
                           >
                             <DateTimePicker
                               ampm={false}
-                              inputFormat="dd/MM/yyyy"
+                              inputFormat="dd/MM/yyyy HH:mm"
                               renderInput={(params) => <TextField fullWidth variant="standard" {...params} />}
                               label="Date de fin Prévu"
                               value={moment(contractArticle?.date_prevu).format('YYYY-MM-DD HH:mm:ss')}

@@ -7,50 +7,60 @@ import { Autocomplete, Grid, Skeleton, TextField } from '@mui/material';
 
 // project imports
 import { LoadingButton } from '@mui/lab';
-import { DateTimePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { format } from 'date-fns';
 import { useParams } from 'react-router-dom';
-import { useGetInspection, useGetInspectionsTechniciens, useUpdateInspection } from 'services/inspections.service';
+import {
+  useGetInspection,
+  useGetInspectionsTechniciens,
+  useGetPropositionsTechniciens,
+  useUpdateInspection
+} from 'services/inspections.service';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
 import renderArrayMultiline from 'utilities/utilities';
+import moment from 'moment/moment';
 
 const InspectionUpdatePage = () => {
-  const { inspectionId } = useParams();
-  const getInspectionQuery = useGetInspection(inspectionId);
-  const inspectionData = getInspectionQuery.data?.inspection;
-  const getInspectionTechniciensQuery = useGetInspectionsTechniciens({ userId: inspectionId });
-  const inspectionTechniciensData = getInspectionTechniciensQuery.data;
+  const { interventionId } = useParams();
 
   const updateInspectionMutation = useUpdateInspection();
 
   const [formErrors, setFormErrors] = useState({});
+  const [interventionReference, setInterventionReference] = useState('');
   const [formInput, setFormInput] = useState({
-    debut: null,
+    debut: new Date(),
     fin: null,
     user_id: null
   });
-
+  const getPropsitionQuery = useGetInspection(interventionId);
+  const propositionData = getPropsitionQuery.data;
+  const getInspectionTechniciensQuery = useGetPropositionsTechniciens({
+    reference: interventionReference,
+    date: moment(formInput?.debut).format('YYYY/MM/DD')
+  });
+  const inspectionTechniciensData = getInspectionTechniciensQuery?.data?.data;
   useEffect(() => {
-    if (getInspectionQuery.isSuccess) {
+    if (getPropsitionQuery.isSuccess) {
       setFormInput((f) => {
         return {
           ...f,
-          debut: inspectionData?.deb_calendar,
-          fin: inspectionData?.fin_calendar,
-          user_id: inspectionData?.technicien?.id
+          debut: propositionData?.deb_calendar,
+          fin: propositionData?.fin_calendar,
+          user_id: propositionData?.collaborator?.id
         };
       });
+      setInterventionReference(propositionData?.reference);
     }
-  }, [getInspectionQuery.isSuccess, inspectionData]);
+  }, [getPropsitionQuery.isSuccess, propositionData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormErrors({});
 
     try {
-      await updateInspectionMutation.mutateAsync({ id: inspectionId, values: formInput });
+      await updateInspectionMutation.mutateAsync({ id: interventionId, values: formInput });
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -59,19 +69,18 @@ const InspectionUpdatePage = () => {
 
   return (
     <MainCard
-      title={`Interventions ${inspectionData?.reference ? '- ' + inspectionData?.reference : ''}`}
+      title={`Proposition ${propositionData?.reference ? '- ' + propositionData?.reference : ''}`}
       backButton
-      goBackLink={`/inspections/${inspectionId}/details`}
+      goBackLink={`/interventions/list`}
     >
       <div>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12} md={6}>
-              <TextField variant="standard" fullWidth label="Référence*" value={inspectionData?.reference || ''} disabled />
+              <TextField variant="standard" fullWidth label="Référence*" value={propositionData?.reference || ''} disabled />
             </Grid>
-            <Grid item xs={12} md={6}></Grid>
             <Grid item xs={12} md={6}>
-              {inspectionData?.technicien && Array.isArray(inspectionTechniciensData) ? (
+              {propositionData?.collaborator && Array.isArray(inspectionTechniciensData) ? (
                 <Autocomplete
                   // value={formInput?.user_id}
                   onChange={(event, newValue) => {
@@ -86,7 +95,7 @@ const InspectionUpdatePage = () => {
                     // const tech = inspectionTechniciensData?.find((e) => e?.id === option);
                     // return tech?.name;
                   }}
-                  defaultValue={inspectionTechniciensData?.find((e) => inspectionData?.technicien?.id === e?.id)}
+                  defaultValue={inspectionTechniciensData?.find((e) => propositionData?.collaborator?.id === e?.id)}
                   renderInput={(params) => <TextField variant="standard" {...params} label="Sélectionner un technicien" />}
                   error={!!formErrors?.data?.user_id}
                   helperText={renderArrayMultiline(formErrors?.data?.user_id)}
@@ -95,14 +104,13 @@ const InspectionUpdatePage = () => {
                 <Skeleton variant="rounded" width={'100%'} height={40} />
               )}
             </Grid>
-            <Grid item xs={12} md={6}></Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={6}>
               <LocalizationProvider
                 dateAdapter={AdapterDateFns}
                 // adapterLocale="fr"
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
-                <DateTimePicker
+                <DatePicker
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -111,8 +119,9 @@ const InspectionUpdatePage = () => {
                       helperText={renderArrayMultiline(formErrors?.data?.debut)}
                     />
                   )}
+                  inputFormat="dd/MM/yyyy"
                   label="Date début"
-                  value={formInput?.debut}
+                  value={moment(formInput?.debut).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
                       const formattedDate = format(v, 'yyyy-MM-dd hh:mm');
@@ -125,13 +134,14 @@ const InspectionUpdatePage = () => {
               </LocalizationProvider>
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={6}>
               <LocalizationProvider
                 dateAdapter={AdapterDateFns}
                 // adapterLocale="fr"
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
-                <DateTimePicker
+                <DatePicker
+                  inputFormat="dd/MM/yyyy"
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -141,7 +151,7 @@ const InspectionUpdatePage = () => {
                     />
                   )}
                   label="Date fin"
-                  value={formInput?.fin}
+                  value={moment(formInput?.fin).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
                       const formattedDate = format(v, 'yyyy-MM-dd hh:mm');

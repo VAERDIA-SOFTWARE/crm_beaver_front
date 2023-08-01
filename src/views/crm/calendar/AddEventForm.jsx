@@ -1,6 +1,5 @@
 import { DateTimePicker, LocalizationProvider, MobileDateTimePicker, frFR } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import SaveIcon from '@mui/icons-material/Save';
 
 // material-ui
@@ -49,8 +48,8 @@ const getInitialValues = (event, range) => {
     color: '#2196f3',
     textColor: '',
     allDay: false,
-    start: range ? new Date(range.start) : new Date(),
-    end: range ? new Date(range.end) : new Date()
+    start: event?.debut,
+    end: event?.fin
   };
 
   if (event || range) {
@@ -72,7 +71,7 @@ const AddEventFrom = ({ event, range, handleDelete, handleCreate, handleUpdate, 
   // const getInspectionTechniciensQuery = useGetInspectionsTechniciens({ userId: event?.id });
   // const inspectionTechniciensData = getInspectionTechniciensQuery.data;
   const getInspectionTechniciensQuery = useGetPropositionsTechniciens({
-    interventionId: event?.id,
+    reference: event?.reference,
     date: moment(event?.start).format('YYYY/MM/DD')
   });
   const inspectionTechniciensData = getInspectionTechniciensQuery?.data?.data;
@@ -87,6 +86,10 @@ const AddEventFrom = ({ event, range, handleDelete, handleCreate, handleUpdate, 
     // start: Yup.date(),
     color: Yup.string().max(255),
     textColor: Yup.string().max(255)
+  });
+  const [dateForm, setDateForm] = useState({
+    fin: event?.fin,
+    debut: event?.debut
   });
 
   const formik = useFormik({
@@ -113,9 +116,8 @@ const AddEventFrom = ({ event, range, handleDelete, handleCreate, handleUpdate, 
           color: values.color,
           textColor: values.textColor,
           allDay: values.allDay,
-          debut: values.start,
-          fin: values.end,
-          ...formInput
+          debut: dateForm.debut,
+          fin: dateForm.fin
         };
 
         if (event) {
@@ -261,23 +263,24 @@ const AddEventFrom = ({ event, range, handleDelete, handleCreate, handleUpdate, 
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
                 <DateTimePicker
-                  {...getFieldProps('start')}
                   disabled={!editMode}
                   ampm={false}
                   label="Date de debut prévue*"
                   inputFormat="dd/MM/yyyy HH:mm"
-                  value={moment(values?.start).format('YYYY-MM-DD HH:mm:ss')}
+                  value={moment(dateForm?.debut).format('YYYY-MM-DD HH:mm:ss')}
                   // value={moment(formInput?.planned_end).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(date) => {
                     const formattedDate = moment(date).format('YYYY-MM-DD HH:mm:ss');
-                    setFieldValue('start', formattedDate);
+                    setDateForm((f) => {
+                      return { ...f, debut: formattedDate };
+                    });
                   }}
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
                       {...params}
-                      error={!!formErrors?.data?.start}
-                      helperText={renderArrayMultiline(formErrors?.data?.start)}
+                      error={!!formErrors?.data?.debut}
+                      helperText={renderArrayMultiline(formErrors?.data?.debut)}
                     />
                   )}
                 />
@@ -320,7 +323,6 @@ const AddEventFrom = ({ event, range, handleDelete, handleCreate, handleUpdate, 
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
                 <DateTimePicker
-                  {...getFieldProps('end')}
                   disabled={!editMode}
                   ampm={false}
                   inputFormat="dd/MM/yyyy HH:mm"
@@ -328,16 +330,18 @@ const AddEventFrom = ({ event, range, handleDelete, handleCreate, handleUpdate, 
                     <TextField
                       variant="standard"
                       {...params}
-                      error={!!formErrors?.data?.end}
-                      helperText={renderArrayMultiline(formErrors?.data?.end)}
+                      error={!!formErrors?.data?.fin}
+                      helperText={renderArrayMultiline(formErrors?.data?.fin)}
                     />
                   )}
                   label="Date de fin prévue"
-                  value={moment(values?.end).format('YYYY-MM-DD HH:mm:ss')}
-                  onChange={(v) => {
+                  value={moment(dateForm?.fin).format('YYYY-MM-DD HH:mm:ss')}
+                  onChange={(date) => {
                     try {
-                      const formattedDate = moment(v).format('YYYY-MM-DD HH:mm:ss');
-                      setFieldValue('end', formattedDate);
+                      const formattedDate = moment(date).format('YYYY-MM-DD HH:mm:ss');
+                      setDateForm((f) => {
+                        return { ...f, fin: formattedDate };
+                      });
                     } catch (error) {}
                   }}
                 />
