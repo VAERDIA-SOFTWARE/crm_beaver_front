@@ -1,9 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
+import { toast } from 'react-toastify';
 
-export const useGetReglements = ({ paginated = false, searchFilter = '', page = 1 }) => {
+export const useGetReglements = ({ paginated = true, searchFilter = '', page = 1 }) => {
   return useQuery(
-    ['', searchFilter, page],
+    ['reglements', searchFilter, page],
     () =>
       axiosClient
         .get(
@@ -28,3 +29,53 @@ export const useGetFactures = () => {
     return axiosClient.get('factures').then((res) => res.data);
   });
 };
+export function useCreateReglement() {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.post(`reglements`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+
+export const useGetReglement = (reglementId = '') => {
+  return useQuery(['reglements', reglementId], () => axiosClient.get(`reglements/${reglementId}`).then((res) => res.data));
+};
+export function useDeleteReglementMutation(id = '') {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.delete(`reglement/${id}`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        // queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+
+export function useUpdateReglement(id = '') {
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.put(`reglements/${id}`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+      }
+    }
+  );
+}

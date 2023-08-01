@@ -98,6 +98,7 @@ const AppCrmCreateFacture = Loadable(lazy(() => import('views/crm/factures/list/
 
 const AppCrmReglementsList = Loadable(lazy(() => import('views/crm/reglements/list/index')));
 const AppCrmReglementsCreate = Loadable(lazy(() => import('views/crm/reglements/list/createReglement')));
+const AppCrmReglementsDetails = Loadable(lazy(() => import('views/crm/reglements/list/DetailsReglement')));
 const AppCrmReglementsUpdate = Loadable(lazy(() => import('views/crm/reglements/list/updateReglement')));
 
 const AppCrmCalendar = Loadable(lazy(() => import('views/crm/calendar')));
@@ -820,7 +821,11 @@ const MainRoutes = {
       element: <AppCrmReglementsCreate />
     },
     {
-      path: '/reglement/:id/update',
+      path: '/reglement/:reglementId/details',
+      element: <AppCrmReglementsDetails />
+    },
+    {
+      path: '/reglement/:reglementId/update',
       element: <AppCrmReglementsUpdate />
     },
 

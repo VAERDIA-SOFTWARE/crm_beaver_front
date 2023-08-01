@@ -29,6 +29,7 @@ const FacturesList = ({ commandeId = null }) => {
   const [searchFilter, setSearchFilter] = React.useState('');
 
   const getFacturesQuery = useGetFactures({ page, searchFilter, commandeId });
+  console.log(getFacturesQuery, 'getFacturesQuery');
 
   const navigate = useNavigate();
 

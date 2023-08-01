@@ -4,8 +4,7 @@ import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import * as React from 'react';
 
 // material-ui
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
-import { Box, Fab, Grid, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Box, Fab, Grid, IconButton, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 // project imports
@@ -20,36 +19,32 @@ import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarDensitySelector,
-  GridToolbarExport,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import { useGetUsers } from 'services/users.service';
 import { useGetSettingsPreferences } from 'services/settings.service';
+import { useGetReglements } from 'services/reglements.service';
 
 const ReglementsList = () => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getClientsQuery = useGetUsers({ page, searchFilter, type: '1', paginated: true, role: 'client' });
-
-  console.log('====================================');
-  console.log(getClientsQuery);
-  console.log('====================================');
+  const getClientsQuery = useGetReglements({ page, searchFilter, paginated: true });
 
   const navigate = useNavigate();
 
   return (
     <MainCard
-      title="Liste des Clients"
+      title="Liste des Reglements"
       content={false}
       secondary={
         <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-          <Tooltip title="Ajouter Clients">
+          <Tooltip title="Ajouter Reglement">
             <Fab
               color="primary"
               size="small"
-              onClick={() => navigate(`/clients/create`)}
+              onClick={() => navigate(`/reglement/create`)}
               sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
             >
               <AddIcon fontSize="small" />
@@ -68,52 +63,17 @@ export default ReglementsList;
 function EditCell({ params }) {
   const navigate = useNavigate();
 
-  // const [anchorEl, setAnchorEl] = React.useState(null);
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  // };
-  // const handleMenuClick = (event) => {
-  //   setAnchorEl(event?.currentTarget);
-  // };
-
   return (
     <div>
       <IconButton
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/clients/${params?.row?.id}/details`);
+          navigate(`/reglement/${params?.row?.id}/details`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
-      {/* <IconButton onClick={handleMenuClick} size="large">
-        <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
-      </IconButton>
-      <Menu
-        id="menu-popular-card-1"
-        anchorEl={anchorEl}
-        keepMounted={true}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        variant="selectedMenu"
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: '{{ righ }}t'
-        }}
-      >
-        <MenuItem
-          onClick={(e) => {
-            navigate(`/clients/${params.row?.id}/import-chantiers`);
-          }}
-        >
-          Importer
-        </MenuItem>
-      </Menu> */}
     </div>
   );
 }
@@ -123,55 +83,53 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
-    {
-      field: 'active_status',
-      headerName: 'Statut',
-      sortable: false,
-      hideable: false,
-      filterable: false,
-      disableExport: true,
-      renderCell: (params) => {
-        return (
-          <>
-            {params?.row?.active_status ? (
-              <AccountCircleIcon
-                sx={{
-                  color: '#16a34a'
-                }}
-              />
-            ) : (
-              <NoAccountsIcon
-                sx={{
-                  color: '#dc2626'
-                }}
-              />
-            )}
-          </>
-        );
-      }
-    },
+    // {
+    //   field: 'active_status',
+    //   headerName: 'Statut',
+    //   sortable: false,
+    //   hideable: false,
+    //   filterable: false,
+    //   disableExport: true,
+    //   renderCell: (params) => {
+    //     return (
+    //       <>
+    //         {params?.row?.active_status ? (
+    //           <AccountCircleIcon
+    //             sx={{
+    //               color: '#16a34a'
+    //             }}
+    //           />
+    //         ) : (
+    //           <NoAccountsIcon
+    //             sx={{
+    //               color: '#dc2626'
+    //             }}
+    //           />
+    //         )}
+    //       </>
+    //     );
+    //   }
+    // },
     { field: 'reference', headerName: 'Référence', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'name', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'libelle', headerName: 'Libelle', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     {
-      field: 'phone_number',
-      headerName: 'Téléphone',
+      field: 'montant',
+      headerName: 'Montant',
       sortable: false,
       filterable: false,
 
       minWidth: 100,
       flex: 1
     },
-    { field: 'email', headerName: 'E-mail', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'date', headerName: 'Date', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     {
-      field: 'address',
-      headerName: 'Addresse',
+      field: 'date_echeance',
+      headerName: "date d'échéance",
       sortable: false,
       filterable: false,
       minWidth: 100,
       flex: 1
     },
-    // { field: 'ville', headerName: 'Ville', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'code_postal', headerName: 'Code Postal', sortable: false, filterable: false, minWidth: 100, flex: 1 },
 
     {
       field: 'action',
@@ -243,7 +201,6 @@ function TableDataGrid({ setSearchFilter, getClientsQuery, setPage }) {
           setSearchFilter(e?.quickFilterValues);
         }}
         onPageChange={(newPage) => setPage(newPage + 1)}
-        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         initialState={[]}
       />
     </Box>
@@ -266,22 +223,8 @@ function CustomToolbar() {
         <GridToolbarQuickFilter />
 
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {/* <GridToolbarExport /> */}
-          {/* <GridToolbarFilterButton /> */}
           <GridToolbarColumnsButton />
           <GridToolbarDensitySelector />
-          {/* <div>
-            <Button onClick={handleClickOpenDialog}>
-              <UploadFileIcon
-                fontSize="small"
-                sx={{
-                  marginRight: '8px'
-                }}
-              />
-              Importer
-            </Button>
-            <UploadExcel getZonesVillesQuery={getZonesVillesQuery} open={open} handleCloseDialog={handleCloseDialog} />
-          </div> */}
         </div>
       </div>
     </GridToolbarContainer>
