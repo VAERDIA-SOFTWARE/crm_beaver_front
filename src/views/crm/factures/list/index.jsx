@@ -24,13 +24,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useGetFactures } from 'services/facture.service';
 import { useGetSettingsPreferences } from 'services/settings.service';
 
-const FacturesList = ({ commandeId = null }) => {
+const FacturesList = ({ clientId = null }) => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getFacturesQuery = useGetFactures({ page, searchFilter, commandeId });
-  console.log(getFacturesQuery, 'getFacturesQuery');
-
+  const getFacturesQuery = useGetFactures({ paginated: true, page: page, searchFilter: searchFilter, clientId: clientId, type: 1 });
+  const facturesData = getFacturesQuery?.data;
   const navigate = useNavigate();
 
   return (
@@ -44,9 +43,7 @@ const FacturesList = ({ commandeId = null }) => {
               color="primary"
               size="small"
               onClick={() => {
-                if (commandeId) {
-                  navigate(`/commandes/${commandeId}/factures/create`);
-                } else navigate(`/factures/create`);
+                navigate(`/factures/create`);
               }}
               sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
             >
@@ -79,7 +76,7 @@ const FacturesList = ({ commandeId = null }) => {
           </div>
         ))}
       </div>
-      <TableDataGrid getFacturesQuery={getFacturesQuery} setPage={setPage} setSearchFilter={setSearchFilter} />
+      <TableDataGrid getFacturesQuery={getFacturesQuery} facturesData={facturesData} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
 };
@@ -102,47 +99,43 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/factures/${params?.row?.id}`);
+          navigate(`/factures/${params.row?.id}/update`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
-      {false && (
-        <>
-          <IconButton onClick={handleMenuClick} size="large">
-            <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
-          </IconButton>
-          <Menu
-            id="menu-popular-card-1"
-            anchorEl={anchorEl}
-            keepMounted={true}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            variant="selectedMenu"
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: '{{ righ }}t'
-            }}
-          >
-            <MenuItem
-              onClick={(e) => {
-                navigate(`/clients/${params.row?.id}/import-chantiers`);
-              }}
-            >
-              Importer
-            </MenuItem>
-          </Menu>
-        </>
-      )}
+      <IconButton onClick={handleMenuClick} size="large">
+        <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
+      </IconButton>
+      <Menu
+        id="menu-popular-card-1"
+        anchorEl={anchorEl}
+        keepMounted={true}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        variant="selectedMenu"
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: '{{ righ }}t'
+        }}
+      >
+        <MenuItem
+          onClick={(e) => {
+            navigate(`/factures/${params.row?.id}/update`);
+          }}
+        >
+          Editer
+        </MenuItem>
+      </Menu>
     </div>
   );
 }
 
-function TableDataGrid({ setSearchFilter, getFacturesQuery, setPage }) {
+function TableDataGrid({ setSearchFilter, getFacturesQuery, setPage, facturesData }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
@@ -190,13 +183,13 @@ function TableDataGrid({ setSearchFilter, getFacturesQuery, setPage }) {
     },
 
     { field: 'reference', headerName: 'Référence', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'montant_total', headerName: 'Montant Total', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    // { field: 'montant_total', headerName: 'Montant Total', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'montant_HT_total', headerName: 'Montant HT', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'montant_Remise', headerName: 'Montant Remise', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'montant_HTNet_total', headerName: 'Montant HTNet', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'montant_TVA_total', headerName: 'Montant TVA', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     { field: 'montant_TTC_total', headerName: 'Montant TTC', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'montant_NetaPayer', headerName: 'Montant NET a payer', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    // { field: 'montant_NetaPayer', headerName: 'Montant NET a payer', sortable: false, filterable: false, minWidth: 100, flex: 1 },
 
     {
       field: 'action',
@@ -252,14 +245,14 @@ function TableDataGrid({ setSearchFilter, getFacturesQuery, setPage }) {
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getFacturesQuery.data?.factures?.data || []}
+        rows={facturesData?.data || []}
         columns={columns}
-        pageSize={parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10}
-        rowsPerPageOptions={[parseInt(useGetSettingsPreferencesQuery?.data?.default_pagination) || 10]}
+        pageSize={parseInt(facturesData?.default_pagination) || 10}
+        rowsPerPageOptions={[parseInt(facturesData?.default_pagination) || 10]}
         onPageSizeChange={(e) => console.log(e)}
         checkboxSelection={false}
         disableSelectionOnClick={true}
-        rowCount={getFacturesQuery.data?.factures?.total || 0}
+        rowCount={facturesData?.total || 0}
         loading={getFacturesQuery.isLoading || getFacturesQuery.isFetching}
         pagination
         paginationMode="server"

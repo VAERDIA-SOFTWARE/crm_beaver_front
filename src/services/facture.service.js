@@ -2,16 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-export const useGetFactures = ({ page = 1, searchFilter = '', commandeId = '' }) => {
+export const useGetFactures = ({ paginated = false, page, searchFilter, clientId, type }) => {
   return useQuery(
-    ['factures', page, searchFilter, commandeId],
+    ['factures', page, searchFilter, paginated, clientId, type],
     () => {
-      if (commandeId) {
-        return axiosClient
-          .get(`commandes/${commandeId}/factures?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}`)
-          .then((res) => res.data);
-      }
-      return axiosClient.get(`factures?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}`).then((res) => res.data);
+      return axiosClient
+        .get(
+          `factures?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}${clientId ? `client_id=${clientId}&` : ''}${
+            paginated ? `paginated=${paginated}&` : ''
+          }${type ? `type=${type}&` : ''}`
+        )
+        .then((res) => res.data);
     },
     {}
   );
@@ -22,25 +23,32 @@ export const useGetFacture = (factureId = '') => {
     enabled: !!factureId
   });
 };
-
-export const useGetFactureTotal = (articles = []) => {
+export const useGetInvoices = ({ paginated = false, user = false, search = false, pageSize, page }) => {
   return useQuery(
-    ['factures', 'artices', articles],
-    () => axiosClient.post(`commandes/articles/calcul-total`, articles).then((res) => res.data),
+    ['invoices', paginated, user, search, pageSize, page],
+    () =>
+      axiosClient
+        .get(
+          `factures?${paginated ? `paginated=true&page_size=${pageSize}&page=${page}&` : ``}${user ? `user=${user}&` : ''}${
+            search ? `search=${search}` : ''
+          }`
+        )
+        .then((res) => res.data),
     {}
   );
 };
 
-export const useGetFactureNextReference = () => {
-  return useQuery(['factures', 'next-reference'], () => axiosClient.get(`factures/next-reference`).then((res) => res.data), {});
+export const useGetInvoiceById = (invoiceId = '') => {
+  return useQuery(['factures', invoiceId], () => axiosClient.get(`factures/${invoiceId}`).then((res) => res.data), {});
 };
 
-export function useCreateFacture() {
+export function useCreateInvoice(invoiceId = '') {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async (values) => {
-      const res = await axiosClient.post(`commandes/${values?.lotChantierId}/factures`, values?.body);
+    async ({ values, invoiceId = '' }) => {
+      const res = await axiosClient.post(`factures${invoiceId !== '' ? `/${invoiceId}` : ''}`, values);
+
       return res.data;
     },
     {
@@ -52,80 +60,13 @@ export function useCreateFacture() {
   );
 }
 
-export function useUpdateFacture() {
-  const queryClient = useQueryClient();
-
-  return useMutation(
-    async (values) => {
-      const res = await axiosClient.post(`factures/${values?.factureId}?_method=PUT`, values?.body);
-      return res.data;
-    },
-    {
-      onSuccess: (data) => {
-        toast.success(data?.message);
-        queryClient.invalidateQueries();
-      }
-    }
-  );
-}
-
-export function useValiderFacture() {
-  const queryClient = useQueryClient();
-
-  return useMutation(
-    async (values) => {
-      const res = await axiosClient.post(`commandes/factures/${values?.factureId}/validate-facture`, values?.body);
-      return res.data;
-    },
-    {
-      onSuccess: (data) => {
-        toast.success(data?.message);
-        queryClient.invalidateQueries();
-      }
-    }
-  );
-}
-
-export function useAnnulerFacture() {
-  const queryClient = useQueryClient();
-
-  return useMutation(
-    async (values) => {
-      const res = await axiosClient.post(`commandes/factures/${values?.factureId}/cancel-facture`, values?.body);
-      return res.data;
-    },
-    {
-      onSuccess: (data) => {
-        toast.success(data?.message);
-        queryClient.invalidateQueries();
-      }
-    }
-  );
-}
-
-export function useCreateFactureAvoir() {
-  const queryClient = useQueryClient();
-
-  return useMutation(
-    async (values) => {
-      const res = await axiosClient.post(`commandes/${values?.lotChantierId}/factures/${values?.factureId}`, values?.body);
-      return res.data;
-    },
-    {
-      onSuccess: (data) => {
-        toast.success(data?.message);
-        queryClient.invalidateQueries();
-      }
-    }
-  );
-}
-
-export function useDeleteFacture(factureId) {
+export function useCreateInvoiceAvoir(invoiceId) {
   const queryClient = useQueryClient();
 
   return useMutation(
     async () => {
-      const res = await axiosClient.delete(`factures/${factureId}`);
+      const res = await axiosClient.post(`factures/${invoiceId}/avoir`);
+
       return res.data;
     },
     {
@@ -136,3 +77,104 @@ export function useDeleteFacture(factureId) {
     }
   );
 }
+
+export function useUpdateInvoice(invoiceId) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.put(`factures/${invoiceId}`, values);
+
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({ id }) => {
+      const res = await axiosClient.delete(`users/${id}`);
+
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      },
+      onError: (data) => {
+        toast.error(data?.message);
+      }
+    }
+  );
+}
+
+export const useGetNextRefrence = (type) => {
+  try {
+    return useQuery(['factures-next-refrences'], () => axiosClient.get(`factures/next-reference/${type}`).then((res) => res.data), {});
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const useGetHeaderTotal = (lines) => {
+  try {
+    return useQuery(
+      ['total-invoice-preview', lines],
+      () => axiosClient.post(`factures/preview/total-invoice`, { lines: lines }).then((res) => res.data),
+      {}
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const useValidateInvoice = (invoiceId) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async () => {
+      const res = await axiosClient.put(`factures/${invoiceId}/validate-facture`);
+
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      },
+      onError: (data) => {
+        toast.error(data?.message);
+      }
+    }
+  );
+};
+
+export const useCancelInvoice = (invoiceId) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async () => {
+      const res = await axiosClient.put(`factures/${invoiceId}/cancel-facture`);
+
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      },
+      onError: (data) => {
+        toast.error(data?.message);
+      }
+    }
+  );
+};

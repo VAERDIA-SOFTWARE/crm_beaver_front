@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import { Autocomplete, Divider, Grid, Skeleton, TextField, Typography } from '@mui/material';
-import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { DateTimePicker, DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 
 // project imports
 import { LoadingButton } from '@mui/lab';
@@ -20,7 +20,7 @@ import {
   useUpdateReglement
 } from 'services/reglements.service';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import moment from 'moment';
+import moment from 'moment/moment';
 
 const UpdateReglement = () => {
   const { reglementId } = useParams();
@@ -29,8 +29,8 @@ const UpdateReglement = () => {
   const [formInput, setFormInput] = useState({
     libelle: '',
     p_mode_de_reglement_id: '',
-    date_echeance: '',
-    date: '',
+    date_echeance: new Date(),
+    date: new Date(),
     reference_cheque: '',
     reference_traite: '',
     montant: '',
@@ -39,8 +39,8 @@ const UpdateReglement = () => {
 
   const [selectedFacture, setSelectedFacture] = useState(null);
   const [selectedreglementMode, setSelectedReglementMode] = useState(null);
-  const useGetFactureQuery = useGetFactures();
-  const factureData = useGetFactureQuery?.data?.factures?.data;
+  const useGetFactureQuery = useGetFactures({});
+  const factureData = useGetFactureQuery?.data;
   const deleteReglementMutation = useDeleteReglementMutation(reglementId);
   const updateReglementMutation = useUpdateReglement(reglementId);
   const getReglementsQuery = useGetReglement(reglementId);
@@ -55,8 +55,8 @@ const UpdateReglement = () => {
         return {
           ...f,
           // p_mode_de_reglement_id: reglementData?.p_mode_de_reglement_id,
-          listFacture: reglementData.factures,
-          ...reglementData
+          ...reglementData,
+          listFacture: reglementData?.factures
         };
       });
     }
@@ -74,23 +74,23 @@ const UpdateReglement = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormErrors({});
-    const formattedFormInput = {
-      ...formInput,
-      date: moment(formInput.date).format('YYYY-MM-DD'),
-      date_echeance: moment(formInput.date_echeance).format('YYYY-MM-DD hh:mm')
-    };
-    try {
-      await updateReglementMutation.mutateAsync({
-        ...formattedFormInput
-      });
-    } catch (error) {
-      const errorsObject = error?.response?.data;
-      setFormErrors(errorsObject);
-    }
+    // e.preventDefault();
+    // setFormErrors({});
+    // const formattedFormInput = {
+    //   ...formInput,
+    //   date: moment(formInput.date).format('YYYY-MM-DD'),
+    //   date_echeance: moment(formInput.date_echeance).format('YYYY-MM-DD hh:mm')
+    // };
+    // try {
+    //   await updateReglementMutation.mutateAsync({
+    //     ...formattedFormInput
+    //   });
+    // } catch (error) {
+    //   const errorsObject = error?.response?.data;
+    //   setFormErrors(errorsObject);
+    // }
   };
-
+  console.log(moment(reglementData?.date_echeance).format('YYYY-MM-DD HH:mm:ss'));
   return (
     <MainCard title={`Ajouter Reglement`} backButton goBackLink="/reglements/list">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -146,11 +146,12 @@ const UpdateReglement = () => {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <DesktopDatePicker
+                <DateTimePicker
+                  ampm={false}
                   label="Date d'echaillance"
-                  inputFormat="dd/MM/yyyy"
-                  value={formInput?.date_echeance}
-                  //   value={moment(formInput?.date_echeance).format('yyyy- mm-mm')}
+                  inputFormat="dd/MM/yyyy HH:mm"
+                  // value={formInput?.date_echeance}
+                  value={moment(formInput?.date_echeance).format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
                       setFormInput((f) => {
@@ -172,9 +173,10 @@ const UpdateReglement = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <DesktopDatePicker
+                  ampm={false}
                   label="Date"
-                  inputFormat="dd/MM/yyyy"
-                  value={formInput?.date}
+                  inputFormat="dd/MM/yyyy HH:mm"
+                  value={moment(formInput?.date).format('YYYY-MM-DD HH:mm:ss')}
                   //   value={moment(formInput?.date_echeance).format('yyyy- mm-mm')}
                   onChange={(v) => {
                     try {
@@ -196,59 +198,62 @@ const UpdateReglement = () => {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <Autocomplete
-                  onChange={(event, newValue) => {
-                    setSelectedReglementMode(newValue);
+                {useGetModeReglementQuery?.isSuccess && (
+                  <Autocomplete
+                    onChange={(event, newValue) => {
+                      setSelectedReglementMode(newValue);
 
-                    setFormInput((formData) => {
-                      return { ...formData, p_mode_de_reglement_id: newValue?.id };
-                    });
-                  }}
-                  options={reglementMode || []}
-                  getOptionLabel={(option) => option.intitule}
-                  defaultValue={useGetModeReglementQuery?.data?.find((e) => reglementData?.p_mode_de_reglement_id === e?.id)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="standard"
-                      label="Catégorie*"
-                      error={!!formErrors?.data?.p_mode_de_reglement_id}
-                      helperText={renderArrayMultiline(formErrors?.data?.p_mode_de_reglement_id)}
-                    />
-                  )}
-                />
+                      setFormInput((formData) => {
+                        return { ...formData, p_mode_de_reglement_id: newValue?.id };
+                      });
+                    }}
+                    options={reglementMode || []}
+                    getOptionLabel={(option) => option.intitule}
+                    defaultValue={useGetModeReglementQuery?.data?.find((e) => reglementData?.p_mode_de_reglement_id === e?.id)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Catégorie*"
+                        error={!!formErrors?.data?.p_mode_de_reglement_id}
+                        helperText={renderArrayMultiline(formErrors?.data?.p_mode_de_reglement_id)}
+                      />
+                    )}
+                  />
+                )}
               </Grid>
               <Grid item xs={12} md={6}>
-                <Autocomplete
-                  multiple
-                  onChange={(event, newValue) => {
-                    setSelectedFacture(newValue); // Update the selected factures array
+                {factureData && reglementData && (
+                  <Autocomplete
+                    multiple
+                    onChange={(event, newValue) => {
+                      setSelectedFacture(newValue); // Update the selected factures array
 
-                    setFormInput((formData) => {
-                      return { ...formData, listFacture: newValue.map((facture) => facture.id) };
-                    });
-                  }}
-                  // onChange={(event, newValue) => {
-                  //   setSelectedFacture(newValue);
+                      setFormInput((formData) => {
+                        return { ...formData, listFacture: newValue.map((facture) => facture.id) };
+                      });
+                    }}
+                    // onChange={(event, newValue) => {
+                    //   setSelectedFacture(newValue);
 
-                  //   setFormInput((formData) => {
-                  //     return { ...formData, listFacture: newValue?.id };
-                  //   });
-                  // }}
-                  options={factureData || []}
-                  // defaultValue={useGetModeReglementQuery?.data?.find((e) => reglementData?.p_mode_de_reglement_id === e?.id)}
-
-                  getOptionLabel={(option) => option.reference}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="standard"
-                      label="Factures*"
-                      error={!!formErrors?.data?.listFacture}
-                      helperText={renderArrayMultiline(formErrors?.data?.listFacture)}
-                    />
-                  )}
-                />
+                    //   setFormInput((formData) => {
+                    //     return { ...formData, listFacture: newValue?.id };
+                    //   });
+                    // }}
+                    options={factureData || []}
+                    defaultValue={returnEqualValuesInArray(factureData, reglementData?.factures, 'id')}
+                    getOptionLabel={(option) => option.reference}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Factures*"
+                        error={!!formErrors?.data?.listFacture}
+                        helperText={renderArrayMultiline(formErrors?.data?.listFacture)}
+                      />
+                    )}
+                  />
+                )}
               </Grid>
               <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
                 <LoadingButton
@@ -270,3 +275,19 @@ const UpdateReglement = () => {
 };
 
 export default UpdateReglement;
+
+const returnEqualValuesInArray = (a, b, field) => {
+  const t = [];
+  try {
+    a?.forEach((aElement) => {
+      b?.forEach((bElement) => {
+        if (aElement[field] === bElement[field]) {
+          t.push(aElement);
+        }
+      });
+    });
+    return t;
+  } catch (error) {
+    return [];
+  }
+};

@@ -14,9 +14,8 @@ import SendIcon from '@mui/icons-material/Send';
 const CreateReglement = () => {
   const useGetModeReglementQuery = useGetReglementsMode();
   const reglementMode = useGetModeReglementQuery?.data;
-  const useGetFactureQuery = useGetFactures();
-  const factureData = useGetFactureQuery?.data?.factures?.data;
-  console.log(factureData);
+  const useGetFactureQuery = useGetFactures({});
+  const factureData = useGetFactureQuery?.data;
   const createReglementMutation = useCreateReglement();
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
@@ -30,7 +29,7 @@ const CreateReglement = () => {
     listFacture: ''
   });
   const [selectedFacture, setSelectedFacture] = useState(null);
-  const [selectedreglementMode, setSelectedReglementMode] = useState(null);
+  const [selectedReglementMode, setSelectedReglementMode] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,29 +75,55 @@ const CreateReglement = () => {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="reference_cheque*"
-                  value={formInput?.reference_cheque || ''}
-                  name="reference_cheque"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.reference_cheque}
-                  helperText={renderArrayMultiline(formErrors?.data?.reference_cheque)}
+                <Autocomplete
+                  onChange={(event, newValue) => {
+                    setSelectedReglementMode(newValue);
+
+                    setFormInput((formData) => {
+                      return { ...formData, p_mode_de_reglement_id: newValue?.id };
+                    });
+                  }}
+                  options={reglementMode || []}
+                  getOptionLabel={(option) => option.intitule}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Catégorie*"
+                      error={!!formErrors?.data?.p_mode_de_reglement_id}
+                      helperText={renderArrayMultiline(formErrors?.data?.p_mode_de_reglement_id)}
+                    />
+                  )}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="reference_traite*"
-                  value={formInput?.reference_traite || ''}
-                  name="reference_traite"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.reference_traite}
-                  helperText={renderArrayMultiline(formErrors?.data?.reference_traite)}
-                />
-              </Grid>
+              {selectedReglementMode?.intitule === 'cheque' && (
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    variant="standard"
+                    fullWidth
+                    label="Reference cheque"
+                    value={formInput?.reference_cheque || ''}
+                    name="Reference_cheque"
+                    onChange={handleChange}
+                    error={!!formErrors?.data?.reference_cheque}
+                    helperText={renderArrayMultiline(formErrors?.data?.reference_cheque)}
+                  />
+                </Grid>
+              )}
+              {selectedReglementMode?.intitule === 'traite' && (
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    variant="standard"
+                    fullWidth
+                    label="Reference traite"
+                    value={formInput?.reference_traite || ''}
+                    name="reference_traite"
+                    onChange={handleChange}
+                    error={!!formErrors?.data?.reference_traite}
+                    helperText={renderArrayMultiline(formErrors?.data?.reference_traite)}
+                  />
+                </Grid>
+              )}
               <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
@@ -111,31 +136,33 @@ const CreateReglement = () => {
                   helperText={renderArrayMultiline(formErrors?.data?.montant)}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <DesktopDatePicker
-                  label="Date de début"
-                  inputFormat="dd/MM/yyyy"
-                  value={moment(formInput?.date_echeance).format('YYYY-MM-DD')}
-                  onChange={(v) => {
-                    try {
-                      setFormInput((f) => {
-                        return { ...f, date_echeance: v };
-                      });
-                    } catch (error) {}
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      fullWidth
-                      required
-                      variant="standard"
-                      {...params}
-                      error={!!formErrors?.data?.date_echeance}
-                      helperText={renderArrayMultiline(formErrors?.data?.date_echeance)}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
+              {(selectedReglementMode?.intitule === 'traite' || selectedReglementMode?.intitule === 'cheque') && (
+                <Grid item xs={12} md={6}>
+                  <DesktopDatePicker
+                    label="Date écheance"
+                    inputFormat="dd/MM/yyyy"
+                    value={moment(formInput?.date_echeance).format('YYYY-MM-DD')}
+                    onChange={(v) => {
+                      try {
+                        setFormInput((f) => {
+                          return { ...f, date_echeance: v };
+                        });
+                      } catch (error) {}
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        fullWidth
+                        required
+                        variant="standard"
+                        {...params}
+                        error={!!formErrors?.data?.date_echeance}
+                        helperText={renderArrayMultiline(formErrors?.data?.date_echeance)}
+                      />
+                    )}
+                  />
+                </Grid>
+              )}
+              {/* <Grid item xs={12} md={6}>
                 <DesktopDatePicker
                   label="Date de début"
                   inputFormat="dd/MM/yyyy"
@@ -158,29 +185,8 @@ const CreateReglement = () => {
                     />
                   )}
                 />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Autocomplete
-                  onChange={(event, newValue) => {
-                    setSelectedReglementMode(newValue);
+              </Grid> */}
 
-                    setFormInput((formData) => {
-                      return { ...formData, p_mode_de_reglement_id: newValue?.id };
-                    });
-                  }}
-                  options={reglementMode || []}
-                  getOptionLabel={(option) => option.intitule}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="standard"
-                      label="Catégorie*"
-                      error={!!formErrors?.data?.p_mode_de_reglement_id}
-                      helperText={renderArrayMultiline(formErrors?.data?.p_mode_de_reglement_id)}
-                    />
-                  )}
-                />
-              </Grid>
               <Grid item xs={12} md={6}>
                 <Autocomplete
                   onChange={(event, newValue) => {
@@ -196,7 +202,7 @@ const CreateReglement = () => {
                     <TextField
                       {...params}
                       variant="standard"
-                      label="Factures*"
+                      label="Factures"
                       error={!!formErrors?.data?.listFacture}
                       helperText={renderArrayMultiline(formErrors?.data?.listFacture)}
                     />

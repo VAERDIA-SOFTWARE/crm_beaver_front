@@ -5,7 +5,7 @@ import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
 import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
-const Crm = {
+const crm = {
   id: 'crm',
   type: 'group',
   children: [
@@ -26,28 +26,36 @@ const Crm = {
       breadcrumbs: false,
       children: [
         {
-          id: 'importer-lot-leads',
+          parentResource: 'lots',
+          permission: 'create',
+          id: 'lots-create',
           title: 'Importer Lot-Leads',
           type: 'item',
           url: '/lot-leads/create',
           breadcrumbs: false
         },
         {
-          id: 'lot-leads',
+          parentResource: 'lots',
+          permission: 'view',
+          id: 'lots-view',
           title: 'Lot-Leads',
           type: 'item',
           url: '/lot-leads/list',
           breadcrumbs: false
         },
         {
-          id: 'new-leads',
+          parentResource: 'clients',
+          permission: 'create',
+          id: 'lead-create',
           title: 'Ajouter Leads',
           type: 'item',
           url: '/leads/create',
           breadcrumbs: false
         },
         {
-          id: 'list-leads',
+          parentResource: 'clients',
+          permission: 'view',
+          id: 'lead-view',
           title: 'List Leads',
           type: 'item',
           url: '/leads/list',
@@ -56,21 +64,25 @@ const Crm = {
       ]
     },
     {
-      id: 'articles-group',
+      id: 'operations',
       title: 'Articles',
       type: 'collapse',
       icon: GroupOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'new-articles',
+          parentResource: 'operations',
+          permission: 'create',
+          id: 'operations-create',
           title: 'Ajouter Article',
           type: 'item',
           url: '/articles/create',
           breadcrumbs: false
         },
         {
-          id: 'articles-list',
+          parentResource: 'operations',
+          permission: 'view',
+          id: 'operations-view',
           title: 'List des articles',
           type: 'item',
           url: '/articles/list',
@@ -79,35 +91,43 @@ const Crm = {
       ]
     },
     {
-      id: 'client-group',
+      id: 'clients',
       title: 'Clients',
       type: 'collapse',
       icon: GroupOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'new-clients',
+          parentResource: 'clients',
+          permission: 'create',
+          id: 'clients-create',
           title: 'Ajouter Client',
           type: 'item',
           url: '/clients/create',
           breadcrumbs: false
         },
         {
-          id: 'clients-list',
+          parentResource: 'clients',
+          permission: 'view',
+          id: 'clients-view',
           title: 'Clients',
           type: 'item',
           url: '/clients/list',
           breadcrumbs: false
         },
         {
-          id: 'new-contrats',
+          parentResource: 'contrats',
+          permission: 'create',
+          id: 'contrats-create',
           title: 'Ajouter contrat',
           type: 'item',
           url: '/contrats/create',
           breadcrumbs: false
         },
         {
-          id: 'contrats-list',
+          parentResource: 'contrats',
+          permission: 'view',
+          id: 'contrats-view',
           title: 'Contrats',
           type: 'item',
           url: '/contrats/list',
@@ -116,65 +136,75 @@ const Crm = {
       ]
     },
     {
-      id: 'techniciens-group',
+      id: 'collaborators',
       title: 'Collaborateurs',
       type: 'collapse',
       icon: EngineeringOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'new-techniciens',
+          parentResource: 'collaborators',
+          permission: 'create',
+          id: 'collaborators-create',
           title: 'Ajouter Collaborateur',
           type: 'item',
           url: '/techniciens/create',
           breadcrumbs: false
         },
         {
-          id: 'list-techniciens',
+          parentResource: 'collaborators',
+          permission: 'view',
+          id: 'collaborators-view',
           title: 'Collaborateurs',
           type: 'item',
           url: '/techniciens/list',
           breadcrumbs: false
-        },
-        {
-          id: 'list-pointage',
-          title: 'Historique Pointage',
-          type: 'item',
-          url: '/pointage/list',
-          breadcrumbs: false
-        },
-        {
-          id: 'maps',
-          title: 'Maps',
-          type: 'item',
-          url: '/maps',
-          breadcrumbs: false
         }
+        // {
+        //   id: 'list-pointage',
+        //   title: 'Historique Pointage',
+        //   type: 'item',
+        //   url: '/pointage/list',
+        //   breadcrumbs: false
+        // },
+        // {
+        //   id: 'maps',
+        //   title: 'Maps',
+        //   type: 'item',
+        //   url: '/maps',
+        //   breadcrumbs: false
+        // }
       ]
     },
     {
-      id: 'inspections-group',
+      id: 'interventions',
       title: 'Intervention',
       type: 'collapse',
       icon: ContentPasteSearchIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'inspections-proposer',
+          parentResource: 'interventions-proposer',
+          permission: 'view',
+          id: 'interventions-proposer-view',
           title: 'Propositions',
           type: 'item',
           url: '/propositions/list',
           breadcrumbs: false
         },
         {
-          id: 'interventions',
+          parentResource: 'interventions',
+          permission: 'view',
+          id: 'interventions-view',
           title: 'Interventions',
           type: 'item',
           url: '/interventions/list',
           breadcrumbs: false
         },
         {
-          id: 'calendrier',
+          parentResource: 'calendrier',
+          permission: 'view',
+          id: 'calendrier-view',
           title: 'Calendrier',
           type: 'item',
           url: '/interventions/calendar',
@@ -184,35 +214,43 @@ const Crm = {
     },
 
     {
-      id: 'facturation-group',
+      id: 'invoices',
       title: 'Facturations',
       type: 'collapse',
       icon: ReceiptOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'list-devis',
+          parentResource: 'invoices',
+          permission: 'create',
+          id: 'devis-create',
           title: 'Nouveau Devis',
-          type: 'item',
-          url: '/devis/list',
-          breadcrumbs: false
-        },
-        {
-          id: 'new-devis',
-          title: 'Devis',
           type: 'item',
           url: '/devis/create',
           breadcrumbs: false
         },
         {
-          id: 'nouvelle-facture',
+          parentResource: 'invoices',
+          permission: 'view',
+          id: 'devis-view',
+          title: 'Devis',
+          type: 'item',
+          url: '/devis/list',
+          breadcrumbs: false
+        },
+        {
+          parentResource: 'invoices',
+          permission: 'create',
+          id: 'invoices-create',
           title: 'Nouvelle Facture',
           type: 'item',
           url: '/factures/create',
           breadcrumbs: false
         },
         {
-          id: 'factures',
+          parentResource: 'invoices',
+          permission: 'view',
+          id: 'invoices-view',
           title: 'Factures',
           type: 'item',
           url: '/factures/list',
@@ -221,24 +259,28 @@ const Crm = {
       ]
     },
     {
-      id: 'reglements-group',
+      id: 'regulations',
       title: 'Reglements ',
       type: 'collapse',
       icon: ReceiptOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
-          id: 'list-Reglements',
-          title: 'Liste des Reglements',
-          type: 'item',
-          url: '/reglements/list',
-          breadcrumbs: false
-        },
-        {
-          id: 'new-reglement',
+          parentResource: 'regulations',
+          permission: 'create',
+          id: 'regulations-create',
           title: 'Ajouter Reglements',
           type: 'item',
           url: '/reglement/create',
+          breadcrumbs: false
+        },
+        {
+          parentResource: 'regulations',
+          permission: 'view',
+          id: 'regulations-view',
+          title: 'Liste des Reglements',
+          type: 'item',
+          url: '/reglements/list',
           breadcrumbs: false
         }
       ]
@@ -246,4 +288,4 @@ const Crm = {
   ]
 };
 
-export default Crm;
+export default crm;

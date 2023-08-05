@@ -24,9 +24,9 @@ export const useGetReglementsMode = () => {
   });
 };
 
-export const useGetFactures = () => {
-  return useQuery(['factures'], () => {
-    return axiosClient.get('factures').then((res) => res.data);
+export const useGetFactures = ({ paginate = false }) => {
+  return useQuery(['factures', paginate], () => {
+    return axiosClient.get(`factures?${paginate !== false ? 'paginate=true&' : ''}`).then((res) => res.data);
   });
 };
 export function useCreateReglement() {

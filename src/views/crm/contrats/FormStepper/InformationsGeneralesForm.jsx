@@ -54,7 +54,7 @@ const InformationsGenerales = ({ handleNext, contractId, setcontractId, contract
     }
   };
 
-  const getClientsQuery = useGetUsers({ role: 'client', paginated: false });
+  const getClientsQuery = useGetUsers({ role: 'client', type: 1, paginated: false });
   const getMarquePACQuery = useGetMarquePAC();
   const getModeFacturationsQuery = useGetModeFacturations();
   const getModeInterventionsQuery = useGetModeInterventions();

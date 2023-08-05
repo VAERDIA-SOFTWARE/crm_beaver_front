@@ -7,16 +7,16 @@ import pages from './pages';
 import utilities from './utilities';
 import support from './support';
 import other from './other';
-import Crm from './crm';
+import crm from './crm';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 let menuItems = { items: [] };
 
 if (process.env.NODE_ENV !== 'development') {
-  menuItems.items = [Crm];
+  menuItems.items = [crm];
 } else {
-  menuItems.items = [Crm, dashboard, application, widget, forms, elements, pages, utilities, support, other];
+  menuItems.items = [crm, dashboard, application, widget, forms, elements, pages, utilities, support, other];
   // menuItems.items = [Crm];
 }
 
