@@ -59,16 +59,6 @@ const ReglementsDetailsPage = () => {
           >
             <EditIcon sx={{ fontSize: '1.3rem' }} />
           </IconButton>
-          {/* <IconButton
-            color="secondary"
-            size="large"
-            onClick={async (e) => {
-              await deleteMutation.mutateAsync();
-              navigate(`/clients/list`);
-            }}
-          >
-            <DeleteOutline sx={{ fontSize: '1.3rem' }} />
-          </IconButton> */}
         </div>
       }
     >
@@ -92,67 +82,59 @@ const ReglementsDataCard = ({ reglementsData, reglementStatus }) => {
   return (
     <MainCard title={reglementsData?.libelle}>
       <Grid container spacing={gridSpacing}>
-        <Grid item xs={12} sm={12} md={12}>
-          {/* <Stack spacing={1}> */}
-          <Typography variant="h4">Informations générales</Typography>
-          {/* <Stack spacing={0}> */}
-          {reglementsData?.libelle && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Libelle :</Typography>
-              <Typography variant="body2">{reglementsData?.libelle}</Typography>
-            </Stack>
-          )}
-          {reglementsData?.reference && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Reference :</Typography>
-              <Typography variant="body2">{reglementsData?.reference}</Typography>
-            </Stack>
-          )}
-          {reglementsData?.reference_cheque && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Reference cheque :</Typography>
-              <Typography variant="body2">{reglementsData?.reference_cheque}</Typography>
-            </Stack>
-          )}
-          {reglementsData?.reference_traite && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Reference traité :</Typography>
-              <Typography variant="body2">{reglementsData?.reference_traite}</Typography>
-            </Stack>
-          )}
-          {reglementsData?.montant && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Montant :</Typography>
-              <Typography variant="body2">{reglementsData?.montant}</Typography>
-            </Stack>
-          )}
-          {reglementsData?.date && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Date :</Typography>
-              <Typography variant="body2">{reglementsData?.date}</Typography>
-            </Stack>
-          )}
-          {reglementsData?.date_echeance && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Date d'echeance :</Typography>
-              <Typography variant="body2">{reglementsData?.date_echeance}</Typography>
-            </Stack>
-          )}
-          {reglementStatus && (
-            <Stack direction="row" spacing={1}>
-              <Typography variant="subtitle1">Date d'echeance :</Typography>
-              <Typography variant="body2">{reglementStatus}</Typography>
-            </Stack>
-          )}
-
-          {/* {reglementsData?.facture && (
+        <Grid item xs={12} sm={6} md={4}>
+          <Stack spacing={2}>
+            <Typography variant="h4">Informations reglement</Typography>
+            <Stack spacing={0}>
+              {reglementsData?.reference && (
                 <Stack direction="row" spacing={1}>
-                  <Typography variant="subtitle1">Date d'echeance :</Typography>
-                  <Typography variant="body2">{reglementsData?.facture}</Typography>
+                  <Typography variant="subtitle1">Référence :</Typography>
+                  <Typography variant="body2">{reglementsData?.reference}</Typography>
                 </Stack>
-              )} */}
-          {/* </Stack> */}
-          {/* </Stack> */}
+              )}
+              {reglementsData?.montant && (
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle1">Montant :</Typography>
+                  <Typography variant="body2">{reglementsData?.montant}</Typography>
+                </Stack>
+              )}
+              {reglementsData?.reference_cheque && (
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle1">Réfrence du chéque :</Typography>
+                  <Typography variant="body2">{reglementsData?.reference_cheque}</Typography>
+                </Stack>
+              )}
+              {reglementsData?.reference_traite && (
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle1">Réference traité :</Typography>
+                  <Typography variant="body2">{reglementsData?.reference_traite}</Typography>
+                </Stack>
+              )}
+              {reglementStatus && (
+                <Stack direction="row" spacing={1}>
+                  <Typography variant="subtitle1">Mode de réglement:</Typography>
+                  <Typography variant="body2">{reglementStatus}</Typography>
+                </Stack>
+              )}
+            </Stack>
+          </Stack>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Stack spacing={2}>
+            <Typography variant="h4">Informations sur les factures</Typography>
+            <Stack spacing={0}>
+              {reglementsData?.factures && (
+                <>
+                  {reglementsData?.factures.map((facture, index) => (
+                    <Stack direction="row" spacing={1} key={facture.id}>
+                      <Typography variant="subtitle1">facture {index + 1}:</Typography>
+                      <Typography variant="body2">{facture.reference}</Typography>
+                    </Stack>
+                  ))}
+                </>
+              )}
+            </Stack>
+          </Stack>
         </Grid>
       </Grid>
     </MainCard>

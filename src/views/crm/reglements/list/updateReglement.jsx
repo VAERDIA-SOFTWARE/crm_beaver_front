@@ -255,17 +255,45 @@ const UpdateReglement = () => {
                   />
                 )}
               </Grid>
-              <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
+              <Grid item sx={{ display: 'flex', justifyContent: 'space-between' }} xs={12}>
+                <LoadingButton
+                  disabled={getReglementsQuery.isLoading}
+                  loadingPosition="start"
+                  startIcon={<DeleteIcon />}
+                  loading={deleteReglementMutation.isLoading}
+                  variant="outlined"
+                  color="error"
+                  onClick={() =>
+                    confirm({
+                      description: `Êtes-vous sûr de vouloir supprimer ${reglementData?.libelle}.`,
+                      title: `Veuillez confirmer la suppression`
+                    })
+                      .then(async () => {
+                        try {
+                          await deleteReglementMutation.mutateAsync();
+                          navigate('/reglements/list', {
+                            replace: true
+                          });
+                        } catch (error) {}
+                      })
+                      .catch(() => console.log('Utilisateur supprimé avec succès.'))
+                  }
+                >
+                  {'Supprimer'}
+                </LoadingButton>
+
                 <LoadingButton
                   loadingPosition="end"
                   endIcon={<SendIcon />}
-                  // loading={createClientMutation.isLoading}
+                  loading={updateReglementMutation.isLoading}
                   variant="contained"
                   type="submit"
                 >
                   Modifier
                 </LoadingButton>
               </Grid>
+
+              <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}></Grid>
             </Grid>
           </form>
         </>

@@ -8,6 +8,8 @@ import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRound
 import { Link, useNavigate } from 'react-router-dom';
 import { prototype } from 'apexcharts';
 import { color } from '@mui/system';
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 
 // constant
 const headerSX = {
@@ -36,6 +38,8 @@ const MainCard = React.forwardRef(
       title,
       backButton,
       goBackLink,
+      settingsIcon = false,
+      handleOpenDialog,
       ...others
     },
     ref
@@ -65,6 +69,44 @@ const MainCard = React.forwardRef(
         }}
       >
         {/* card header and action */}
+        {!darkTitle && settingsIcon && (
+          <CardHeader
+            style={{ backgroundColor: headerColor && `${color}` }}
+            sx={headerSX}
+            // title={
+            //   <div style={{ display: 'flex', gap: 4, alignItems: 'center', color: headerColor && `white` }}>
+            //     {backButton && (
+            //       <IconButton
+            //         color="secondary"
+            //         size="large"
+            //         onClick={(e) => {
+            //           if (goBackLink) {
+            //             navigate(goBackLink);
+            //           } else navigate(-1);
+
+            //           // handleOpenEditDialog(e);
+            //         }}
+            //         style={{
+            //           padding: '5px'
+            //         }}
+            //       >
+            //         {/* <Link to={goBackLink}> */}
+            //         <ArrowBackIosNewRoundedIcon sx={{ fontSize: '1rem' }} />
+            //         {/* </Link> */}
+            //       </IconButton>
+            //     )}
+            //     {title}
+            //     <div style={{ marginLeft: '1rem' }}>{circle && circleItem({ couleur: circle })}</div>
+            //   </div>
+            // }
+            action={
+              <IconButton aria-label="settings" onClick={handleOpenDialog} color={theme.palette.secondary.main}>
+                <EditIcon />
+              </IconButton>
+            }
+            // action={secondary}
+          />
+        )}
         {!darkTitle && title && (
           <CardHeader
             style={{ backgroundColor: headerColor && `${color}` }}
@@ -96,6 +138,7 @@ const MainCard = React.forwardRef(
               </div>
             }
             action={secondary}
+            // action={secondary}
           />
         )}
 

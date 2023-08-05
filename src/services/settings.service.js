@@ -397,3 +397,30 @@ export function useCreateSociete() {
     }
   );
 }
+export function useGetInterventionColor() {
+  return useQuery(['settings-etats'], () => axiosClient.get(`settings/etats-interventions`).then((res) => res.data), {});
+}
+export function useGetEtats({ model }) {
+  return useQuery(
+    ['settings-etat', model],
+    () => axiosClient.get(`settings/etats?${model ? `model=${model}&` : ''}`).then((res) => res.data),
+    {}
+  );
+}
+
+export function useUpdateInterventionColors() {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (values) => {
+      const res = await axiosClient.put(`settings/etats-interventions`, values);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        toast.success(data?.message);
+        queryClient.invalidateQueries();
+      }
+    }
+  );
+}

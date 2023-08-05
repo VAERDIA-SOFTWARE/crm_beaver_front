@@ -10,8 +10,11 @@ import renderArrayMultiline from 'utilities/utilities';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { useCreateReglement, useGetFactures, useGetReglementsMode } from 'services/reglements.service';
 import SendIcon from '@mui/icons-material/Send';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const CreateReglement = () => {
+  const navigate = useNavigate();
+
   const useGetModeReglementQuery = useGetReglementsMode();
   const reglementMode = useGetModeReglementQuery?.data;
   const useGetFactureQuery = useGetFactures({});
@@ -21,12 +24,12 @@ const CreateReglement = () => {
   const [formInput, setFormInput] = useState({
     libelle: '',
     p_mode_de_reglement_id: '',
-    date_echeance: '',
-    date: '',
+    date_echeance: new Date(),
+    date: new Date(),
     reference_cheque: '',
     reference_traite: '',
     montant: '',
-    listFacture: ''
+    factures: []
   });
   const [selectedFacture, setSelectedFacture] = useState(null);
   const [selectedReglementMode, setSelectedReglementMode] = useState(null);
@@ -40,11 +43,10 @@ const CreateReglement = () => {
         ...formInput,
         date: moment(formInput?.date).format('YYYY-MM-DD'),
         date_echeance: moment(formInput?.date_echeance).format('YYYY-MM-DD')
-        // mise_en_place_date: moment(contractForm?.date_debut).format('YYYY-MM-DD')
       };
       await createReglementMutation.mutateAsync(formattedInput);
 
-      // navigate('/clients/list');
+      navigate('/reglements/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -127,8 +129,9 @@ const CreateReglement = () => {
               <Grid item xs={12} md={6}>
                 <TextField
                   variant="standard"
+                  type="number"
                   fullWidth
-                  label="montant*"
+                  label="Montant*"
                   value={formInput?.montant || ''}
                   name="montant"
                   onChange={handleChange}
@@ -164,7 +167,7 @@ const CreateReglement = () => {
               )}
               {/* <Grid item xs={12} md={6}>
                 <DesktopDatePicker
-                  label="Date de début"
+                  label="Date du création"
                   inputFormat="dd/MM/yyyy"
                   value={moment(formInput?.date).format('YYYY-MM-DD')}
                   onChange={(v) => {
@@ -189,11 +192,12 @@ const CreateReglement = () => {
 
               <Grid item xs={12} md={6}>
                 <Autocomplete
+                  multiple
                   onChange={(event, newValue) => {
                     setSelectedFacture(newValue);
 
                     setFormInput((formData) => {
-                      return { ...formData, listFacture: newValue?.id };
+                      return { ...formData, factures: newValue.map((facture) => facture.id) };
                     });
                   }}
                   options={factureData || []}
@@ -213,7 +217,7 @@ const CreateReglement = () => {
                 <LoadingButton
                   loadingPosition="end"
                   endIcon={<SendIcon />}
-                  // loading={createClientMutation.isLoading}
+                  loading={createReglementMutation.isLoading}
                   variant="contained"
                   type="submit"
                 >
