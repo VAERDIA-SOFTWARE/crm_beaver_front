@@ -6,7 +6,15 @@ import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import Chart from 'react-apexcharts';
 
-const ChartDashboard = ({ handleOpenChartDialog, handleCloseChartDialog, openCharts, chartsInformations, setChartsInformations }) => {
+const ChartDashboard = ({
+  handleOpenChartDialog,
+  handleCloseChartDialog,
+  openCharts,
+  chartsInformations,
+  setChartsInformations,
+  loggedinUser
+}) => {
+  console.log(loggedinUser?.resources);
   return (
     <MainCard
       settingsIcon={true}
@@ -29,7 +37,7 @@ const ChartDashboard = ({ handleOpenChartDialog, handleCloseChartDialog, openCha
           <Grid container spacing={gridSpacing}>
             <Grid container spacing={gridSpacing}>
               {chartsInformations
-                .filter((element) => element.default)
+                .filter((element) => element.default && loggedinUser?.resources[element?.ressource]?.authorized === true)
                 .map((element) => (
                   <Grid item xs={12} lg={4} sm={6} key={element.id}>
                     <AreaChartCard chartsInformations={element} setChartsInformations={setChartsInformations} />

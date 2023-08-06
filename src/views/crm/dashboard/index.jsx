@@ -77,6 +77,7 @@ const Analytics = () => {
         chartsInformations={chartsInformations}
         setChartsInformations={setChartsInformations}
         theme={theme}
+        loggedinUser={loggedinUser}
       />
       <TablesDashboard
         handleOpenDialog={handleOpenstatsDialog}

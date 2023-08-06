@@ -1,4 +1,5 @@
 import {
+  Card,
   CardContent,
   Checkbox,
   Dialog,
@@ -8,7 +9,8 @@ import {
   FormControlLabel,
   Grid,
   IconButton,
-  Typography
+  Typography,
+  useMediaQuery
 } from '@mui/material';
 import { styled, Stack } from '@mui/system';
 import { gridSpacing } from 'store/constant';
@@ -22,8 +24,18 @@ import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
 import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined';
 import { useState, useEffect } from 'react';
 import { useOpenWeather } from 'react-open-weather';
+import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
 
-const WidgetDashboard = ({ handleOpenDialog, handleCloseDialog, open, cardInformation, setCardInformation, theme, loggedinUser }) => {
+const WidgetDashboard = ({
+  handleOpenDialog,
+  handleCloseDialog,
+  open,
+  cardInformation,
+  setCardInformation,
+  theme,
+  loggedinUser,
+  bgcolor
+}) => {
   const [position, setPosition] = useState({ lat: null, lon: null });
   const { data } = useOpenWeather({
     key: 'ca47382a80733cff8869b6e0527167da',
@@ -32,6 +44,7 @@ const WidgetDashboard = ({ handleOpenDialog, handleCloseDialog, open, cardInform
     lang: 'fr',
     unit: 'metric'
   });
+  const matchDownXs = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -68,26 +81,60 @@ const WidgetDashboard = ({ handleOpenDialog, handleCloseDialog, open, cardInform
       )}
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12} lg={3} sm={6}>
-          <MainCard>
-            <Stack spacing={1}>
-              <Typography variant="h3">
-                {data?.current?.temperature?.current} <sup>°</sup>
-              </Typography>
-              <Typography variant="body1">Bonjour {loggedinUser?.name}</Typography>
-            </Stack>
-          </MainCard>
+          <Card sx={{ bgcolor: bgcolor || '', position: 'relative' }}>
+            <Grid container justifyContent="space-between" alignItems="center">
+              <Grid item xs={4} sx={{ background: theme.palette.secondary.main, py: 3.5, px: 0 }}>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    textAlign: 'center',
+                    color: '#fff',
+                    '& > svg': {
+                      width: 32,
+                      height: 32
+                    }
+                  }}
+                  align="center"
+                >
+                  <WbSunnyOutlinedIcon />
+                </Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="space-between"
+                  spacing={1}
+                  alignItems={matchDownXs ? 'center' : 'flex-start'}
+                >
+                  <Grid item sm={12}>
+                    <Typography variant="h3" sx={{ color: bgcolor ? '#fff' : '', ml: 2 }}>
+                      Bonjour {loggedinUser?.name}
+                    </Typography>
+                  </Grid>
+                  <Grid item sm={12}>
+                    <Typography variant="body2" align="left" sx={{ color: bgcolor ? '#fff' : 'grey.700', ml: 2 }}>
+                      {data?.current?.temperature?.current} <sup>°</sup>
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Card>
         </Grid>
         {cardInformation
-          .filter((element) => element.default)
+          .filter((element) => element.default && loggedinUser?.resources[element?.ressource]?.authorized === true)
           .map((element) => (
             <Fade in={true} out={true} timeout={500} key={element.id}>
               <Grid item xs={12} lg={3} sm={6}>
                 <ReportCard
+                  matchDownXs={matchDownXs}
                   cardInformation={cardInformation}
                   setCardInformation={setCardInformation}
                   primary={element.primaryData}
                   secondary={element.title}
-                  color={theme.palette.secondary.main}
+                  color={theme.palette[element.color]?.main}
+                  theme={theme}
                   iconPrimary={getIconComponent(element.icon)}
                 />
               </Grid>
@@ -141,6 +188,12 @@ const BootstrapDialogTitle = ({ children, onClose, ...other }) => (
 );
 
 const ModalContent = ({ cardInformation, setCardInformation }) => {
+  const updatedCardInfo = cardInformation.map((item) => {
+    return { ...item };
+  });
+
+  const selectedItemCount = updatedCardInfo.filter((item) => item.default).length;
+
   const handleChangeState = (event) => {
     const { name, checked } = event.target;
     const updatedCardInfo = cardInformation.map((item) => {
@@ -149,11 +202,9 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
       }
       return item;
     });
-    const selectedItems = updatedCardInfo.filter((item) => item.default);
-    if (selectedItems.length <= 3) {
+
+    if (selectedItemCount <= 3) {
       setCardInformation(updatedCardInfo);
-    } else {
-      toast.error('Vous ne pouvez pas choisir plus que quatre widgets');
     }
   };
 
@@ -164,7 +215,15 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
           {cardInformation.map((item) => (
             <Grid item xs={12} key={item.id}>
               <FormControlLabel
-                control={<Checkbox checked={item.default} onChange={handleChangeState} name={item.id.toString()} color="primary" />}
+                control={
+                  <Checkbox
+                    checked={item.default}
+                    onChange={handleChangeState}
+                    name={item.id.toString()}
+                    color="primary"
+                    disabled={!item.default && selectedItemCount >= 3}
+                  />
+                }
                 label={item.title}
               />
             </Grid>
@@ -177,26 +236,44 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
 
 //    Cards widget layout
 
-const ReportCard = ({ primary, secondary, iconPrimary, color, cardInformation, setCardInformation }) => {
+const ReportCard = ({ primary, secondary, iconPrimary, color, cardInformation, setCardInformation, theme, bgcolor, matchDownXs }) => {
   return (
-    <>
-      <MainCard>
-        <CustomizedDialogs cardInformation={cardInformation} setCardInformation={setCardInformation} />
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Stack spacing={1}>
-              <Typography variant="h3">{primary}</Typography>
-              <Typography variant="body1">{secondary}</Typography>
-            </Stack>
-          </Grid>
-          <Grid item>
-            <Typography variant="h2" style={{ color }}>
-              {iconPrimary}
-            </Typography>
+    <Card sx={{ bgcolor: bgcolor || '', position: 'relative' }}>
+      <Grid container justifyContent="space-between" alignItems="center">
+        <Grid item xs={4} sx={{ background: color, py: 3.5, px: 0 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              textAlign: 'center',
+              color: '#fff',
+              '& > svg': {
+                width: 32,
+                height: 32
+              }
+            }}
+            align="center"
+          >
+            {iconPrimary}
+          </Typography>
+        </Grid>
+        <Grid item xs={8}>
+          <Grid container direction="column" justifyContent="space-between" spacing={1} alignItems={matchDownXs ? 'center' : 'flex-start'}>
+            <Grid item sm={12}>
+              <Typography variant="h3" sx={{ color: bgcolor ? '#fff' : '', ml: 2 }}>
+                {primary}
+              </Typography>
+            </Grid>
+            <Grid item sm={12}>
+              <Typography variant="body2" align="left" sx={{ color: bgcolor ? '#fff' : 'grey.700', ml: 2 }}>
+                {secondary}
+
+                {/* <span style={{ color }}>{secondarySub}</span>{' '} */}
+              </Typography>
+            </Grid>
           </Grid>
         </Grid>
-      </MainCard>
-    </>
+      </Grid>
+    </Card>
   );
 };
 
