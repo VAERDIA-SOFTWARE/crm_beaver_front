@@ -69,7 +69,7 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/reglement/${params?.row?.id}/details`);
+          navigate(`/reglement/${params?.row?.id}/update`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />

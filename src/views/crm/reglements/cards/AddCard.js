@@ -41,6 +41,8 @@ import { MONTANTHT, MONTANTHTNET, MONTANTTTC, PUHTNET, PUTTC, totalHeaderCalucle
 import { DatePicker, DateTimePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import moment from 'moment/moment';
+import { reference } from '@popperjs/core';
+import { toast } from 'react-toastify';
 const CustomInput = forwardRef(({ ...props }, ref) => {
   return (
     <TextField
@@ -146,26 +148,17 @@ const tomorrowDate = now.setDate(now.getDate() + 7);
 const AddCard = ({
   items,
   setItems,
-  invoiceNumber,
-  selectedClient,
-  setSelectedClient,
-  selectedCompany,
-  setSelectedCompany,
-  date,
-  setDate,
-  object,
-  setObject,
   clientArticlesData,
+  setClientArticlesData,
   preferencesData,
   count,
   setCount,
   disabled = false,
-  operation,
-  setOperation,
-  setNumeroPiece,
-  numeroPiece,
   totalHeader,
-  setTotalHeader
+  setTotalHeader,
+  reglementData,
+  rest,
+  setRest
 }) => {
   // ** States
   const [selected, setSelected] = useState('');
@@ -182,14 +175,8 @@ const AddCard = ({
   useEffect(() => {
     setLocaleArticles([...getDistinctObjects(items, clientArticlesData)]);
   }, [clientArticlesData, items]);
-  useEffect(() => {
-    const calcule = totalHeaderCalucle(items);
-    setTotalHeader({ ...calcule });
-  }, [items, totalHeaderCalucle]);
-  console.log(totalHeader);
 
   // ** Hook
-  const theme = useTheme();
 
   // ** Deletes form
   const deleteForm = async (e, i) => {
@@ -201,6 +188,7 @@ const AddCard = ({
     setLocaleArticles((prev) => [...prev, itemBack]);
     // console.log(updatedItems)
     setItems([...updatedItems]);
+    setRest((prev) => prev + item?.montant_TTC_total);
 
     // @ts-ignore
     await e.target.closest('.repeater-wrapper').remove();
@@ -210,205 +198,118 @@ const AddCard = ({
 
   const updateFields = (index, fieldName, fieldValue) => {
     const updatedItems = [...items];
-    console.log('index', index);
-    if (fieldName === 'p_operation_id') {
-      const newIndex = localeArticles?.findIndex((e) => e?.id === fieldValue);
-      const item = localeArticles[newIndex];
-      const articles = [...localeArticles];
-      articles.splice(index, 1);
-      setLocaleArticles([...articles]);
-      updatedItems[index] = {
-        ...updatedItems[index],
-        id: fieldValue,
-        designation_article: item?.reference,
-        nom: item?.nom,
-        tva_rate: preferencesData?.taux_tva,
-        qte: 1,
-        remise: 0,
-        p_operation_id: fieldValue
-      };
-
-      // setLocaleArticles([...newLocaleARticles])
-    } else {
-      if (!(fieldName === 'designation_article')) {
-        updatedItems[index] = {
-          ...updatedItems[index],
-          [fieldName]: fieldValue
-        };
-        updatedItems[index] = {
-          ...updatedItems[index],
-          prix_unitaire_HTNet:
-            updatedItems[index]?.prix_unitaire_HT && PUHTNET(updatedItems[index]?.prix_unitaire_HT, updatedItems[index]?.remise)
-        };
-        updatedItems[index] = {
-          ...updatedItems[index],
-          prix_unitaire_TTC:
-            updatedItems[index]?.prix_unitaire_HTNet &&
-            updatedItems[index]?.tva_rate &&
-            PUTTC(updatedItems[index]?.prix_unitaire_HTNet, updatedItems[index]?.tva_rate)
-        };
-        updatedItems[index] = {
-          ...updatedItems[index],
-          montant_HT:
-            updatedItems[index]?.prix_unitaire_HT &&
-            updatedItems[index]?.qte &&
-            MONTANTHT(updatedItems[index]?.prix_unitaire_HT, updatedItems[index]?.qte)
-        };
-        updatedItems[index] = {
-          ...updatedItems[index],
-          montant_HTNet:
-            updatedItems[index]?.prix_unitaire_HTNet &&
-            updatedItems[index]?.qte &&
-            MONTANTHTNET(updatedItems[index]?.prix_unitaire_HTNet, updatedItems[index]?.qte)
-        };
-        updatedItems[index] = {
-          ...updatedItems[index],
-          montant_TTC:
-            updatedItems[index]?.prix_unitaire_TTC &&
-            updatedItems[index]?.qte &&
-            MONTANTTTC(updatedItems[index]?.prix_unitaire_TTC, updatedItems[index]?.qte)
-        };
-        updatedItems[index] = {
-          ...updatedItems[index],
-          montant_TVA:
-            updatedItems[index]?.montant_TTC &&
-            updatedItems[index]?.montant_HTNet &&
-            updatedItems[index]?.montant_TTC - updatedItems[index]?.montant_HTNet
-        };
-      } else {
-        updatedItems[index] = {
-          ...updatedItems[index],
-          [fieldName]: fieldValue
-        };
-      }
+    const newIndex = localeArticles?.findIndex((e) => e?.id === fieldValue);
+    const item = localeArticles[newIndex];
+    const articles = [...localeArticles];
+    if (rest === 0) {
+      toast.error('m');
+      return 0;
     }
+
+    articles.splice(index, 1);
+    setLocaleArticles([...articles]);
+    updatedItems[index] = {
+      ...updatedItems[index],
+      ...item,
+      rest_a_payer: rest - item?.montant_TTC_total >= 0 ? 0 : item?.montant_TTC_total - rest
+    };
+    setRest((prev) => (prev - item?.montant_TTC_total <= 0 ? 0 : prev - item?.montant_TTC_total));
     setItems([...updatedItems]);
 
     // setItems([...updatedItems])
   };
+
   return (
     <Card>
       <CardContent>
         <Grid container>
           <Grid item xl={6} xs={12} sx={{ mb: { xl: 0, xs: 4 } }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ mb: 6, display: 'flex', alignItems: 'center' }}>
-                {selectedCompany?.logo_url && (
-                  <img src={selectedCompany?.logo_url} height={150} style={{ backgroundSize: 'cover', maxWidth: 200 }} alt="Logo" />
-                )}
-                {/* <Typography variant='h6' sx={{ ml: 2, fontWeight: 700, lineHeight: 1.2 }}>
-                  {themeConfig.templateName}
-                </Typography> */}
-              </Box>
-              {/* <div>
-                <Typography variant='body2' sx={{ mb: 1 }}>
-                  Office 149, 450 South Brand Brooklyn
-                </Typography>
-                <Typography variant='body2' sx={{ mb: 1 }}>
-                  San Diego County, CA 91905, USA
-                </Typography>
-                <Typography variant='body2'>+1 (123) 456 7891, +44 (876) 543 2198</Typography>
-              </div> */}
+            <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ mr: 0, width: '80px' }}>
+                Reference :
+              </Typography>
+              <TextField
+                size="small"
+                value={reglementData?.reference}
+                sx={{ width: { sm: '160px', xs: '160px' } }}
+                InputProps={{
+                  disabled: true,
+                  startAdornment: <InputAdornment position="start">#</InputAdornment>
+                }}
+              />
+            </Box>
+            <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ mr: 0, width: '80px' }}>
+                Client :
+              </Typography>
+              <TextField
+                size="small"
+                value={reglementData?.client?.name}
+                sx={{ width: { sm: '160px', xs: '160px' } }}
+                InputProps={{
+                  disabled: true
+                }}
+              />
+            </Box>
+            <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ mr: 0, width: '80px' }}>
+                Date de creation :
+              </Typography>
+              <TextField
+                size="small"
+                value={reglementData?.created_at}
+                sx={{ width: { sm: '160px', xs: '160px' } }}
+                InputProps={{
+                  disabled: true
+                }}
+              />
             </Box>
           </Grid>
           <Grid item xl={6} xs={12}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xl: 'flex-end', xs: 'flex-start' } }}>
-              <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ mr: 1, width: '105px' }}>
-                  Reference
+              <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+                <Typography variant="body2" sx={{ mr: 0, width: '80px' }}>
+                  mode regelment :
                 </Typography>
                 <TextField
                   size="small"
-                  value={invoiceNumber}
-                  sx={{ width: { sm: '250px', xs: '170px' } }}
-                  InputProps={{
-                    disabled: true,
-                    startAdornment: <InputAdornment position="start">#</InputAdornment>
-                  }}
-                />
-              </Box>
-              {/* <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ mr: 1, width: '105px' }}>
-                  N° Document:
-                </Typography>
-                <TextField
-                  onChange={(event) => setNumeroPiece(event?.target?.value)}
-                  size="small"
-                  value={numeroPiece}
-                  sx={{ width: { sm: '250px', xs: '170px' } }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">#</InputAdornment>
-                  }}
-                />
-              </Box> */}
-              {/* <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ mr: 1, width: '105px' }}>
-                  Operation:
-                </Typography>
-                <TextField
-                  size="small"
-                  value={operation}
-                  sx={{ width: { sm: '250px', xs: '170px' } }}
+                  value={reglementData?.mode_de_reglement?.intitule}
+                  sx={{ width: { sm: '160px', xs: '160px' } }}
                   InputProps={{
                     disabled: true
                   }}
                 />
-              </Box> */}
-              <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ mr: 2, width: '100px' }}>
-                  Date :
-                </Typography>
-                {/* <DatePicker
-                  id="issue-date"
-                  dateFormat="dd/MM/yyyy"
-                  selected={date}
-                  customInput={<CustomInput />}
-                  onChange={(date) => setDate(date)}
-                /> */}
-                <LocalizationProvider
-                  dateAdapter={AdapterDateFns}
-                  // adapterLocale="fr"
-                  localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
-                >
-                  <DatePicker
-                    disabled={disabled}
-                    ampm={false}
-                    inputFormat="dd/MM/yyyy"
-                    renderInput={(params) => <TextField sx={{ width: 250 }} size="small" {...params} />}
-                    label="Date fin"
-                    value={moment(date).format('YYYY-MM-DD')}
-                    onChange={(v) => {
-                      try {
-                        const formattedDate = moment(v).format('YYYY-MM-DD');
-                        setDate(formattedDate);
-                      } catch (error) {}
-                    }}
-                  />
-                </LocalizationProvider>
               </Box>
-              {/* <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ mr: 2, width: '100px' }}>
-                  Objet :
-                </Typography>
-                <TextField
-                  disabled={disabled}
-                  size="small"
-                  value={object || 'Audit energitique'}
-                  sx={{ width: { sm: '250px', xs: '170px' } }}
-                  onChange={(event) => setObject(event?.target?.value)}
-                />
-              </Box> */}
-              {/* <Box sx={{ display: 'flex' }}>
-                <Typography variant='body2' sx={{ mr: 2, width: '100px' }}>
-                  Date Due:
-                </Typography>
-                <DatePicker
-                  id='due-date'
-                  selected={dueDate}
-                  customInput={<CustomInput />}
-                  onChange={date => setDueDate(date)}
-                />
-              </Box> */}
+              {(reglementData?.mode_de_reglement?.intitule === 'traite' || reglementData?.mode_de_reglement?.intitule === 'cheque') && (
+                <>
+                  <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="body2" sx={{ mr: 0, width: '80px' }}>
+                      Date echeance :
+                    </Typography>
+                    <TextField
+                      size="small"
+                      value={reglementData?.date_echeance}
+                      sx={{ width: { sm: '160px', xs: '160px' } }}
+                      InputProps={{
+                        disabled: true
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="body2" sx={{ mr: 0, width: '80px' }}>
+                      Reference :
+                    </Typography>
+                    <TextField
+                      size="small"
+                      value={reglementData?.reference_cheque || reglementData?.reference_traite}
+                      sx={{ width: { sm: '160px', xs: '160px' } }}
+                      InputProps={{
+                        disabled: true
+                      }}
+                    />
+                  </Box>
+                </>
+              )}
             </Box>
           </Grid>
         </Grid>
@@ -417,69 +318,33 @@ const AddCard = ({
       <Divider sx={{ my: (theme) => `${theme.spacing(1)} !important` }} />
 
       <CardContent sx={{ pb: 2 }}>
-        <Grid container justifyContent={'space-between'}>
-          <Grid item xs={3} sm={3}>
-            {selectedCompany !== null && selectedCompany !== undefined ? (
-              <div>
-                <Typography variant="body2" sx={{ mr: 2, color: 'text.primary', fontWeight: 900, letterSpacing: '.25px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-                    <span style={{ justifySelf: 'flex-start' }}>{`${selectedCompany?.intitule}`}</span>
-                  </div>
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, color: 'text.primary' }}>
-                  {selectedCompany?.adresse && `${selectedCompany?.adresse}`}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, color: 'text.primary' }}>
-                  {`${selectedCompany?.code_postale} ${selectedCompany?.ville}`}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, color: 'text.primary' }}>
-                  {selectedCompany?.siren_number && `N° Siret: ${selectedCompany?.siren_number}`}
-                </Typography>
-              </div>
-            ) : null}
-          </Grid>
-          <Grid
-            item
-            xs={3}
-            sm={3}
-            sx={{
-              mb: { lg: 0, xs: 4 }
-            }}
-          >
-            {!selectedClient && (
-              <Select size="small" value={selectedClient} onChange={(event) => setSelectedClient(event?.target?.value)} sx={{ mb: 4 }}>
-                {clientsQuery?.isSuccess &&
-                  clientsData?.map((client) => (
-                    <MenuItem key={client.name} value={client}>
-                      {client.name}
-                    </MenuItem>
-                  ))}
-              </Select>
-            )}
-            {selectedClient !== null && selectedClient !== undefined ? (
-              <div>
-                <Typography variant="body2" sx={{ mr: 2, color: 'text.primary', fontWeight: 900, letterSpacing: '.25px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-                    <span style={{ justifySelf: 'flex-start' }}>{`${selectedClient?.name}`}</span>
-                    {!disabled && (
-                      <IconButton size="small" onClick={(event) => setSelectedClient(null)}>
-                        <Icon icon="mdi:close" color="wrong" fontSize={20} />
-                      </IconButton>
-                    )}
-                  </div>
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, color: 'text.primary' }}>
-                  {`${selectedClient?.address}`}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, color: 'text.primary' }}>
-                  {`${selectedClient?.zip_code} ${selectedClient?.city}`}
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 1, color: 'text.primary' }}>
-                  {selectedClient?.siren_number && `SIREN : ${selectedClient?.siren_number}`}
-                </Typography>
-              </div>
-            ) : null}
-          </Grid>
+        <Grid container justifyContent={'space-around'}>
+          <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ mr: 0, width: '90px' }}>
+              MONTANT :
+            </Typography>
+            <span
+              style={{
+                fontSize: '1.25rem',
+                color: '#212121'
+              }}
+            >
+              {reglementData?.montant}
+            </span>
+          </Box>
+          <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ mr: 0, width: '60px' }}>
+              REST :
+            </Typography>
+            <span
+              style={{
+                fontSize: '1.25rem',
+                color: '#212121'
+              }}
+            >
+              {rest}
+            </span>
+          </Box>
         </Grid>
       </CardContent>
 
@@ -513,19 +378,19 @@ const AddCard = ({
                           <Typography variant="subtitle2" className="col-title" sx={{ mb: { md: 2, xs: 0 }, color: 'text.primary' }}>
                             Article
                           </Typography>
-                          {!item?.designation_article ? (
+                          {!item?.reference ? (
                             <FormControl sx={{ minWidth: 120, ml: '1rem' }}>
                               <InputLabel>Article</InputLabel>
                               <Select
                                 displayEmpty
                                 label="Article"
                                 size="small"
-                                value={item?.p_operation_id}
+                                value={item?.id}
                                 onChange={(event) => updateFields(i, 'p_operation_id', event?.target?.value)}
                               >
                                 {localeArticles?.map((article) => (
                                   <MenuItem key={article?.id} value={article?.id}>
-                                    {article?.nom}
+                                    {article?.reference}
                                   </MenuItem>
                                 ))}
                               </Select>
@@ -536,97 +401,13 @@ const AddCard = ({
                                 disabled
                                 size="small"
                                 sx={{ width: 100 }}
-                                value={item?.nom || item?.article?.nom}
+                                value={item?.reference}
                                 InputProps={{ inputProps: { min: 0 } }}
                                 InputLabelProps={{ shrink: true }}
                               />
                             </>
                           )}
                         </>
-                      </Grid>
-                      <Grid item>
-                        {/* <Typography
-                          variant='subtitle2'
-                          className='col-title'
-                          sx={{ mb: { md: 2, xs: 0 }, color: 'text.primary' }}
-                        >
-                          Designation
-                        </Typography> */}
-                        <TextField
-                          disabled={disabled}
-                          label="Designation"
-                          onChange={(event) => updateFields(i, 'designation_article', event?.target?.value)}
-                          size="small"
-                          sx={{ width: 200 }}
-                          value={item?.designation_article}
-                          InputProps={{ inputProps: { min: 0 } }}
-                          InputLabelProps={{ shrink: true }}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Typography variant="subtitle2" className="col-title" sx={{ mb: { md: 2, xs: 0 }, color: 'text.primary' }}>
-                          Quentité
-                        </Typography>
-                        <TextField
-                          disabled={disabled}
-                          label="Qte"
-                          onChange={(event) => updateFields(i, 'qte', parseInt(event?.target?.value))}
-                          size="small"
-                          type="number"
-                          sx={{ width: 70 }}
-                          value={item?.qte}
-                          InputProps={{ inputProps: { min: 0 } }}
-                          InputLabelProps={{ shrink: true }}
-                        />
-                      </Grid>
-                      <Grid item>
-                        {/* <Typography
-                          variant='subtitle2'
-                          className='col-title'
-                          sx={{ mb: { md: 2, xs: 0 }, color: 'text.primary' }}
-                        >
-                          Prix Unitaire HT
-                        </Typography> */}
-                        <TextField
-                          disabled={disabled}
-                          label="PU HT"
-                          onChange={(event) => {
-                            const inputValue = event.target.value;
-                            const numbersOnly = inputValue.replace(/[^0-9.]/g, '');
-                            updateFields(i, 'prix_unitaire_HT', parseFloat(numbersOnly) || 0);
-                          }}
-                          size="small"
-                          sx={{ width: 100 }}
-                          value={item?.prix_unitaire_HT}
-                          InputProps={{ inputProps: { min: 0 } }}
-                          InputLabelProps={{ shrink: true }}
-                        />
-                      </Grid>
-                      <Grid item>
-                        {/* <Typography
-                          variant='subtitle2'
-                          className='col-title'
-                          sx={{ mb: { md: 2, xs: 0 }, color: 'text.primary' }}
-                        >
-                          Remise
-                        </Typography> */}
-                        <TextField
-                          disabled={disabled}
-                          label="Remise"
-                          onChange={(event) => {
-                            const inputValue = event.target.value;
-                            const numbersOnly = inputValue.replace(/[^0-9.]/g, '');
-                            updateFields(i, 'remise', parseFloat(numbersOnly) || 0);
-                          }}
-                          size="small"
-                          sx={{ width: 80 }}
-                          value={item?.remise}
-                          InputProps={{
-                            inputProps: { min: 0 },
-                            endAdornment: <InputAdornment position="end">%</InputAdornment>
-                          }}
-                          InputLabelProps={{ shrink: true }}
-                        />
                       </Grid>
                       {/* <Grid item> */}
                       {/* <Typography
@@ -703,14 +484,27 @@ const AddCard = ({
                       </Grid> */}
                       <Grid item>
                         <Typography variant="subtitle2" className="col-title" sx={{ mb: { md: 2, xs: 0 }, color: 'text.primary' }}>
-                          Montant HTNet
+                          Montant TTC
                         </Typography>
                         <TextField
                           sx={{ width: 120 }}
                           disabled
                           size="small"
                           type="number"
-                          value={item?.montant_HTNet}
+                          value={item?.montant_TTC_total}
+                          InputProps={{ inputProps: { min: 0 } }}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Typography variant="subtitle2" className="col-title" sx={{ mb: { md: 2, xs: 0 }, color: 'text.primary' }}>
+                          Reste a payer
+                        </Typography>
+                        <TextField
+                          sx={{ width: 120 }}
+                          disabled
+                          size="small"
+                          type="number"
+                          value={item?.rest_a_payer}
                           InputProps={{ inputProps: { min: 0 } }}
                         />
                       </Grid>
@@ -767,6 +561,7 @@ const AddCard = ({
           <Grid item xs={12} sx={{ px: 0 }}>
             {!disabled && (
               <Button
+                disabled={rest === 0}
                 size="small"
                 variant="contained"
                 startIcon={<Icon icon="mdi:plus" fontSize={20} />}
@@ -775,7 +570,7 @@ const AddCard = ({
                   setCount(count + 1);
                 }}
               >
-                Ajouter Ligne
+                Ajouter Facture
               </Button>
             )}
           </Grid>
@@ -784,9 +579,9 @@ const AddCard = ({
 
       <Divider />
 
-      <CardContent>
+      {/* <CardContent>
         <Grid container>
-          <Grid item xs={12} sm={9} sx={{ order: { sm: 1, xs: 2 } }}>
+           <Grid item xs={12} sm={9} sx={{ order: { sm: 1, xs: 2 } }}>
             <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Typography variant="body2" sx={{ mr: 2, color: 'text.primary', fontWeight: 900, letterSpacing: '.25px' }}>
                 COORDONNEES BANCAIRES :
@@ -809,8 +604,7 @@ const AddCard = ({
             <CalcWrapper>
               <Typography variant="body2">Remise:</Typography>
               <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', lineHeight: '.25px' }}>
-                {/* {headerTotalData?.amount_discount} */}
-                {/* {Math.round((headerTotalData?.amount_discount + Number.EPSILON) * 100) / 100} */}
+
                 {Math.round((totalHeader?.montant_Remise + Number.EPSILON) * 100) / 100}
               </Typography>
             </CalcWrapper>
@@ -824,7 +618,6 @@ const AddCard = ({
             <CalcWrapper>
               <Typography variant="body2">Total:</Typography>
               <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', lineHeight: '.25px' }}>
-                {/* {headerTotalData?.amount_TTC_total} */}
                 {Math.round((totalHeader?.montant_TTC_total + Number.EPSILON) * 100) / 100}
               </Typography>
             </CalcWrapper>
@@ -832,9 +625,9 @@ const AddCard = ({
         </Grid>
       </CardContent>
 
-      <Divider sx={{ my: (theme) => `${theme.spacing(1)} !important` }} />
+      <Divider sx={{ my: (theme) => `${theme.spacing(1)} !important` }} /> */}
 
-      <CardContent sx={{ pt: 4 }}>
+      {/* <CardContent sx={{ pt: 4 }}>
         <InputLabel htmlFor="invoice-note">Pieds de page:</InputLabel>
         <TextField
           disabled
@@ -845,7 +638,7 @@ const AddCard = ({
           sx={{ '& .MuiInputBase-input': { color: 'text.secondary' } }}
           defaultValue={selectedCompany?.footer1}
         />
-      </CardContent>
+      </CardContent> */}
     </Card>
   );
 };

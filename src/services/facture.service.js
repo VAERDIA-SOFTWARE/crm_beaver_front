@@ -2,15 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosClient from 'axiosClient';
 import { toast } from 'react-toastify';
 
-export const useGetFactures = ({ paginated = false, page, searchFilter, clientId, type }) => {
+export const useGetFactures = ({ payed = null, paginated = false, page, searchFilter, clientId, type, status = null }) => {
   return useQuery(
-    ['factures', page, searchFilter, paginated, clientId, type],
+    ['factures', page, payed, searchFilter, paginated, clientId, type, status],
     () => {
       return axiosClient
         .get(
-          `factures?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}${clientId ? `client_id=${clientId}&` : ''}${
+          `factures?page=${page}&${searchFilter ? `search=${searchFilter}&` : ''}${clientId ? `clientId=${clientId}&` : ''}${
             paginated ? `paginated=${paginated}&` : ''
-          }${type ? `type=${type}&` : ''}`
+          }${type ? `type=${type}&` : ''}${status ? `status=${status}&` : ''}${payed ? `payed=${payed}&` : ''}`
         )
         .then((res) => res.data);
     },

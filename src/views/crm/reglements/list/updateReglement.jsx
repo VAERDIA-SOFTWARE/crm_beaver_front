@@ -11,22 +11,40 @@ import { useConfirm } from 'material-ui-confirm';
 import { useNavigate, useParams } from 'react-router-dom';
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
-import renderArrayMultiline from 'utilities/utilities';
-import {
-  useDeleteReglementMutation,
-  useGetFactures,
-  useGetReglement,
-  useGetReglementsMode,
-  useUpdateReglement
-} from 'services/reglements.service';
+import { useGetReglement, useUpdateReglement } from 'services/reglements.service';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import moment from 'moment/moment';
+import AddActions from '../cards/AddActions';
+import AddCard from '../cards/AddCard';
+import {
+  useCancelInvoice,
+  useGetFactures,
+  useGetInvoiceById,
+  useGetInvoices,
+  useUpdateInvoice,
+  useValidateInvoice
+} from 'services/facture.service';
+import { useGetArticles } from 'services/articles.service';
+import { useGetSettingsPreferences } from 'services/settings.service';
+import { useGetCompanie } from 'services/companies.service';
 
-const UpdateReglement = () => {
+const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBackLink = '/factures/list' }) => {
+  const router = useNavigate();
   const { reglementId } = useParams();
 
-  const [formErrors, setFormErrors] = useState({});
-  const [formInput, setFormInput] = useState({
+  // const toggleAddCustomerDrawer = () => setAddCustomerOpen(!addCustomerOpen)
+  const [totalHeader, setTotalHeader] = useState({
+    montant_HT_total: '',
+    montant_TTC_total: '',
+    montant_TVA_total: '',
+    montant_HTNet_total: '',
+    montant_Remise: ''
+  });
+  // const createInvoiceAvoirMutation = useCreateInvoiceAvoir(invoiceId);
+  const updateInvoiceMutation = useUpdateReglement(reglementId);
+  const validateInvoiceMutation = useValidateInvoice(reglementId);
+  const cancelInvoiceMutation = useCancelInvoice(reglementId);
+  const [reglementData, setReglementData] = useState({
     libelle: '',
     p_mode_de_reglement_id: '',
     date_echeance: new Date(),
@@ -34,288 +52,168 @@ const UpdateReglement = () => {
     reference_cheque: '',
     reference_traite: '',
     montant: '',
-    listFacture: ''
+    factures: [],
+    client_id: ''
   });
+  const [items, setItems] = useState([]);
+  const [articles, setArticles] = useState([]);
+  const [count, setCount] = useState(1);
 
-  const [selectedFacture, setSelectedFacture] = useState(null);
-  const [selectedreglementMode, setSelectedReglementMode] = useState(null);
-  const useGetFactureQuery = useGetFactures({});
-  const factureData = useGetFactureQuery?.data;
-  const deleteReglementMutation = useDeleteReglementMutation(reglementId);
-  const updateReglementMutation = useUpdateReglement(reglementId);
-  const getReglementsQuery = useGetReglement(reglementId);
-  const reglementData = getReglementsQuery.data;
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  // const [avoir, setAvoir] = useState(false);
+  const [rest, setRest] = useState(0);
+  const [operation, setOperation] = useState(null);
 
-  const useGetModeReglementQuery = useGetReglementsMode();
-  const reglementMode = useGetModeReglementQuery?.data;
-
+  const dossiersQuery = useGetFactures({ payed: '0', paginated: false, clientId: reglementData?.client_id });
+  const clientArticlesData = dossiersQuery?.data;
+  const preferencesQeury = useGetSettingsPreferences();
+  const preferencesData = preferencesQeury?.data;
+  const invoiceQuery = useGetReglement(reglementId);
+  const invoiceData = invoiceQuery?.data;
+  const companiesQuery = useGetCompanie();
+  const companiesData = companiesQuery?.data;
   useEffect(() => {
-    if (getReglementsQuery.isSuccess) {
-      setFormInput((f) => {
-        return {
-          ...f,
-          // p_mode_de_reglement_id: reglementData?.p_mode_de_reglement_id,
-          ...reglementData,
-          listFacture: reglementData?.factures
-        };
-      });
+    if (invoiceQuery?.isSuccess) {
+      if (invoiceData?.reste === 0) {
+        setDisabled(true);
+      }
+      setReglementData({ ...invoiceData });
+      setRest(invoiceData?.reste);
+      invoiceQuery?.isSuccess && setItems([...invoiceData?.factures]);
+      dossiersQuery?.isSuccess && setArticles([...clientArticlesData]);
+      setCount(invoiceData?.factures?.length === 0 ? 1 : invoiceData?.factures?.length);
     }
-  }, [reglementData, getReglementsQuery.isSuccess]);
+  }, [dossiersQuery?.isSuccess, clientArticlesData, invoiceData, invoiceQuery?.isSuccess, companiesData]);
 
-  const navigate = useNavigate();
-
-  const confirm = useConfirm();
-
-  const handleChange = (e) => {
-    setFormInput({
-      ...formInput,
-      [e.target.name]: e.target.value
-    });
+  // useEffect(() => {
+  // }, [nextRefrenceData])
+  const handlePrintInvoice = () => {
+    const fileURL = `${process.env.REACT_APP_API_URL}factures/${invoiceId}/pdf`;
+    const link = document.createElement('a');
+    link.href = fileURL;
+    link.target = '_blank';
+    link.download = 'download.pdf';
+    link.click();
   };
 
-  const handleSubmit = async (e) => {
-    // e.preventDefault();
-    // setFormErrors({});
-    // const formattedFormInput = {
-    //   ...formInput,
-    //   date: moment(formInput.date).format('YYYY-MM-DD'),
-    //   date_echeance: moment(formInput.date_echeance).format('YYYY-MM-DD hh:mm')
-    // };
-    // try {
-    //   await updateReglementMutation.mutateAsync({
-    //     ...formattedFormInput
-    //   });
-    // } catch (error) {
-    //   const errorsObject = error?.response?.data;
-    //   setFormErrors(errorsObject);
-    // }
+  const handleSubmit = async () => {
+    const filteredArray = items.filter((value) => value !== undefined);
+
+    const form = {
+      ...reglementData,
+      factures: [...filteredArray]
+    };
+
+    try {
+      await updateInvoiceMutation.mutateAsync(form);
+
+      router(goBackLink);
+    } catch (error) {
+      // toast.error(error?.response?.data?.message);
+    }
   };
-  console.log(moment(reglementData?.date_echeance).format('YYYY-MM-DD HH:mm:ss'));
+
   return (
-    <MainCard title={`Ajouter Reglement`} backButton goBackLink="/reglements/list">
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <>
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="Libelle*"
-                  value={formInput?.libelle || ''}
-                  name="libelle"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.libelle}
-                  helperText={renderArrayMultiline(formErrors?.data?.libelle)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="reference_cheque*"
-                  value={formInput?.reference_cheque || ''}
-                  name="reference_cheque"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.reference_cheque}
-                  helperText={renderArrayMultiline(formErrors?.data?.reference_cheque)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="reference_traite*"
-                  value={formInput?.reference_traite || ''}
-                  name="reference_traite"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.reference_traite}
-                  helperText={renderArrayMultiline(formErrors?.data?.reference_traite)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  variant="standard"
-                  fullWidth
-                  label="montant*"
-                  value={formInput?.montant || ''}
-                  name="montant"
-                  onChange={handleChange}
-                  error={!!formErrors?.data?.montant}
-                  helperText={renderArrayMultiline(formErrors?.data?.montant)}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <DateTimePicker
-                  ampm={false}
-                  label="Date d'echaillance"
-                  inputFormat="dd/MM/yyyy HH:mm"
-                  // value={formInput?.date_echeance}
-                  value={moment(formInput?.date_echeance).format('YYYY-MM-DD HH:mm:ss')}
-                  onChange={(v) => {
-                    try {
-                      setFormInput((f) => {
-                        return { ...f, date_echeance: v };
-                      });
-                    } catch (error) {}
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      fullWidth
-                      required
-                      variant="standard"
-                      {...params}
-                      error={!!formErrors?.data?.date_echeance}
-                      helperText={renderArrayMultiline(formErrors?.data?.date_echeance)}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <DesktopDatePicker
-                  ampm={false}
-                  label="Date"
-                  inputFormat="dd/MM/yyyy HH:mm"
-                  value={moment(formInput?.date).format('YYYY-MM-DD HH:mm:ss')}
-                  //   value={moment(formInput?.date_echeance).format('yyyy- mm-mm')}
-                  onChange={(v) => {
-                    try {
-                      setFormInput((f) => {
-                        return { ...f, date: v };
-                      });
-                    } catch (error) {}
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      fullWidth
-                      required
-                      variant="standard"
-                      {...params}
-                      error={!!formErrors?.data?.date}
-                      helperText={renderArrayMultiline(formErrors?.data?.date)}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {useGetModeReglementQuery?.isSuccess && (
-                  <Autocomplete
-                    onChange={(event, newValue) => {
-                      setSelectedReglementMode(newValue);
+    <MainCard
+      title={title}
+      backButton
+      goBackLink={goBackLink}
+      secondary={
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          {invoiceData?.status?.status === 0 && (
+            <>
+              <LoadingButton
+                loadingPosition="end"
+                loading={validateInvoiceMutation.isLoading}
+                onClick={async () => {
+                  try {
+                    await validateInvoiceMutation.mutateAsync();
+                    router(goBackLink);
+                  } catch {}
+                }}
+                variant="contained"
+                type="submit"
+                sx={{
+                  backgroundColor: '#2ea50d'
+                }}
+              >
+                {invoiceData?.p_type === 21 ? 'Generer Facture' : 'Valider'}
+              </LoadingButton>
+              <LoadingButton
+                sx={{
+                  backgroundColor: 'rgb(239, 68, 68)'
+                }}
+                loadingPosition="end"
+                loading={cancelInvoiceMutation.isLoading}
+                onClick={async () => {
+                  try {
+                    await cancelInvoiceMutation.mutateAsync();
+                    router(goBackLink);
+                  } catch {}
+                }}
+                variant="contained"
+                type="submit"
+              >
+                Annuler
+              </LoadingButton>
+            </>
+          )}
 
-                      setFormInput((formData) => {
-                        return { ...formData, p_mode_de_reglement_id: newValue?.id };
-                      });
-                    }}
-                    options={reglementMode || []}
-                    getOptionLabel={(option) => option.intitule}
-                    defaultValue={useGetModeReglementQuery?.data?.find((e) => reglementData?.p_mode_de_reglement_id === e?.id)}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="standard"
-                        label="Catégorie*"
-                        error={!!formErrors?.data?.p_mode_de_reglement_id}
-                        helperText={renderArrayMultiline(formErrors?.data?.p_mode_de_reglement_id)}
-                      />
-                    )}
-                  />
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {factureData && reglementData && (
-                  <Autocomplete
-                    multiple
-                    onChange={(event, newValue) => {
-                      setSelectedFacture(newValue); // Update the selected factures array
-
-                      setFormInput((formData) => {
-                        return { ...formData, listFacture: newValue.map((facture) => facture.id) };
-                      });
-                    }}
-                    // onChange={(event, newValue) => {
-                    //   setSelectedFacture(newValue);
-
-                    //   setFormInput((formData) => {
-                    //     return { ...formData, listFacture: newValue?.id };
-                    //   });
-                    // }}
-                    options={factureData || []}
-                    defaultValue={returnEqualValuesInArray(factureData, reglementData?.factures, 'id')}
-                    getOptionLabel={(option) => option.reference}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="standard"
-                        label="Factures*"
-                        error={!!formErrors?.data?.listFacture}
-                        helperText={renderArrayMultiline(formErrors?.data?.listFacture)}
-                      />
-                    )}
-                  />
-                )}
-              </Grid>
-              <Grid item sx={{ display: 'flex', justifyContent: 'space-between' }} xs={12}>
-                <LoadingButton
-                  disabled={getReglementsQuery.isLoading}
-                  loadingPosition="start"
-                  startIcon={<DeleteIcon />}
-                  loading={deleteReglementMutation.isLoading}
-                  variant="outlined"
-                  color="error"
-                  onClick={() =>
-                    confirm({
-                      description: `Êtes-vous sûr de vouloir supprimer ${reglementData?.libelle}.`,
-                      title: `Veuillez confirmer la suppression`
-                    })
-                      .then(async () => {
-                        try {
-                          await deleteReglementMutation.mutateAsync();
-                          navigate('/reglements/list', {
-                            replace: true
-                          });
-                        } catch (error) {}
-                      })
-                      .catch(() => console.log('Utilisateur supprimé avec succès.'))
-                  }
-                >
-                  {'Supprimer'}
-                </LoadingButton>
-
-                <LoadingButton
-                  loadingPosition="end"
-                  endIcon={<SendIcon />}
-                  loading={updateReglementMutation.isLoading}
-                  variant="contained"
-                  type="submit"
-                >
-                  Modifier
-                </LoadingButton>
-              </Grid>
-
-              <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}></Grid>
-            </Grid>
-          </form>
-        </>
-      </LocalizationProvider>
+          {/* {invoiceData?.state?.state === 1 && invoiceData?.nature?.nature === '1' && (
+            <LoadingButton
+              loadingPosition='end'
+              loading={validateInvoiceMutation.isLoading}
+              onClick={async () => {
+                try {
+                  await createInvoiceAvoirMutation.mutateAsync()
+                  router.push('/invoices')
+                } catch {}
+              }}
+              variant='contained'
+              type='submit'
+              sx={{
+                backgroundColor: 'rgb(239, 68, 68)'
+              }}
+            >
+              Facture AVoir
+            </LoadingButton>
+          )} */}
+        </div>
+      }
+    >
+      <Grid container spacing={6}>
+        <Grid item xl={9} md={8} xs={12}>
+          <AddCard
+            rest={rest}
+            setRest={setRest}
+            reglementData={reglementData}
+            totalHeader={totalHeader}
+            setTotalHeader={setTotalHeader}
+            disabled={disabled}
+            items={items}
+            setItems={setItems}
+            clientArticlesData={articles}
+            setClientArticlesData={setArticles}
+            preferencesData={preferencesData}
+            count={count}
+            setCount={setCount}
+          />
+        </Grid>
+        <Grid item xl={3} md={4} xs={12}>
+          <AddActions
+            disabled={disabled}
+            edit={true}
+            mainAction="Editer"
+            handleSubmit={handleSubmit}
+            showInvoice={showInvoice}
+            setShowInvoice={setShowInvoice}
+            printInvoice={handlePrintInvoice}
+          />
+        </Grid>
+      </Grid>
     </MainCard>
   );
 };
 
 export default UpdateReglement;
-
-const returnEqualValuesInArray = (a, b, field) => {
-  const t = [];
-  try {
-    a?.forEach((aElement) => {
-      b?.forEach((bElement) => {
-        if (aElement[field] === bElement[field]) {
-          t.push(aElement);
-        }
-      });
-    });
-    return t;
-  } catch (error) {
-    return [];
-  }
-};

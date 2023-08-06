@@ -33,10 +33,6 @@ const ClientsList = () => {
 
   const getClientsQuery = useGetUsers({ page, searchFilter, type: '1', paginated: true, role: 'client' });
 
-  console.log('====================================');
-  console.log(getClientsQuery);
-  console.log('====================================');
-
   const navigate = useNavigate();
 
   return (
