@@ -190,12 +190,11 @@ const Calendar = () => {
       setSelectedEvent(null);
     }
   };
-  console.log("'zeazeazeaz");
   const handleEventUpdate = async ({ event }) => {
     try {
-      console.log(event);
-      const start = moment(event?._def?.extendedProps?.start).format('YYYY-MM-DD HH:mm:ss');
-      const end = moment(event?._def?.extendedProps?.fin).format('YYYY-MM-DD HH:mm:ss');
+      const start = event?._instance?.range?.start?.toUTCString();
+      const end = event?._instance?.range?.end?.toUTCString();
+
       const selectedEvent = getInspectionsCalendarQuery.data?.find((_event) => _event.id === +event.id);
       const a = [...localInspectionUpdates, { ...selectedEvent, debut: start, fin: end, start: event?.start, end: event?.end }].filter(
         (v, i, a) => a.findLastIndex((v2) => v2.id === v.id) === i

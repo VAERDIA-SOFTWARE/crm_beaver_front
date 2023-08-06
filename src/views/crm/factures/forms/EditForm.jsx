@@ -1,36 +1,41 @@
-import { useEffect, useState } from 'react';
-// material-ui
-import DeleteIcon from '@mui/icons-material/Delete';
-import SendIcon from '@mui/icons-material/Send';
-import { Autocomplete, Divider, Grid, Skeleton, TextField, Typography } from '@mui/material';
-import { DateTimePicker, DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+// ** React Imports
+import { useContext, useEffect, useState } from 'react';
 
-// project imports
-import { LoadingButton } from '@mui/lab';
-import { useConfirm } from 'material-ui-confirm';
-import { useNavigate, useParams } from 'react-router-dom';
-import { gridSpacing } from 'store/constant';
-import MainCard from 'ui-component/cards/MainCard';
-import { useGetReglement, useUpdateReglement } from 'services/reglements.service';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import moment from 'moment/moment';
+// ** MUI Imports
+import Grid from '@mui/material/Grid';
+
+// ** Third Party Components
+import axios from 'axios';
+
+// ** Demo Components Imports
 import AddActions from '../cards/AddActions';
+
+// ** Styled Component
 import AddCard from '../cards/AddCard';
 import {
   useCancelInvoice,
-  useGetFactures,
+  useCreateInvoiceAvoir,
+  useGetHeaderTotal,
   useGetInvoiceById,
-  useGetInvoices,
+  useGetNextRefrence,
   useUpdateInvoice,
   useValidateInvoice
 } from 'services/facture.service';
-import { useGetArticles } from 'services/articles.service';
+// import { useGetClientArticles, useGetDossier } from 'services/dossier.service';
 import { useGetSettingsPreferences } from 'services/settings.service';
-import { useGetCompanie } from 'services/companies.service';
+// import { ArrayContext } from 'src/context/ArrayContext';
+import { toast } from 'react-toastify';
+import { useGetArticles } from 'services/articles.service';
 
-const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBackLink = '/factures/list' }) => {
+import moment from 'moment/moment';
+import InvoicePdfDialog from '../dialog/InvoicePdfDialog';
+import { LoadingButton } from '@mui/lab';
+import { useNavigate } from 'react-router-dom';
+import { useGetCompanie } from 'services/companies.service';
+import MainCard from 'ui-component/cards/MainCard';
+
+const EditForm = ({ invoiceId, type = 1, title = 'Editer Facture', goBackLink = '/factures/list' }) => {
   const router = useNavigate();
-  const { reglementId } = useParams();
 
   // const toggleAddCustomerDrawer = () => setAddCustomerOpen(!addCustomerOpen)
   const [totalHeader, setTotalHeader] = useState({
@@ -41,48 +46,48 @@ const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBack
     montant_Remise: ''
   });
   // const createInvoiceAvoirMutation = useCreateInvoiceAvoir(invoiceId);
-  const updateInvoiceMutation = useUpdateReglement(reglementId);
-  const validateInvoiceMutation = useValidateInvoice(reglementId);
-  const cancelInvoiceMutation = useCancelInvoice(reglementId);
-  const [reglementData, setReglementData] = useState({
-    libelle: '',
-    p_mode_de_reglement_id: '',
-    date_echeance: new Date(),
-    date: new Date(),
-    reference_cheque: '',
-    reference_traite: '',
-    montant: '',
-    factures: [],
-    client_id: ''
-  });
+  const updateInvoiceMutation = useUpdateInvoice(invoiceId);
+  const validateInvoiceMutation = useValidateInvoice(invoiceId);
+  const cancelInvoiceMutation = useCancelInvoice(invoiceId);
   const [items, setItems] = useState([]);
   const [articles, setArticles] = useState([]);
+  const [reglementIds, setReglementIds] = useState([]);
   const [count, setCount] = useState(1);
-
+  const [invoiceNumber, setinvoiceNumber] = useState('');
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [date, setDate] = useState(new Date());
   const [showInvoice, setShowInvoice] = useState(false);
+  const [object, setObject] = useState('');
   const [disabled, setDisabled] = useState(false);
   // const [avoir, setAvoir] = useState(false);
-  const [rest, setRest] = useState(0);
+  const [numeroPiece, setNumeroPiece] = useState('');
   const [operation, setOperation] = useState(null);
 
-  const dossiersQuery = useGetFactures({ payed: '0', paginated: false, clientId: reglementData?.client_id });
+  const dossiersQuery = useGetArticles({});
   const clientArticlesData = dossiersQuery?.data;
   const preferencesQeury = useGetSettingsPreferences();
   const preferencesData = preferencesQeury?.data;
-  const invoiceQuery = useGetReglement(reglementId);
+  const invoiceQuery = useGetInvoiceById(invoiceId);
   const invoiceData = invoiceQuery?.data;
   const companiesQuery = useGetCompanie();
   const companiesData = companiesQuery?.data;
   useEffect(() => {
     if (invoiceQuery?.isSuccess) {
-      if (invoiceData?.reste === 0) {
+      if (invoiceData?.status?.status !== 0) {
         setDisabled(true);
       }
-      setReglementData({ ...invoiceData });
-      setRest(invoiceData?.reste);
-      invoiceQuery?.isSuccess && setItems([...invoiceData?.factures]);
+      setinvoiceNumber(invoiceData?.reference);
+      setSelectedClient(invoiceData?.user);
+      setSelectedCompany(companiesData);
+      setObject(invoiceData?.object);
+      setOperation(invoiceData?.operation);
+      setNumeroPiece(invoiceData?.num_piece);
+
+      setDate(new Date(moment(invoiceData?.date_facture, 'YYYY-MM-DD HH:mm:ss').format()));
+      invoiceQuery?.isSuccess && setItems([...invoiceData?.facture_lignes]);
       dossiersQuery?.isSuccess && setArticles([...clientArticlesData]);
-      setCount(invoiceData?.factures?.length === 0 ? 1 : invoiceData?.factures?.length);
+      setCount(invoiceData?.invoice_lines?.length === 0 ? 1 : invoiceData?.facture_lignes?.length);
     }
   }, [dossiersQuery?.isSuccess, clientArticlesData, invoiceData, invoiceQuery?.isSuccess, companiesData]);
 
@@ -101,8 +106,15 @@ const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBack
     const filteredArray = items.filter((value) => value !== undefined);
 
     const form = {
-      ...reglementData,
-      factures: [...filteredArray]
+      reference: invoiceNumber,
+      object: object,
+      client_id: selectedClient?.id,
+      p_society_id: selectedCompany?.id,
+      date_facture: date,
+      num_piece: numeroPiece,
+      comment: '',
+      factureLignes: [...filteredArray],
+      type: type
     };
 
     try {
@@ -185,16 +197,27 @@ const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBack
       <Grid container spacing={6}>
         <Grid item xl={9} md={8} xs={12}>
           <AddCard
-            rest={rest}
-            setRest={setRest}
-            reglementData={reglementData}
+            reglementIds={reglementIds}
+            setReglementIds={setReglementIds}
             totalHeader={totalHeader}
             setTotalHeader={setTotalHeader}
+            numeroPiece={numeroPiece}
+            setNumeroPiece={setNumeroPiece}
+            operation={operation}
+            setOperation={setOperation}
             disabled={disabled}
             items={items}
             setItems={setItems}
+            invoiceNumber={invoiceNumber}
+            selectedClient={selectedClient}
+            setSelectedClient={setSelectedClient}
+            selectedCompany={selectedCompany}
+            setSelectedCompany={setSelectedCompany}
+            date={date}
+            setDate={setDate}
+            object={object}
+            setObject={setObject}
             clientArticlesData={articles}
-            setClientArticlesData={setArticles}
             preferencesData={preferencesData}
             count={count}
             setCount={setCount}
@@ -212,8 +235,11 @@ const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBack
           />
         </Grid>
       </Grid>
+      <div style={{ width: 1300 }}>
+        <InvoicePdfDialog reference={invoiceNumber} invoiceId={invoiceId} setOpen={setShowInvoice} open={showInvoice} />
+      </div>
     </MainCard>
   );
 };
 
-export default UpdateReglement;
+export default EditForm;

@@ -9,7 +9,7 @@ import InputLabel from 'ui-component/extended/Form/InputLabel';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetFacture, useGetFactureTotal } from 'services/facture.service';
+import { useGetFacture, useGetHeaderTotal } from 'services/facture.service';
 import LogoText from 'ui-component/LogoText';
 import TotalCard from './CreateFacture/TotalCard';
 
@@ -33,7 +33,7 @@ function DetailsFacture({ facture }) {
     totalAmount: 0
   });
 
-  const useGetFactureTotalQuery = useGetFactureTotal(productsData);
+  const useGetFactureTotalQuery = useGetHeaderTotal(productsData);
   // for calculating cost of all orders
   const getTotalAmounts = () => {
     const amounts = {

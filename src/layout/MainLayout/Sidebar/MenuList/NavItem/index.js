@@ -19,12 +19,10 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 const NavItem = ({ item, level, loggedInUser, parentItem }) => {
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down('lg'));
-
   const location = useLocation();
   const { borderRadius } = useConfig();
   const dispatch = useDispatch();
   const { openItem } = useSelector((state) => state.menu);
-
   const Icon = item?.icon;
   const itemIcon = item?.icon ? (
     <Icon stroke={1.5} size="1.3rem" />
@@ -37,7 +35,6 @@ const NavItem = ({ item, level, loggedInUser, parentItem }) => {
       fontSize={level > 0 ? 'inherit' : 'medium'}
     />
   );
-
   let itemTarget = '_self';
   if (item.target) {
     itemTarget = '_blank';
@@ -72,11 +69,11 @@ const NavItem = ({ item, level, loggedInUser, parentItem }) => {
     // eslint-disable-next-line
   }, []);
 
-  // if (loggedInUser && loggedInUser?.resources?.[item?.id]) {
-  //   if (loggedInUser?.resources?.[item?.id].authorized == false) {
-  //     return null;
-  //   }
-  // }
+  if (loggedInUser && loggedInUser?.resources?.[item?.parentResource]) {
+    if (loggedInUser?.resources?.[item?.parentResource]?.permissions[item?.permission] === false) {
+      return null;
+    }
+  }
 
   return (
     <ListItemButton

@@ -71,19 +71,23 @@ const NavCollapse = ({ menu, level, parentItem, loggedInUser }) => {
       fontSize={level > 0 ? 'inherit' : 'medium'}
     />
   );
-
   let count = 0;
-  // if (parentItem?.id === 'crm') {
-  //   menu?.children.forEach((item) => {
-  //     if (loggedInUser?.resources?.[item?.id]?.authorized) {
-  //       count++;
-  //     }
-  //   });
+  if (parentItem?.id === 'crm') {
+    menu?.children.forEach((item) => {
+      if (loggedInUser && loggedInUser?.resources?.[item?.parentResource]) {
+        if (loggedInUser?.resources?.[item?.parentResource]?.permissions[item?.permission] === true) {
+          count++;
+        }
+      }
+      // if (loggedInUser?.resources?.[item?.id]?.authorized) {
+      //   count++;
+      // }
+    });
 
-  //   if (count === 0) {
-  //     return null;
-  //   }
-  // }
+    if (count === 0) {
+      return null;
+    }
+  }
 
   return (
     <>

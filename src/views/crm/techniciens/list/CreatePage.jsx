@@ -60,8 +60,9 @@ const TechnicienCreatePage = () => {
     p_zone_ville_ids: '',
     qualifications: '',
     couleur: '',
-    role: 'technicien',
-    signature: ''
+    role: 'collaborator',
+    signature: '',
+    auth: 1
   });
 
   const navigate = useNavigate();

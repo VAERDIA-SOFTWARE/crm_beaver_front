@@ -2,7 +2,8 @@ import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import * as React from 'react';
 
 // material-ui
-import { Box, Fab, Grid, IconButton, Tooltip, Typography } from '@mui/material';
+import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
+import { Box, Fab, Grid, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 // project imports
@@ -19,21 +20,16 @@ import {
   GridToolbarDensitySelector,
   GridToolbarQuickFilter
 } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useGetFactures } from 'services/facture.service';
 import { useGetSettingsPreferences } from 'services/settings.service';
-import { useGetArticles } from 'services/articles.service';
-import { AccountCircleOutlined, NoAccountsOutlined } from '@mui/icons-material';
 
-const UsersList = () => {
+const DevisList = ({ clientId = null }) => {
   const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getArticlesQuery = useGetArticles();
-  const articlesData = getArticlesQuery?.data;
-  console.log('====================================');
-  console.log(articlesData);
-  console.log('====================================');
+  const getFacturesQuery = useGetFactures({ paginated: true, page: page, searchFilter: searchFilter, clientId: clientId, type: '0' });
+  const facturesData = getFacturesQuery?.data;
   const navigate = useNavigate();
 
   return (
@@ -46,7 +42,9 @@ const UsersList = () => {
             <Fab
               color="primary"
               size="small"
-              onClick={() => navigate(`/devis/create`)}
+              onClick={() => {
+                navigate(`/devis/create`);
+              }}
               sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
             >
               <AddIcon fontSize="small" />
@@ -54,13 +52,36 @@ const UsersList = () => {
           </Tooltip>
         </Grid>
       }
+      // secondary={<SecondaryAction link="https://material-ui.com/components/data-grid/" />}
     >
-      <TableDataGrid setPageSize={setPageSize} getusersQuery={articlesData} setPage={setPage} setSearchFilter={setSearchFilter} />
+      <div
+        style={{
+          display: 'flex',
+          gap: 14,
+          alignItems: 'center',
+          padding: 20,
+          flexWrap: 'wrap'
+        }}
+      >
+        {getFacturesQuery?.data?.status?.map((e) => (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
+            <div style={{ width: 10, height: 10, backgroundColor: e?.couleur, borderRadius: 9999 }} />
+            {e?.nom}
+          </div>
+        ))}
+      </div>
+      <TableDataGrid getFacturesQuery={getFacturesQuery} facturesData={facturesData} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );
 };
 
-export default UsersList;
+export default DevisList;
 
 function EditCell({ params }) {
   const navigate = useNavigate();
@@ -78,73 +99,98 @@ function EditCell({ params }) {
         color="secondary"
         size="large"
         onClick={(e) => {
-          navigate(`/articles/${params?.row?.id}/details`);
+          navigate(`/devis/${params.row?.id}/update`);
         }}
       >
         <VisibilityRoundedIcon sx={{ fontSize: '1.3rem' }} />
       </IconButton>
+      <IconButton onClick={handleMenuClick} size="large">
+        <MoreHorizOutlinedIcon fontSize="small" aria-controls="menu-popular-card-1" aria-haspopup="true" sx={{ color: 'grey.500' }} />
+      </IconButton>
+      <Menu
+        id="menu-popular-card-1"
+        anchorEl={anchorEl}
+        keepMounted={true}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        variant="selectedMenu"
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: '{{ righ }}t'
+        }}
+      >
+        <MenuItem
+          onClick={(e) => {
+            navigate(`/devis/${params.row?.id}/update`);
+          }}
+        >
+          Editer
+        </MenuItem>
+      </Menu>
     </div>
   );
 }
 
-function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage }) {
+function TableDataGrid({ setSearchFilter, getFacturesQuery, setPage, facturesData }) {
   const theme = useTheme();
   const useGetSettingsPreferencesQuery = useGetSettingsPreferences();
 
   const columns = [
     {
-      field: 'active',
-      headerName: 'Statut',
+      field: 'status_detaille',
+      headerName: 'Etat',
       sortable: false,
       hideable: false,
       filterable: false,
-      disableExport: true,
+      disableExport: false,
       renderCell: (params) => {
         return (
-          <>
-            {params?.row?.active ? (
-              <AccountCircleOutlined
-                sx={{
-                  color: '#16a34a'
-                }}
-              />
-            ) : (
-              <NoAccountsOutlined
-                sx={{
-                  color: '#dc2626'
-                }}
-              />
-            )}
-          </>
+          <div>
+            <div style={{ width: 10, height: 10, backgroundColor: params?.row?.status_detaille?.couleur, borderRadius: 9999 }} />
+          </div>
         );
       }
     },
+
+    {
+      field: 'client_ref',
+      headerName: 'Référence Client',
+
+      sortable: false,
+      filterable: false,
+      minWidth: 100,
+      flex: 1,
+      // valueGetter: (params) => `${params.row.firstName || ''} ${params.row.lastName || ''}`
+      renderCell: (params) => {
+        return (
+          <Link
+            to={`/clients/${params?.row?.user?.id}/details`}
+            target="_blank"
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {params?.row?.user?.reference}
+          </Link>
+        );
+      }
+    },
+
     { field: 'reference', headerName: 'Référence', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'nom', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'prix_unitaire', headerName: 'Prix Unitaire', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'remise', headerName: 'Remise', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    {
-      field: 'unite_id',
-      headerName: 'Unité',
-      sortable: false,
-      filterable: false,
-      minWidth: 100,
-      flex: 1,
-      renderCell: (params) => {
-        return <>{params?.row?.unite?.intitule}</>;
-      }
-    },
-    {
-      field: 'p_category_article_id',
-      headerName: 'Catégorie',
-      sortable: false,
-      filterable: false,
-      minWidth: 100,
-      flex: 1,
-      renderCell: (params) => {
-        return <>{params?.row?.unite?.intitule}</>;
-      }
-    },
+    // { field: 'montant_total', headerName: 'Montant Total', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'montant_HT_total', headerName: 'Montant HT', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'montant_Remise', headerName: 'Montant Remise', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'montant_HTNet_total', headerName: 'Montant HTNet', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'montant_TVA_total', headerName: 'Montant TVA', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'montant_TTC_total', headerName: 'Montant TTC', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    // { field: 'montant_NetaPayer', headerName: 'Montant NET a payer', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+
     {
       field: 'action',
       headerName: 'Action',
@@ -199,18 +245,23 @@ function TableDataGrid({ setSearchFilter, setPageSize, getusersQuery, setPage })
         components={{
           Toolbar: CustomToolbar || GridToolbar
         }}
-        rows={getusersQuery || []}
+        rows={facturesData?.data || []}
         columns={columns}
-        loading={getusersQuery?.isLoading || getusersQuery?.isFetching}
-        rowsPerPageOptions={[5, 10, 25]}
+        pageSize={parseInt(facturesData?.default_pagination) || 10}
+        rowsPerPageOptions={[parseInt(facturesData?.default_pagination) || 10]}
+        onPageSizeChange={(e) => console.log(e)}
+        checkboxSelection={false}
+        disableSelectionOnClick={true}
+        rowCount={facturesData?.total || 0}
+        loading={getFacturesQuery.isLoading || getFacturesQuery.isFetching}
+        pagination
         paginationMode="server"
         filterMode="server"
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        pageSize={parseInt(getusersQuery?.data?.per_page) || 10}
-        pagination
-        checkboxSelection={false}
-        rowCount={getusersQuery?.data?.total || 0}
+        onFilterModelChange={(e) => {
+          setSearchFilter(e?.quickFilterValues);
+        }}
         onPageChange={(newPage) => setPage(newPage + 1)}
+        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         initialState={[]}
       />
     </Box>

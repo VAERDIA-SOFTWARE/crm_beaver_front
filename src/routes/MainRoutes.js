@@ -85,8 +85,8 @@ const AppCrmLeadCreate = Loadable(lazy(() => import('views/crm/leads/list/Create
 const AppCrmLeadsList = Loadable(lazy(() => import('views/crm/leads/list/index')));
 
 const AppCrmDevisDetails = Loadable(lazy(() => import('views/crm/devis/list/DetailsPage')));
-const AppCrmDevisUpdate = Loadable(lazy(() => import('views/crm/devis/list/UpdatePage')));
-const AppCrmDevisCreate = Loadable(lazy(() => import('views/crm/devis/list/CreatePage')));
+const AppCrmDevisUpdate = Loadable(lazy(() => import('views/crm/devis/UpdateDevis')));
+const AppCrmDevisCreate = Loadable(lazy(() => import('views/crm/devis/CreateDevis')));
 const AppCrmDevisList = Loadable(lazy(() => import('views/crm/devis/list/index')));
 
 const AppCrmPointageDetails = Loadable(lazy(() => import('views/crm/pointage/list/DetailsPage')));
@@ -94,7 +94,8 @@ const AppCrmPointageList = Loadable(lazy(() => import('views/crm/pointage/list/i
 
 const AppCrmFacturesList = Loadable(lazy(() => import('views/crm/factures/list/index')));
 const AppCrmFacturesDetails = Loadable(lazy(() => import('views/crm/factures/list/DetailsPage')));
-const AppCrmCreateFacture = Loadable(lazy(() => import('views/crm/factures/list/CreateFacture')));
+const AppCrmCreateFacture = Loadable(lazy(() => import('views/crm/factures/CreateInvoice')));
+const AppCrmUpdateFacture = Loadable(lazy(() => import('views/crm/factures/UpdateInvoice')));
 
 const AppCrmReglementsList = Loadable(lazy(() => import('views/crm/reglements/list/index')));
 const AppCrmReglementsCreate = Loadable(lazy(() => import('views/crm/reglements/list/createReglement')));
@@ -811,7 +812,7 @@ const MainRoutes = {
     },
     {
       path: '/factures/:factureId/update',
-      element: <AppCrmCreateFacture />
+      element: <AppCrmUpdateFacture />
     },
     {
       path: '/factures/create',
