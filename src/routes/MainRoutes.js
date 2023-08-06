@@ -233,6 +233,7 @@ const UtilsGrid = Loadable(lazy(() => import('views/utilities/Grid')));
 
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
+const DashboardCollaborateur = Loadable(lazy(() => import('views/crm/dashboard/index')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -243,6 +244,10 @@ if (process.env.NODE_ENV === 'development') {
     {
       path: '/dashboard/analytics',
       element: <DashboardAnalytics />
+    },
+    {
+      path: '/dashboard/test',
+      element: <DashboardCollaborateur />
     },
     {
       path: '/widget/statistics',
