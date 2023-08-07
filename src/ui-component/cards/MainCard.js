@@ -109,13 +109,13 @@ const MainCard = React.forwardRef(
         )}
         {!darkTitle && title && (
           <CardHeader
-            style={{ backgroundColor: headerColor && `${color}` }}
+            style={{ backgroundColor: `#13597e` }}
             sx={headerSX}
             title={
-              <div style={{ display: 'flex', gap: 4, alignItems: 'center', color: headerColor && `white` }}>
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center', color: `white` }}>
                 {backButton && (
                   <IconButton
-                    color="secondary"
+                    color="white"
                     size="large"
                     onClick={(e) => {
                       if (goBackLink) {
