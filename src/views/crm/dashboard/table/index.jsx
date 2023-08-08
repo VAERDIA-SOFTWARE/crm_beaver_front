@@ -1,6 +1,7 @@
 import {
   Button,
   CardContent,
+  CardHeader,
   Checkbox,
   Dialog,
   DialogActions,
@@ -9,7 +10,8 @@ import {
   Fade,
   FormControlLabel,
   Grid,
-  IconButton
+  IconButton,
+  Typography
 } from '@mui/material';
 import { Box, styled } from '@mui/system';
 import MainCard from 'ui-component/cards/MainCard';
@@ -49,7 +51,7 @@ const TablesDashboard = ({
       {open && open == true && (
         <CustomizedDialogs
           open={open}
-          onClose={handleCloseDialog}
+          handleCloseDialog={handleCloseDialog}
           reportCard={reportCard}
           setReportCard={setReportCard}
           cardInformation={cardInformation}
@@ -75,7 +77,7 @@ const TablesDashboard = ({
 export default TablesDashboard;
 
 // Modal Parts
-const CustomizedDialogs = ({ open, onClose, reportCard, setReportCard, cardInformation, setCardInformation, loggedinUserId }) => {
+const CustomizedDialogs = ({ open, handleCloseDialog, reportCard, setReportCard, cardInformation, setCardInformation, loggedinUserId }) => {
   const [formInput, setFormInput] = useState([]);
   const useUpdateDashboardQuery = useUpdateDashboard({ idClient: loggedinUserId, idBlock: 3 });
 
@@ -91,13 +93,14 @@ const CustomizedDialogs = ({ open, onClose, reportCard, setReportCard, cardInfor
   const handleChange = async () => {
     try {
       await useUpdateDashboardQuery.mutateAsync(formInput);
+      handleCloseDialog(false);
     } catch (err) {
       toast.error('Erreur');
     }
   };
   return (
-    <BootstrapDialog open={open} onClose={onClose} aria-labelledby="customized-dialog-title">
-      <BootstrapDialogTitle open={open} onClose={onClose} id="customized-dialog-title">
+    <BootstrapDialog open={open} onClose={handleCloseDialog} aria-labelledby="customized-dialog-title">
+      <BootstrapDialogTitle open={open} onClose={handleCloseDialog} id="customized-dialog-title">
         Veuillez choisir un tableau
       </BootstrapDialogTitle>
       <DialogContent dividers>
@@ -160,7 +163,7 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
       return item;
     });
 
-    if (selectedItemCount <= 3) {
+    if (selectedItemCount <= 1) {
       setCardInformation(updatedCardInfo);
     }
   };
@@ -178,7 +181,7 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
                     onChange={handleChangeState}
                     name={item.id.toString()}
                     color="primary"
-                    disabled={!item.default && selectedItemCount >= 3}
+                    disabled={!item.default && selectedItemCount >= 1}
                   />
                 }
                 label={item.title}
@@ -216,17 +219,17 @@ function TableDataGrid({ setPageSize, articlesData, setPage, theme, id, name }) 
       flex: 1
     },
 
-    {
-      field: 'client',
-      headerName: 'Client',
-      sortable: false,
-      filterable: false,
-      minWidth: 100,
-      flex: 1,
-      renderCell: (params) => {
-        return <div>{params?.row?.user?.name}</div>;
-      }
-    },
+    // {
+    //   field: 'client',
+    //   headerName: 'Client',
+    //   sortable: false,
+    //   filterable: false,
+    //   minWidth: 100,
+    //   flex: 1,
+    //   renderCell: (params) => {
+    //     return <div>{params?.row?.user?.name}</div>;
+    //   }
+    // },
     {
       field: 'marque_pac_parents',
       headerName: 'Marque PAC',
@@ -347,26 +350,26 @@ function TableDataGrid({ setPageSize, articlesData, setPage, theme, id, name }) 
       minWidth: 50,
       flex: 1
     },
-    // {
-    //   field: 'reference_chantier',
-    //   headerName: 'Intitulé Client',
-    //   sortable: false,
-    //   hideable: true,
-    //   minWidth: 100,
-    //   flex: 1,
-    //   filterable: false,
-    //   renderCell: (params) => {
-    //     return (
-    //       <div
-    //         style={{
-    //           cursor: 'pointer'
-    //         }}
-    //       >
-    //         {params?.row?.client?.name}
-    //       </div>
-    //     );
-    //   }
-    // },
+    {
+      field: 'reference_chantier',
+      headerName: 'Intitulé Client',
+      sortable: false,
+      hideable: true,
+      minWidth: 100,
+      flex: 1,
+      filterable: false,
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              cursor: 'pointer'
+            }}
+          >
+            {params?.row?.client?.name}
+          </div>
+        );
+      }
+    },
     {
       field: 'collaborator',
       headerName: 'Collaborator',
@@ -448,6 +451,22 @@ function TableDataGrid({ setPageSize, articlesData, setPage, theme, id, name }) 
         }
       }}
     >
+      <CardHeader
+        sx={{ padding: 2, '& .MuiCardHeader-action': { mr: 0 } }}
+        title={
+          <>
+            <Typography variant="h3">
+              {name == 'list_available_collaborator_today'
+                ? "Liste des techniciens disponibles pour aujourd'hui"
+                : name == 'list_contracts_drafy_today'
+                ? "Liste des contrats echouées pour aujourd'hui"
+                : name == 'list_interventions_today'
+                ? "Liste des interventions pour aujourd'hui"
+                : ''}
+            </Typography>
+          </>
+        }
+      />
       <DataGrid
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         density="compact"

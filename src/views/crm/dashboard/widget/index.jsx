@@ -66,15 +66,7 @@ const WidgetDashboard = ({
     }
   }, []);
   return (
-    <MainCard
-      sx={{ boxShadow: 'unset' }}
-      settingsIcon={true}
-      handleOpenDialog={handleOpenDialog}
-      boxShadow={false}
-      shadow={false}
-      border={false}
-      title="Informations Generales mensuelle"
-    >
+    <MainCard sx={{ boxShadow: 'unset' }} settingsIcon={true} handleOpenDialog={handleOpenDialog} title="Informations Generales mensuelle">
       {open && open === true && (
         <CustomizedDialogs
           open={open}
@@ -158,12 +150,12 @@ export default WidgetDashboard;
 // Dialogs Parts
 const CustomizedDialogs = ({ open, onClose, cardInformation, setCardInformation, loggedinUserId }) => {
   const [formInput, setFormInput] = useState([]);
-  const useUpdateDashboardQuery = useUpdateDashboard({ idClient: loggedinUserId, idBlock: 2 });
+  const useUpdateDashboardQuery = useUpdateDashboard({ idClient: loggedinUserId, idBlock: 1 });
 
   useEffect(() => {
     if (cardInformation && cardInformation.length > 0) {
       const newFormInput = cardInformation.map((item) => ({
-        name: item.title,
+        name: item.name,
         active: item.default
       }));
       setFormInput(newFormInput);

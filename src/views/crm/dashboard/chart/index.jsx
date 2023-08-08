@@ -25,7 +25,8 @@ const ChartDashboard = ({
   openCharts,
   chartsInformations,
   setChartsInformations,
-  loggedinUser
+  loggedinUser,
+  theme
 }) => {
   return (
     <MainCard
@@ -53,7 +54,7 @@ const ChartDashboard = ({
               .filter((element) => element.default)
               .map((element) => (
                 <Grid item xs={12} lg={4} sm={6} key={element.id}>
-                  <AreaChartCard chartsInformations={element} setChartsInformations={setChartsInformations} />
+                  <AreaChartCard chartsInformations={element} setChartsInformations={setChartsInformations} theme={theme} />
                 </Grid>
               ))}
           </Grid>
@@ -191,16 +192,18 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
 };
 
 // component card
-const AreaChartCard = ({ chartsInformations }) => {
+const AreaChartCard = ({ chartsInformations, theme }) => {
   const chartData = {
     series: [
       {
         name: chartsInformations.year,
-        data: chartsInformations.currentYear
+        data: chartsInformations.currentYear,
+        color: theme.palette.success.main
       },
       {
         name: chartsInformations.yearSub,
-        data: chartsInformations.subYear
+        data: chartsInformations.subYear,
+        color: theme.palette.warning.main
       }
     ],
     options: {
