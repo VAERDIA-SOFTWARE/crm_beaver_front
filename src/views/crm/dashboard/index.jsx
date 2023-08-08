@@ -16,7 +16,7 @@ const Analytics = () => {
   const loggedinUser = getLoggedUserQuery?.data;
   const [cardInformation, setCardInformation] = useState([]);
   const [chartsInformations, setChartsInformations] = useState([]);
-  const [statsInformations, setStatsInformation] = useState(jsArray);
+  const [statsInformations, setStatsInformation] = useState([]);
   useEffect(() => {
     if (getWidgetDashboardQuery.isSuccess) {
       setCardInformation([...getWidgetDashboardQuery.data]);
@@ -29,11 +29,11 @@ const Analytics = () => {
     }
   }, [getChartsDashboardQuery?.isSuccess, getChartsDashboardQuery?.data]);
 
-  // useEffect(() => {
-  //   if (getStatsDashboardQuery.isSuccess) {
-  //     setStatsInformation([...getStatsDashboardQuery.data]);
-  //   }
-  // }, [getStatsDashboardQuery?.isSuccess, getStatsDashboardQuery?.data]);
+  useEffect(() => {
+    if (getStatsDashboardQuery.isSuccess) {
+      setStatsInformation([...getStatsDashboardQuery.data]);
+    }
+  }, [getStatsDashboardQuery?.isSuccess, getStatsDashboardQuery?.data]);
 
   const [open, setOpen] = useState(false);
   const [openCharts, setOpenChart] = useState(false);
@@ -85,6 +85,7 @@ const Analytics = () => {
         open={openStats}
         cardInformation={statsInformations}
         setCardInformation={setStatsInformation}
+        loggedinUser={loggedinUser}
         theme={theme}
       />
     </MainCard>
@@ -363,4 +364,3 @@ const staticTablesDashboardData = [
     ]
   }
 ];
-const jsArray = JSON.parse(JSON.stringify(staticTablesDashboardData));
