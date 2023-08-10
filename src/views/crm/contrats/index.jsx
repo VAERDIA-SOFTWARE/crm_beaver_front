@@ -45,6 +45,7 @@ const Contract = () => {
   const statusData = getStatusQuery?.data;
   return (
     <MainCard
+      headerColor={true}
       title="Liste des contrats"
       content={false}
       secondary={

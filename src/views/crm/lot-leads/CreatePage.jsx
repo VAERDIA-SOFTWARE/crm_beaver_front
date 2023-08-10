@@ -106,7 +106,7 @@ const LotChantierCreatePage = () => {
   };
 
   return (
-    <MainCard title="Importer Leads" backButton goBackLink={goBackLink}>
+    <MainCard headerColor={true} title="Importer Leads" backButton goBackLink={goBackLink}>
       <div
         style={{
           maxWidth: 650,

@@ -99,7 +99,7 @@ const CreateForm = ({ type = 1, title = 'Créer  Facture', goBackLink = '/factur
   };
 
   return (
-    <MainCard title={title} backButton goBackLink={goBackLink}>
+    <MainCard headerColor={true} title={title} backButton goBackLink={goBackLink}>
       <Grid container spacing={6}>
         <Grid item xl={9} md={8} xs={12}>
           <AddCard

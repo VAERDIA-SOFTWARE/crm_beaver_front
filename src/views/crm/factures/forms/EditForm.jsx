@@ -128,6 +128,7 @@ const EditForm = ({ invoiceId, type = 1, title = 'Editer Facture', goBackLink = 
 
   return (
     <MainCard
+      headerColor={true}
       title={title}
       backButton
       goBackLink={goBackLink}

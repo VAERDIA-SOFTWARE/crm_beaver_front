@@ -77,6 +77,7 @@ const ArticleCreatePage = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title={`Ajouter Article`}
       // backButton
       // goBackLink={`/articles/${articleId}/details`}

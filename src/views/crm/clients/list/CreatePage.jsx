@@ -40,9 +40,6 @@ const ClientsCreatePage = () => {
   const categoryData = getCategoryClient?.data;
 
   const LotId = localStorage.getItem('LotId');
-  console.log('====================================');
-  console.log(LotId);
-  console.log('====================================');
 
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
@@ -99,7 +96,7 @@ const ClientsCreatePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
-    <MainCard title={`Ajouter Clients`} backButton goBackLink="/clients/list">
+    <MainCard headerColor={true} title={`Ajouter Clients`} backButton goBackLink="/clients/list">
       <div>
         <>
           <form onSubmit={handleSubmit}>

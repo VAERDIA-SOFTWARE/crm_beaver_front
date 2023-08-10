@@ -64,7 +64,7 @@ const CreateReglement = () => {
   };
   console.log(formInput);
   return (
-    <MainCard title={`Ajouter Reglement`} backButton goBackLink="/reglements/list">
+    <MainCard headerColor={true} title={`Ajouter Reglement`} backButton goBackLink="/reglements/list">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <>
           <form onSubmit={handleSubmit}>

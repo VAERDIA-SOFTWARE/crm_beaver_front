@@ -57,25 +57,23 @@ const InspectionsList = ({ title, userId = '', overrideData, disableAdresse, dis
   }, [user]);
 
   return (
-    <MainCard>
-      <MainCard title={title ?? 'Liste des Interventions'} content={false}>
-        <TableDataGrid
-          disableEtat={disableEtat}
-          disableAdresse={disableAdresse}
-          disableAffectationDate={disableAffectationDate}
-          overrideData={overrideData}
-          disableStatut
-          inspectionsStatusData={inspectionsStatutData}
-          inspectionsEtatData={inspectionsEtatData}
-          getInspectionsQuery={getInspectionsQuery}
-          inspectionsData={inspectionsData}
-          setPage={setPage}
-          setSearchFilter={setSearchFilter}
-          setEtat={setEtat}
-          etat={etat}
-          statusData={statusData}
-        />
-      </MainCard>
+    <MainCard headerColor={true} title={title ?? 'Liste des Interventions'} content={false}>
+      <TableDataGrid
+        disableEtat={disableEtat}
+        disableAdresse={disableAdresse}
+        disableAffectationDate={disableAffectationDate}
+        overrideData={overrideData}
+        disableStatut
+        inspectionsStatusData={inspectionsStatutData}
+        inspectionsEtatData={inspectionsEtatData}
+        getInspectionsQuery={getInspectionsQuery}
+        inspectionsData={inspectionsData}
+        setPage={setPage}
+        setSearchFilter={setSearchFilter}
+        setEtat={setEtat}
+        etat={etat}
+        statusData={statusData}
+      />
     </MainCard>
   );
 };

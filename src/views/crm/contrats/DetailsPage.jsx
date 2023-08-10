@@ -82,6 +82,7 @@ const ContratDetailsPage = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title={`Contrat ${contratData?.reference ? '- ' + contratData?.reference : ''}`}
       backButton
       goBackLink="/contrats/list"
@@ -101,6 +102,9 @@ const ContratDetailsPage = () => {
           {user?.role.includes('admin') && contratData?.state === 0 && (
             <>
               <LoadingButton
+                sx={{
+                  backgroundColor: '#07bc0c'
+                }}
                 loadingPosition="end"
                 // endIcon={<AssignmentReturnedIcon />}
                 loading={changeContractStateMutation.isLoading}
@@ -148,6 +152,9 @@ const ContratDetailsPage = () => {
 
           {user?.role.includes('admin') && (contratData?.state === 2 || contratData?.state === 4) && (
             <LoadingButton
+              sx={{
+                backgroundColor: '#07bc0c'
+              }}
               loadingPosition="end"
               // endIcon={<AssignmentReturnedIcon />}
               loading={renewContractMutation.isLoading}
@@ -173,7 +180,7 @@ const ContratDetailsPage = () => {
           )}
           {user?.role.includes('admin') && contratData?.state === 0 && (
             <IconButton
-              color="secondary"
+              color="text"
               size="large"
               onClick={(e) => {
                 navigate(`/contrats/create`, {

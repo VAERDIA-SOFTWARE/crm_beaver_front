@@ -44,7 +44,7 @@ const InspectionDetailsPage = () => {
   const statusData = getStatusQuery?.data;
   useEffect(() => {
     setPdfPath(
-      inspectionData?.etat !== 3
+      inspectionData?.etat !== 2
         ? `${process.env.REACT_APP_API_URL}rapports/default`
         : `${process.env.REACT_APP_API_URL}rapports/${inspectionData?.id}/download-pdf`
     );
@@ -77,9 +77,10 @@ const InspectionDetailsPage = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title={`Intervention ${inspectionData?.reference ? '- ' + inspectionData?.reference : ''}`}
       backButton
-      goBackLink="/inspections/list"
+      goBackLink="/interventions/list"
       secondary={
         <div
           style={{
@@ -90,14 +91,15 @@ const InspectionDetailsPage = () => {
         >
           {inspectionData?.etat !== 0 ? (
             <>
-              {inspectionData?.etat === 2 && (
+              {inspectionData?.etat === 1 && (
                 <>
                   {user?.role.includes('admin') && (
                     <LoadingButton
+                      color="success"
                       loadingPosition="end"
                       endIcon={<AssignmentReturnedIcon />}
                       loading={generateInspectionsRapportMutation.isLoading}
-                      onClick={() => generateInspectionsRapportMutation.mutate({ interventionId })}
+                      onClick={() => generateInspectionsRapportMutation.mutate({ inspectionId: interventionId })}
                       variant="contained"
                       type="submit"
                     >
@@ -118,35 +120,7 @@ const InspectionDetailsPage = () => {
                 </Tooltip> */}
                 </>
               )}
-              {inspectionData?.etat === 1 && (
-                <>
-                  {user?.role.includes('admin') && (
-                    <LoadingButton
-                      loadingPosition="start"
-                      startIcon={<AssignmentTurnedInIcon />}
-                      loading={validateInspectionsMutation.isLoading}
-                      onClick={() => validateInspectionsMutation.mutate({ interventionId })}
-                      variant="contained"
-                      type="submit"
-                    >
-                      Valider Interventions
-                    </LoadingButton>
-                  )}
-
-                  {/* <Tooltip title="Vérifier inspection">
-                  <IconButton
-                    color="secondary"
-                    size="large"
-                    onClick={(e) => {
-                      // generateInspectionsRapportMutation.mutate({ inspectionId: inspectionId });
-                    }}
-                  >
-                    <AssignmentTurnedInIcon sx={{ fontSize: '1.3rem' }} />
-                  </IconButton>
-                </Tooltip> */}
-                </>
-              )}
-              {inspectionData?.etat === 3 && (
+              {inspectionData?.etat === 2 && (
                 <Tooltip title="Télécharger rapport">
                   <a
                     style={{
@@ -171,6 +145,7 @@ const InspectionDetailsPage = () => {
             <>
               {(user?.role.includes('admin') || user?.role.includes('technicien')) && (
                 <LoadingButton
+                  color="success"
                   loadingPosition="end"
                   // endIcon={<AssignmentReturnedIcon />}
                   onClick={(e) => {
@@ -186,7 +161,7 @@ const InspectionDetailsPage = () => {
           )}
           {inspectionData?.etat === 0 && user?.role.includes('admin') && (
             <IconButton
-              color="secondary"
+              color="text"
               size="large"
               onClick={(e) => {
                 navigate(`/interventions/${interventionId}/update`);

@@ -37,6 +37,7 @@ const TechniciensList = () => {
   return (
     <>
       <MainCard
+        headerColor={true}
         title="Liste des Collaborateurs"
         content={false}
         secondary={

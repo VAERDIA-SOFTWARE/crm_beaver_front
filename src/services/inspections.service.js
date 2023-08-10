@@ -8,7 +8,7 @@ export const useGetInspections = ({ paginated = false, searchFilter = '', userId
     () =>
       axiosClient
         .get(
-          `interventions?${searchFilter ? `search=${searchFilter}&` : ''}${userId ? `userId=${userId}&` : ''}${
+          `interventions?${searchFilter ? `search=${searchFilter}&` : ''}${userId ? `collaborator=${userId}&` : ''}${
             page ? `page=${page}&` : ''
           }${etat !== -1 ? `etat=${etat}&` : ''}${paginated !== -1 ? `paginated=${paginated}&` : ''}`
         )
@@ -81,7 +81,7 @@ export function useCreateInspection() {
 
   return useMutation(
     async (values) => {
-      const res = await axiosClient.post(`inspections`, values);
+      const res = await axiosClient.post(`interventions`, values);
       return res.data;
     },
     {
@@ -98,7 +98,7 @@ export function useDeleteInspection() {
 
   return useMutation(
     async (values) => {
-      const res = await axiosClient.delete(`inspections/${values?.inspectionId}`);
+      const res = await axiosClient.delete(`interventions/${values?.inspectionId}`);
       return res.data;
     },
     {
@@ -190,7 +190,7 @@ export function useValidateInspections() {
 
   return useMutation(
     async ({ inspectionId }) => {
-      const res = await axiosClient.put(`inspections/${inspectionId}/validate`);
+      const res = await axiosClient.put(`interventions/${inspectionId}/validate`);
       return res.data;
     },
     {

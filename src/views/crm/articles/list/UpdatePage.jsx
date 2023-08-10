@@ -73,6 +73,7 @@ const UserUpdatePage = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title={`Article ${articleData?.reference ? '- ' + articleData?.reference : ''}`}
       backButton
       goBackLink={`/articles/${articleId}/details`}

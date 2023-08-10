@@ -41,44 +41,47 @@ const PropositionsList = ({ title, userId = '' }) => {
   const useValiderPropositionsMutation = useValiderPropositions();
 
   return (
-    <MainCard>
-      <div>
-        <MainCard
-          title={title ?? 'Liste des Propositions'}
-          content={false}
-          secondary={
-            user?.role.includes('admin') && (
-              <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-                <LoadingButton
-                  disabled={!selectedRows?.length}
-                  loadingPosition="end"
-                  endIcon={<SendIcon />}
-                  loading={useValiderPropositionsMutation.isLoading}
-                  variant="contained"
-                  onClick={async () => {
-                    try {
-                      console.log(selectedRows);
-                      await useValiderPropositionsMutation.mutateAsync({ propositions: selectedRows });
-                      setSelectedRows([]);
-                    } catch (error) {}
-                  }}
-                >
-                  Valider
-                </LoadingButton>
-              </Grid>
-            )
-          }
-        >
-          <TableDataGrid
-            selectedRows={selectedRows}
-            setSelectedRows={setSelectedRows}
-            getInspectionsQuery={getInterventionsQuery}
-            propositionData={propositionData}
-            setPage={setPage}
-            setSearchFilter={setSearchFilter}
-          />
-        </MainCard>
-      </div>
+    <MainCard
+      headerColor={true}
+      title={title ?? 'Liste des Propositions'}
+      content={false}
+      secondary={
+        user?.role.includes('admin') && (
+          <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
+            <LoadingButton
+              sx={{
+                backgroundColor: '#efb816',
+                color: 'white',
+                '&:disabled': {
+                  color: 'white'
+                }
+              }}
+              disabled={!selectedRows?.length}
+              loadingPosition="end"
+              endIcon={<SendIcon />}
+              loading={useValiderPropositionsMutation.isLoading}
+              variant="contained"
+              onClick={async () => {
+                try {
+                  await useValiderPropositionsMutation.mutateAsync({ propositions: selectedRows });
+                  setSelectedRows([]);
+                } catch (error) {}
+              }}
+            >
+              Valider
+            </LoadingButton>
+          </Grid>
+        )
+      }
+    >
+      <TableDataGrid
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        getInspectionsQuery={getInterventionsQuery}
+        propositionData={propositionData}
+        setPage={setPage}
+        setSearchFilter={setSearchFilter}
+      />
     </MainCard>
   );
 };

@@ -32,6 +32,7 @@ const LeadsDetailsPage = () => {
   }, [clientData, getLeadsQuery.isSuccess]);
   return (
     <MainCard
+      headerColor={true}
       title={`Lead ${clientData?.reference && '- ' + clientData?.reference}`}
       backButton
       goBackLink={-1}

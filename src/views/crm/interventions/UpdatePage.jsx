@@ -69,6 +69,7 @@ const InspectionUpdatePage = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title={`Proposition ${propositionData?.reference ? '- ' + propositionData?.reference : ''}`}
       backButton
       goBackLink={`/interventions/list`}

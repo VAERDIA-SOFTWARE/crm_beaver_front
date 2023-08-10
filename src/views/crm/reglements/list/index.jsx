@@ -36,6 +36,7 @@ const ReglementsList = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title="Liste des Reglements"
       content={false}
       secondary={

@@ -22,7 +22,7 @@ const headerSX = {
 const MainCard = React.forwardRef(
   (
     {
-      headerColor,
+      headerColor = false,
       color,
       circle = false,
       border = true,
@@ -109,10 +109,10 @@ const MainCard = React.forwardRef(
         )}
         {!darkTitle && title && (
           <CardHeader
-            style={{ backgroundColor: `#13597e` }}
+            style={{ backgroundColor: headerColor && `#13597e` }}
             sx={headerSX}
             title={
-              <div style={{ display: 'flex', gap: 4, alignItems: 'center', color: `white` }}>
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center', color: headerColor ? `white` : `#13597e` }}>
                 {backButton && (
                   <IconButton
                     color="white"

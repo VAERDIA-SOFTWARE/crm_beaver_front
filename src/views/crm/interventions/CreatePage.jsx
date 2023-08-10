@@ -52,7 +52,7 @@ const InspectionsCreatePage = () => {
   };
 
   return (
-    <MainCard title="Ajouter Interventions" backButton goBackLink="/inspections/list">
+    <MainCard  title="Ajouter Interventions" backButton goBackLink="/inspections/list">
       <div>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>

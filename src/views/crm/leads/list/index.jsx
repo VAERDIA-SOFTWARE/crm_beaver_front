@@ -47,6 +47,7 @@ const LeadsList = (data) => {
     <MainCard
       title="Liste des Leads"
       content={false}
+      headerColor={true}
       secondary={
         <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
           <Tooltip title="Ajouter Leads">

@@ -37,6 +37,7 @@ const UsersList = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title="Liste des Articles"
       content={false}
       secondary={

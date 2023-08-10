@@ -114,6 +114,7 @@ const TechnicienUpdatePage = () => {
   };
   return (
     <MainCard
+      headerColor={true}
       title={`Collaborateur ${technicienData?.reference ? '- ' + technicienData?.reference : ''}`}
       backButton
       goBackLink={`/techniciens/${technicienId}/details`}

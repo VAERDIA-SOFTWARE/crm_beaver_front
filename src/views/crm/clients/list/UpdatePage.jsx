@@ -39,10 +39,6 @@ const ClientUpdatePage = () => {
   const categoryData = getCategoryClient?.data;
   const updateClientMutation = useUpdateUser(clientId);
 
-  console.log('====================================');
-  console.log(categoryData);
-  console.log('====================================');
-
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     name: '',
@@ -95,7 +91,12 @@ const ClientUpdatePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
-    <MainCard title={`Modifier Clients ${clientData?.reference ? '- ' + clientData?.reference : ''}`} backButton goBackLink="/clients/list">
+    <MainCard
+      headerColor={true}
+      title={`Modifier Client12 ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
+      backButton
+      goBackLink="/clients/list"
+    >
       <div>
         <>
           <form onSubmit={handleSubmit}>

@@ -95,7 +95,7 @@ const LeadsCreatePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
-    <MainCard title={`Ajouter Leads Manuellement`} backButton goBackLink={`/lot-leads/${LotId}/details`}>
+    <MainCard headerColor={true} title={`Ajouter Leads Manuellement`} backButton goBackLink={`/lot-leads/${LotId}/details`}>
       <div>
         <>
           <form onSubmit={handleSubmit}>

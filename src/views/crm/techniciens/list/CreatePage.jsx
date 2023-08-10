@@ -115,7 +115,7 @@ const TechnicienCreatePage = () => {
     // uploadImage(formData);
   };
   return (
-    <MainCard title="Ajouter Collaborateur" backButton goBackLink="/techniciens/list">
+    <MainCard headerColor={true} title="Ajouter Collaborateur" backButton goBackLink="/techniciens/list">
       <div>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>

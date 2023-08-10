@@ -27,12 +27,13 @@ const PropositionDetailsPage = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title={`Proposition ${inspectionData?.reference ? '- ' + inspectionData?.reference : ''}`}
       backButton
       goBackLink="/propositions/list"
       secondary={
         <IconButton
-          color="secondary"
+          color="text"
           size="large"
           onClick={(e) => {
             navigate(`/propositions/${propositionId}/update`);

@@ -49,6 +49,7 @@ const LotChantierList = ({ title, userId, disableTopBar, goBackLink = '/lot-lead
   return (
     <>
       <MainCard
+        headerColor={true}
         title={title ?? 'Liste des Leads'}
         content={false}
         secondary={

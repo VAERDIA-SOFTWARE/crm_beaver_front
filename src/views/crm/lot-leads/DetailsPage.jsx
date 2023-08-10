@@ -43,6 +43,7 @@ const DetailsLotLeadsPage = () => {
   const usersData = usersQuery?.data;
   return (
     <MainCard
+      headerColor={true}
       title={`Leads ${lotData?.reference ? '- ' + lotData?.reference : ''}`}
       backButton
       goBackLink={`/lot-leads/list`}

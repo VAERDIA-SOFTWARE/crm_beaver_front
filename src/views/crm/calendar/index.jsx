@@ -85,8 +85,8 @@ const Calendar = () => {
           color: e?.collaborator?.couleur,
           bgColor: e?.state?.couleur,
           // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
-          start: moment(e?.debut).format('YYYY-MM-DD HH:mm:ss'),
-          end: moment(e?.fin).format('YYYY-MM-DD HH:mm:ss'),
+          start: moment(e?.deb_calendar).utc().format('YYYY-MM-DD HH:mm:ss'),
+          end: moment(e?.fin_calendar).utc().format('YYYY-MM-DD HH:mm:ss'),
           // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
           title: e?.client?.name,
           startEditable: isEditModeOn && e?.etat === 0 ? true : false,
@@ -271,11 +271,7 @@ const Calendar = () => {
   // };
   return (
     <MainCard
-      sx={
-        {
-          // backgroundColor: isEditModeOn ? '#dcfce7' : 'initial'
-        }
-      }
+      headerColor={true}
       title="Calendrier des interventions"
       secondary={
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -305,13 +301,14 @@ const Calendar = () => {
           )}
           {user?.role.includes('admin') && (
             <LoadingButton
+              color={isEditModeOn ? 'error' : 'success'}
               loadingPosition="start"
               startIcon={
                 !isEditModeOn ? <EditIcon fontSize="small" sx={{ mr: 0.75 }} /> : <EditOffIcon fontSize="small" sx={{ mr: 0.75 }} />
               }
               loading={getInspectionsCalendarQuery.isLoading}
               disabled={getInspectionsCalendarQuery.isLoading}
-              color={'secondary'}
+              // color={'secondary'}
               variant="contained"
               onClick={async () => {
                 const d = getInspectionsCalendarQuery.data?.map((e) => {
@@ -324,8 +321,8 @@ const Calendar = () => {
                     bgColor: e?.state?.couleur,
                     description: e?.chantier?.ville,
                     // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
-                    start: moment(e?.debut).format('YYYY-MM-DD HH:mm:ss'),
-                    end: moment(e?.fin).format('YYYY-MM-DD HH:mm:ss'),
+                    start: moment(e?.deb_calendar).utc().format('YYYY-MM-DD HH:mm:ss'),
+                    end: moment(e?.fin_calendar).utc().format('YYYY-MM-DD HH:mm:ss'),
                     // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
                     title: e?.client?.name,
                     startEditable: isEditModeOn && e?.etat === 0 ? true : false,
@@ -542,8 +539,8 @@ const Calendar = () => {
                     bgColor: e?.state?.couleur,
                     description: e?.chantier?.ville,
                     // start: sub(new Date(), { days: 12, hours: 0, minutes: 45 }),
-                    start: moment(e?.debut).format('YYYY-MM-DD HH:mm:ss'),
-                    end: moment(e?.fin).format('YYYY-MM-DD HH:mm:ss'),
+                    start: moment(e?.deb_calendar).utc().format('YYYY-MM-DD HH:mm:ss'),
+                    end: moment(e?.fin_calendar).utc().format('YYYY-MM-DD HH:mm:ss'),
                     // end: sub(new Date(), { days: 12, hours: 0, minutes: 30 }),
                     title: e?.client?.name,
                     startEditable: isEditModeOn && e?.etat === 0 ? true : false,

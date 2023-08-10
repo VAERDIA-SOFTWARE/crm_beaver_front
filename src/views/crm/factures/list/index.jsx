@@ -34,6 +34,7 @@ const FacturesList = ({ clientId = null }) => {
 
   return (
     <MainCard
+      headerColor={true}
       title="Liste des Factures"
       content={false}
       secondary={
@@ -54,28 +55,6 @@ const FacturesList = ({ clientId = null }) => {
       }
       // secondary={<SecondaryAction link="https://material-ui.com/components/data-grid/" />}
     >
-      <div
-        style={{
-          display: 'flex',
-          gap: 14,
-          alignItems: 'center',
-          padding: 20,
-          flexWrap: 'wrap'
-        }}
-      >
-        {getFacturesQuery?.data?.status?.map((e) => (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8
-            }}
-          >
-            <div style={{ width: 10, height: 10, backgroundColor: e?.couleur, borderRadius: 9999 }} />
-            {e?.nom}
-          </div>
-        ))}
-      </div>
       <TableDataGrid getFacturesQuery={getFacturesQuery} facturesData={facturesData} setPage={setPage} setSearchFilter={setSearchFilter} />
     </MainCard>
   );

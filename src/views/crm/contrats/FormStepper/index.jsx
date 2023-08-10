@@ -103,7 +103,7 @@ const CreatePage = () => {
     }
   }, [getContractQuery?.isSuccess, ContractData, activeStep, getContractQuery?.isFetching]);
   return (
-    <MainCard title={contractForm?.id ? `Editer Contrat - ${contractForm?.reference}` : 'Crée Contrat'}>
+    <MainCard headerColor={true} title={contractForm?.id ? `Editer Contrat - ${contractForm?.reference}` : 'Crée Contrat'}>
       <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
         {steps.map((label, index) => {
           const labelProps = {};

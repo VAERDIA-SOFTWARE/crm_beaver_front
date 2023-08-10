@@ -18,19 +18,17 @@ const UserDetailsPage = () => {
   const getUserQuery = useGetArticle(articleId);
   const userData = getUserQuery.data;
 
-  console.log('====================================');
-  console.log(userData);
-  console.log('====================================');
   const navigate = useNavigate();
 
   return (
     <MainCard
+      headerColor={true}
       title={`Article ${userData?.reference ? '- ' + userData?.reference : ''}`}
       backButton
       goBackLink="/articles/list"
       secondary={
         <IconButton
-          color="secondary"
+          color="white"
           size="large"
           onClick={(e) => {
             navigate(`/articles/${articleId}/update`);

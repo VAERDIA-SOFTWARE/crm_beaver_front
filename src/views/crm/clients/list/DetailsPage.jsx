@@ -30,6 +30,7 @@ const ClientsDetailsPage = () => {
   }, [clientData, getClientsQuery.isSuccess]);
   return (
     <MainCard
+      headerColor={true}
       title={`Client ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
       backButton
       goBackLink={-1}
@@ -42,7 +43,7 @@ const ClientsDetailsPage = () => {
           }}
         >
           <IconButton
-            color="secondary"
+            color="white"
             size="large"
             onClick={(e) => {
               // handleOpenEditDialog(e);

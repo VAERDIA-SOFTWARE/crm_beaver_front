@@ -28,7 +28,7 @@ import { useGetArticles } from 'services/articles.service';
 import { useGetSettingsPreferences } from 'services/settings.service';
 import { useGetCompanie } from 'services/companies.service';
 
-const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBackLink = '/factures/list' }) => {
+const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Reglement', goBackLink = '/factures/list' }) => {
   const router = useNavigate();
   const { reglementId } = useParams();
 
@@ -117,6 +117,7 @@ const UpdateReglement = ({ invoiceId, type = 1, title = 'Editer Facture', goBack
   return (
     <MainCard
       title={title}
+      headerColor={true}
       backButton
       goBackLink={goBackLink}
       secondary={
