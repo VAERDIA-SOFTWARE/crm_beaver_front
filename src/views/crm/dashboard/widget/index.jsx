@@ -1,11 +1,12 @@
 import {
+  Button,
   Card,
   CardContent,
   Checkbox,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
-  Fade,
   FormControlLabel,
   Grid,
   IconButton,
@@ -25,6 +26,9 @@ import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined';
 import { useState, useEffect } from 'react';
 import { useOpenWeather } from 'react-open-weather';
 import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { useUpdateDashboard } from 'services/dashboard.service';
 
 const WidgetDashboard = ({
   handleOpenDialog,
@@ -62,21 +66,14 @@ const WidgetDashboard = ({
     }
   }, []);
   return (
-    <MainCard
-      sx={{ boxShadow: 'unset' }}
-      settingsIcon={true}
-      handleOpenDialog={handleOpenDialog}
-      boxShadow={false}
-      shadow={false}
-      border={false}
-      title="Informations Generales mensuelle"
-    >
+    <MainCard sx={{ boxShadow: 'unset' }} settingsIcon={true} handleOpenDialog={handleOpenDialog} title="Informations Generales mensuelle">
       {open && open === true && (
         <CustomizedDialogs
           open={open}
           onClose={handleCloseDialog}
           cardInformation={cardInformation}
           setCardInformation={setCardInformation}
+          loggedinUserId={loggedinUser?.id}
         />
       )}
       <Grid container spacing={gridSpacing}>
@@ -122,10 +119,11 @@ const WidgetDashboard = ({
             </Grid>
           </Card>
         </Grid>
+
         {cardInformation
-          .filter((element) => element.default && loggedinUser?.resources[element?.ressource]?.authorized === true)
+          .filter((element) => element.default)
           .map((element) => (
-            <Fade in={true} out={true} timeout={500} key={element.id}>
+            <>
               <Grid item xs={12} lg={3} sm={6}>
                 <ReportCard
                   matchDownXs={matchDownXs}
@@ -133,12 +131,15 @@ const WidgetDashboard = ({
                   setCardInformation={setCardInformation}
                   primary={element.primaryData}
                   secondary={element.title}
-                  color={theme.palette[element.color]?.main}
+                  color={theme.palette.secondary.main}
                   theme={theme}
                   iconPrimary={getIconComponent(element.icon)}
+                  difference={element.difference}
+                  differenceIcon={getIconComponent(element.differenceIcon)}
+                  iconColor={element.iconColor}
                 />
               </Grid>
-            </Fade>
+            </>
           ))}
       </Grid>
     </MainCard>
@@ -147,15 +148,39 @@ const WidgetDashboard = ({
 export default WidgetDashboard;
 
 // Dialogs Parts
-const CustomizedDialogs = ({ open, onClose, cardInformation, setCardInformation }) => {
+const CustomizedDialogs = ({ open, onClose, cardInformation, setCardInformation, loggedinUserId }) => {
+  const [formInput, setFormInput] = useState([]);
+  const useUpdateDashboardQuery = useUpdateDashboard({ idClient: loggedinUserId, idBlock: 1 });
+
+  useEffect(() => {
+    if (cardInformation && cardInformation.length > 0) {
+      const newFormInput = cardInformation.map((item) => ({
+        name: item.name,
+        active: item.default
+      }));
+      setFormInput(newFormInput);
+    }
+  }, [cardInformation]);
+  const handleChange = async () => {
+    try {
+      await useUpdateDashboardQuery.mutateAsync(formInput);
+    } catch (err) {
+      toast.error('Erreur');
+    }
+  };
   return (
     <BootstrapDialog open={open} onClose={onClose} aria-labelledby="customized-dialog-title">
       <BootstrapDialogTitle open={open} onClose={onClose} id="customized-dialog-title">
-        Cartes disponibles
+        Veuillez choisir jusqu'a 3 Widgets
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <ModalContent cardInformation={cardInformation} setCardInformation={setCardInformation} />
       </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleChange}>
+          confirmer
+        </Button>
+      </DialogActions>
     </BootstrapDialog>
   );
 };
@@ -192,13 +217,13 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
     return { ...item };
   });
 
-  const selectedItemCount = updatedCardInfo.filter((item) => item.default).length;
+  const selectedItemCount = updatedCardInfo.filter((item) => item.default === 1).length;
 
   const handleChangeState = (event) => {
     const { name, checked } = event.target;
     const updatedCardInfo = cardInformation.map((item) => {
       if (item.id === Number(name)) {
-        return { ...item, default: checked };
+        return { ...item, default: checked ? 1 : 0 };
       }
       return item;
     });
@@ -235,8 +260,7 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
 };
 
 //    Cards widget layout
-
-const ReportCard = ({ primary, secondary, iconPrimary, color, cardInformation, setCardInformation, theme, bgcolor, matchDownXs }) => {
+const ReportCard = ({ primary, secondary, iconPrimary, color, theme, bgcolor, matchDownXs, difference, differenceIcon, iconColor }) => {
   return (
     <Card sx={{ bgcolor: bgcolor || '', position: 'relative' }}>
       <Grid container justifyContent="space-between" alignItems="center">
@@ -256,7 +280,7 @@ const ReportCard = ({ primary, secondary, iconPrimary, color, cardInformation, s
             {iconPrimary}
           </Typography>
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={4}>
           <Grid container direction="column" justifyContent="space-between" spacing={1} alignItems={matchDownXs ? 'center' : 'flex-start'}>
             <Grid item sm={12}>
               <Typography variant="h3" sx={{ color: bgcolor ? '#fff' : '', ml: 2 }}>
@@ -266,10 +290,16 @@ const ReportCard = ({ primary, secondary, iconPrimary, color, cardInformation, s
             <Grid item sm={12}>
               <Typography variant="body2" align="left" sx={{ color: bgcolor ? '#fff' : 'grey.700', ml: 2 }}>
                 {secondary}
-
-                {/* <span style={{ color }}>{secondarySub}</span>{' '} */}
               </Typography>
             </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={4}>
+          <Grid container>
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ my: 1.5, mx: 'auto', color: theme?.palette[iconColor]?.main }}>
+              {differenceIcon}
+              <Typography variant="body2">{difference}</Typography>
+            </Stack>
           </Grid>
         </Grid>
       </Grid>
@@ -282,8 +312,9 @@ const iconMap = {
   GroupAddOutlinedIcon,
   EngineeringOutlinedIcon,
   ReceiptOutlinedIcon,
-  RequestQuoteOutlinedIcon
-  // Add more mappings as needed
+  RequestQuoteOutlinedIcon,
+  ArrowUpwardIcon,
+  ArrowDownwardIcon
 };
 
 export const getIconComponent = (iconName) => {

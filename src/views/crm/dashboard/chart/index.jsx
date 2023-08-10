@@ -1,10 +1,23 @@
 import { gridSpacing } from 'store/constant';
 import MainCard from 'ui-component/cards/MainCard';
-import { CardContent, Checkbox, Dialog, DialogContent, DialogTitle, FormControlLabel, Grid, IconButton } from '@mui/material';
+import {
+  Button,
+  CardContent,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  Grid,
+  IconButton
+} from '@mui/material';
 import { styled } from '@mui/system';
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import Chart from 'react-apexcharts';
+import { useEffect, useState } from 'react';
+import { useUpdateDashboard } from 'services/dashboard.service';
 
 const ChartDashboard = ({
   handleOpenChartDialog,
@@ -12,9 +25,9 @@ const ChartDashboard = ({
   openCharts,
   chartsInformations,
   setChartsInformations,
-  loggedinUser
+  loggedinUser,
+  theme
 }) => {
-  console.log(loggedinUser?.resources);
   return (
     <MainCard
       settingsIcon={true}
@@ -27,24 +40,25 @@ const ChartDashboard = ({
       {openCharts && openCharts === true && (
         <CustomizedDialogs
           open={openCharts}
-          onClose={handleCloseChartDialog}
+          handleCloseChartDialog={handleCloseChartDialog}
           cardInformation={chartsInformations}
           setCardInformation={setChartsInformations}
+          loggedinUserId={loggedinUser?.id}
         />
       )}
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12} lg={12} md={12}>
+          {/* <Grid container spacing={gridSpacing}> */}
           <Grid container spacing={gridSpacing}>
-            <Grid container spacing={gridSpacing}>
-              {chartsInformations
-                .filter((element) => element.default && loggedinUser?.resources[element?.ressource]?.authorized === true)
-                .map((element) => (
-                  <Grid item xs={12} lg={4} sm={6} key={element.id}>
-                    <AreaChartCard chartsInformations={element} setChartsInformations={setChartsInformations} />
-                  </Grid>
-                ))}
-            </Grid>
+            {chartsInformations
+              .filter((element) => element.default)
+              .map((element) => (
+                <Grid item xs={12} lg={4} sm={6} key={element.id}>
+                  <AreaChartCard chartsInformations={element} setChartsInformations={setChartsInformations} theme={theme} />
+                </Grid>
+              ))}
           </Grid>
+          {/* </Grid> */}
         </Grid>
       </Grid>
     </MainCard>
@@ -53,11 +67,38 @@ const ChartDashboard = ({
 export default ChartDashboard;
 
 // Modal Parts
-const CustomizedDialogs = ({ open, onClose, reportCard, setReportCard, cardInformation, setCardInformation }) => {
+const CustomizedDialogs = ({
+  open,
+  reportCard,
+  setReportCard,
+  cardInformation,
+  setCardInformation,
+  loggedinUserId,
+  handleCloseChartDialog
+}) => {
+  const [formInput, setFormInput] = useState([]);
+  const useUpdateDashboardQuery = useUpdateDashboard({ idClient: loggedinUserId, idBlock: 2 });
+
+  useEffect(() => {
+    if (cardInformation && cardInformation.length > 0) {
+      const newFormInput = cardInformation.map((item) => ({
+        name: item.name,
+        active: item.default
+      }));
+      setFormInput(newFormInput);
+    }
+  }, [cardInformation]);
+  const handleChange = async () => {
+    try {
+      await useUpdateDashboardQuery.mutateAsync(formInput);
+      handleCloseChartDialog(false);
+    } catch (err) {}
+  };
+
   return (
-    <BootstrapDialog open={open} onClose={onClose} aria-labelledby="customized-dialog-title">
-      <BootstrapDialogTitle open={open} onClose={onClose} id="customized-dialog-title">
-        Statistiques disponibles
+    <BootstrapDialog open={open} onClose={handleCloseChartDialog} aria-labelledby="customized-dialog-title">
+      <BootstrapDialogTitle open={open} onClose={handleCloseChartDialog} id="customized-dialog-title">
+        Veuillez choisir jusqu'a 3 Courbes
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <ModalContent
@@ -67,6 +108,11 @@ const CustomizedDialogs = ({ open, onClose, reportCard, setReportCard, cardInfor
           setCardInformation={setCardInformation}
         />
       </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleChange}>
+          confirmer
+        </Button>
+      </DialogActions>
     </BootstrapDialog>
   );
 };
@@ -99,19 +145,23 @@ const BootstrapDialogTitle = ({ children, onClose, ...other }) => (
 );
 
 const ModalContent = ({ cardInformation, setCardInformation }) => {
+  const updatedCardInfo = cardInformation.map((item) => {
+    return { ...item };
+  });
+
+  const selectedItemCount = updatedCardInfo.filter((item) => item.default === 1).length;
+
   const handleChangeState = (event) => {
     const { name, checked } = event.target;
     const updatedCardInfo = cardInformation.map((item) => {
       if (item.id === Number(name)) {
-        return { ...item, default: checked };
+        return { ...item, default: checked ? 1 : 0 };
       }
       return item;
     });
-    const selectedItems = updatedCardInfo.filter((item) => item.default);
-    if (selectedItems.length <= 3) {
+
+    if (selectedItemCount <= 3) {
       setCardInformation(updatedCardInfo);
-    } else {
-      toast.error('Vous ne pouvez pas choisir plus que trois courbes ');
     }
   };
 
@@ -122,7 +172,15 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
           {cardInformation.map((item) => (
             <Grid item xs={12} key={item.id}>
               <FormControlLabel
-                control={<Checkbox checked={item.default} onChange={handleChangeState} name={item.id} color="primary" />}
+                control={
+                  <Checkbox
+                    checked={item.default}
+                    onChange={handleChangeState}
+                    name={item.id}
+                    color="primary"
+                    disabled={!item.default && selectedItemCount >= 3}
+                  />
+                }
                 label={item.title}
               />
             </Grid>
@@ -134,12 +192,18 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
 };
 
 // component card
-const AreaChartCard = ({ chartsInformations }) => {
+const AreaChartCard = ({ chartsInformations, theme }) => {
   const chartData = {
     series: [
       {
-        name: chartsInformations.title,
-        data: chartsInformations.data
+        name: chartsInformations.year,
+        data: chartsInformations.currentYear,
+        color: theme.palette.success.main
+      },
+      {
+        name: chartsInformations.yearSub,
+        data: chartsInformations.subYear,
+        color: theme.palette.warning.main
       }
     ],
     options: {
@@ -157,6 +221,9 @@ const AreaChartCard = ({ chartsInformations }) => {
       legend: {
         show: true,
         position: 'bottom'
+      },
+      stroke: {
+        curve: 'smooth'
       },
       title: {
         text: chartsInformations.title,

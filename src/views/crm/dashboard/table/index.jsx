@@ -1,4 +1,18 @@
-import { CardContent, Checkbox, Dialog, DialogContent, DialogTitle, Fade, FormControlLabel, Grid, IconButton } from '@mui/material';
+import {
+  Button,
+  CardContent,
+  CardHeader,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Fade,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  Typography
+} from '@mui/material';
 import { Box, styled } from '@mui/system';
 import MainCard from 'ui-component/cards/MainCard';
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,6 +24,9 @@ import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import { DataGrid, frFR } from '@mui/x-data-grid';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import SignalCellularNoSimOutlinedIcon from '@mui/icons-material/SignalCellularNoSimOutlined';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { useUpdateDashboard } from 'services/dashboard.service';
 const TablesDashboard = ({
   open,
   handleOpenDialog,
@@ -18,7 +35,8 @@ const TablesDashboard = ({
   setReportCard,
   cardInformation,
   setCardInformation,
-  theme
+  theme,
+  loggedinUser
 }) => {
   return (
     <MainCard
@@ -33,11 +51,12 @@ const TablesDashboard = ({
       {open && open == true && (
         <CustomizedDialogs
           open={open}
-          onClose={handleCloseDialog}
+          handleCloseDialog={handleCloseDialog}
           reportCard={reportCard}
           setReportCard={setReportCard}
           cardInformation={cardInformation}
           setCardInformation={setCardInformation}
+          loggedinUserId={loggedinUser?.id}
         />
       )}
 
@@ -46,11 +65,9 @@ const TablesDashboard = ({
           {cardInformation
             .filter((element) => element.default)
             .map((element) => (
-              <Fade in={true} out={true} timeout={500} key={element.id}>
-                <Grid item xs={12} lg={12} sm={12}>
-                  <TableDataGrid theme={theme} articlesData={element} id={element?.id} />
-                </Grid>
-              </Fade>
+              <Grid item xs={12} lg={12} sm={12}>
+                <TableDataGrid theme={theme} articlesData={element} id={element?.id} name={element?.name} />
+              </Grid>
             ))}
         </Grid>
       </Grid>
@@ -60,11 +77,31 @@ const TablesDashboard = ({
 export default TablesDashboard;
 
 // Modal Parts
-const CustomizedDialogs = ({ open, onClose, reportCard, setReportCard, cardInformation, setCardInformation }) => {
+const CustomizedDialogs = ({ open, handleCloseDialog, reportCard, setReportCard, cardInformation, setCardInformation, loggedinUserId }) => {
+  const [formInput, setFormInput] = useState([]);
+  const useUpdateDashboardQuery = useUpdateDashboard({ idClient: loggedinUserId, idBlock: 3 });
+
+  useEffect(() => {
+    if (cardInformation && cardInformation.length > 0) {
+      const newFormInput = cardInformation.map((item) => ({
+        name: item.name,
+        active: item.default
+      }));
+      setFormInput(newFormInput);
+    }
+  }, [cardInformation]);
+  const handleChange = async () => {
+    try {
+      await useUpdateDashboardQuery.mutateAsync(formInput);
+      handleCloseDialog(false);
+    } catch (err) {
+      toast.error('Erreur');
+    }
+  };
   return (
-    <BootstrapDialog open={open} onClose={onClose} aria-labelledby="customized-dialog-title">
-      <BootstrapDialogTitle open={open} onClose={onClose} id="customized-dialog-title">
-        Statistiques disponibles
+    <BootstrapDialog open={open} onClose={handleCloseDialog} aria-labelledby="customized-dialog-title">
+      <BootstrapDialogTitle open={open} onClose={handleCloseDialog} id="customized-dialog-title">
+        Veuillez choisir un tableau
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <ModalContent
@@ -74,6 +111,11 @@ const CustomizedDialogs = ({ open, onClose, reportCard, setReportCard, cardInfor
           setCardInformation={setCardInformation}
         />
       </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleChange}>
+          confirmer
+        </Button>
+      </DialogActions>
     </BootstrapDialog>
   );
 };
@@ -106,19 +148,23 @@ const BootstrapDialogTitle = ({ children, onClose, ...other }) => (
 );
 
 const ModalContent = ({ cardInformation, setCardInformation }) => {
+  const updatedCardInfo = cardInformation.map((item) => {
+    return { ...item };
+  });
+
+  const selectedItemCount = updatedCardInfo.filter((item) => item.default === 1).length;
+
   const handleChangeState = (event) => {
     const { name, checked } = event.target;
     const updatedCardInfo = cardInformation.map((item) => {
       if (item.id === Number(name)) {
-        return { ...item, default: checked };
+        return { ...item, default: checked ? 1 : 0 };
       }
       return item;
     });
-    const selectedItems = updatedCardInfo.filter((item) => item.default);
-    if (selectedItems.length <= 1) {
+
+    if (selectedItemCount <= 1) {
       setCardInformation(updatedCardInfo);
-    } else {
-      toast.error("Vous ne pouvez pas choisir plus qu'une liste");
     }
   };
 
@@ -129,7 +175,15 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
           {cardInformation.map((item) => (
             <Grid item xs={12} key={item.id}>
               <FormControlLabel
-                control={<Checkbox checked={item.default} onChange={handleChangeState} name={item.id} color="primary" />}
+                control={
+                  <Checkbox
+                    checked={item.default}
+                    onChange={handleChangeState}
+                    name={item.id.toString()}
+                    color="primary"
+                    disabled={!item.default && selectedItemCount >= 1}
+                  />
+                }
                 label={item.title}
               />
             </Grid>
@@ -140,59 +194,53 @@ const ModalContent = ({ cardInformation, setCardInformation }) => {
   );
 };
 
-function TableDataGrid({ setPageSize, articlesData, setPage, theme, id }) {
+function TableDataGrid({ setPageSize, articlesData, setPage, theme, id, name }) {
   const articlesColumns = [
-    {
-      field: 'active',
-      headerName: 'Statut',
-      sortable: false,
-      hideable: false,
-      filterable: false,
-      disableExport: true,
-      renderCell: (params) => {
-        return (
-          <>
-            {params?.row?.active ? (
-              <ArticleOutlinedIcon
-                sx={{
-                  color: '#16a34a'
-                }}
-              />
-            ) : (
-              <SignalCellularNoSimOutlinedIcon
-                sx={{
-                  color: '#dc2626'
-                }}
-              />
-            )}
-          </>
-        );
-      }
-    },
+    // {
+    //   field: 'validated',
+    //   headerName: 'Statut',
+    //   sortable: false,
+    //   hideable: false,
+    //   filterable: false,
+    //   disableExport: true,
+    //   renderCell: ({ row }) => {
+
+    //   }
+    // },
     { field: 'reference', headerName: 'Référence', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'nom', headerName: 'Intitulé', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'prix_unitaire', headerName: 'Prix Unitaire', sortable: false, filterable: false, minWidth: 100, flex: 1 },
-    { field: 'remise', headerName: 'Remise', sortable: false, filterable: false, minWidth: 100, flex: 1 },
+    { field: 'date_debut', headerName: 'Date Debut', sortable: false, filterable: false, minWidth: 100, flex: 1 },
     {
-      field: 'unite_id',
-      headerName: 'Unité',
+      field: 'date_fin',
+      headerName: 'Date Fin',
       sortable: false,
       filterable: false,
+
       minWidth: 100,
-      flex: 1,
-      renderCell: (params) => {
-        return <>{params?.row?.unite?.intitule}</>;
-      }
+      flex: 1
     },
+
+    // {
+    //   field: 'client',
+    //   headerName: 'Client',
+    //   sortable: false,
+    //   filterable: false,
+    //   minWidth: 100,
+    //   flex: 1,
+    //   renderCell: (params) => {
+    //     return <div>{params?.row?.user?.name}</div>;
+    //   }
+    // },
     {
-      field: 'p_category_article_id',
-      headerName: 'Catégorie',
+      field: 'marque_pac_parents',
+      headerName: 'Marque PAC',
       sortable: false,
       filterable: false,
       minWidth: 100,
       flex: 1,
       renderCell: (params) => {
-        return <>{params?.row?.category?.intitule}</>;
+        const marqueList = params?.row?.marque_pac_parents;
+        const marqueText = marqueList?.join(', ');
+        return <div>{marqueText}</div>;
       }
     }
   ];
@@ -403,6 +451,22 @@ function TableDataGrid({ setPageSize, articlesData, setPage, theme, id }) {
         }
       }}
     >
+      <CardHeader
+        sx={{ padding: 2, '& .MuiCardHeader-action': { mr: 0 } }}
+        title={
+          <>
+            <Typography variant="h3">
+              {name == 'list_available_collaborator_today'
+                ? "Liste des techniciens disponibles pour aujourd'hui"
+                : name == 'list_contracts_drafy_today'
+                ? "Liste des contrats echouées pour aujourd'hui"
+                : name == 'list_interventions_today'
+                ? "Liste des interventions pour aujourd'hui"
+                : ''}
+            </Typography>
+          </>
+        }
+      />
       <DataGrid
         localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
         density="compact"
@@ -420,7 +484,15 @@ function TableDataGrid({ setPageSize, articlesData, setPage, theme, id }) {
           }
         }}
         rows={articlesData?.data || []}
-        columns={id == 2 ? TechnicientsColumns : id == 3 ? articlesColumns : id == 1 ? columns : []}
+        columns={
+          name == 'list_available_collaborator_today'
+            ? TechnicientsColumns
+            : name == 'list_contracts_drafy_today'
+            ? articlesColumns
+            : name == 'list_interventions_today'
+            ? columns
+            : []
+        }
         rowsPerPageOptions={[5, 10, 25]}
         paginationMode="server"
         filterMode="server"
