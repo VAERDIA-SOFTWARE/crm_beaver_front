@@ -103,7 +103,7 @@ const TechnicienDetailsPage = () => {
   //   date_debut: moment().subtract(6, 'days').format('YYYY/MM/DD'),
   //   date_fin: moment().format('YYYY/MM/DD')
   // });
-  console.log(searchFilter);
+
   const getArticlesQuery = useGetpointages({ date_debut: searchFilter?.date_debut, date_fin: searchFilter?.date_fin });
 
   const pointages = getArticlesQuery?.data;
@@ -153,7 +153,6 @@ const TechnicienDetailsPage = () => {
           variant="scrollable"
         >
           <Tab to="#" label="Collaborateur" {...a11yProps(0)} />
-          <Tab to="#" label="Chantiers" {...a11yProps(1)} />
           <Tab to="#" label="Interventions" {...a11yProps(2)} />
           <Tab to="#" label="Accès" {...a11yProps(3)} />
           <Tab to="#" label="Historique de pointage" {...a11yProps(4)} />
@@ -194,22 +193,6 @@ const TechnicienDetailsPage = () => {
         <TabPanel value={value} index={1}>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12}>
-              {/* <ChantierList
-                title=""
-                // inspectionChantierFilter={1}
-                // etatFilter={0}
-                disableFilters
-                disableCreate
-                disableCheckboxSelection={true}
-                userId={technicienId}
-                genererInspections
-              /> */}
-            </Grid>
-          </Grid>
-        </TabPanel>
-        <TabPanel value={value} index={2}>
-          <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
-            <Grid item xs={12}>
               <TableDataGrid
                 disableStatut
                 inspectionsStatusData={inspectionsStatutData}
@@ -225,7 +208,7 @@ const TechnicienDetailsPage = () => {
             </Grid>
           </Grid>
         </TabPanel>
-        <TabPanel value={value} index={3}>
+        <TabPanel value={value} index={2}>
           <Grid container spacing={gridSpacing} sx={{ mt: 0.25 }}>
             <Grid item xs={12} sx={{ marginBottom: '2rem' }}>
               <AuthToggleCard toggleAuth={toggleAuth} setToggleAuth={setToggleAuth} userData={technicienData} userId={technicienId} />
@@ -236,11 +219,11 @@ const TechnicienDetailsPage = () => {
             {Array.isArray(userPermissionsData) && <AccessDataCard userPermissionsData={userPermissionsData} userId={technicienId} />}
           </Grid>
         </TabPanel>
-        <TabPanel value={value} index={4}>
+        <TabPanel value={value} index={3}>
           <PointageList searchFilter={searchFilter} setSearchFilter={setSearchFilter} pointages={pointages} />
         </TabPanel>
-        <TabPanel value={value} index={5}>
-          <PointageMaps />
+        <TabPanel value={value} index={4}>
+          <PointageMaps technicienId={technicienId} />
         </TabPanel>
         <div
           style={{

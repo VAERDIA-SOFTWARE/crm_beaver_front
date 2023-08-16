@@ -383,6 +383,50 @@ const ProfileSection = () => {
                                   </ListItemButton>
                                 </Link>
                                 <Link
+                                  to={'/settings/mode-facturation'}
+                                  style={{
+                                    textDecorationLine: 'none'
+                                  }}
+                                >
+                                  <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} selected={selectedIndex === 4}>
+                                    <ListItemIcon sx={{ my: 'auto', minWidth: 36 }}>
+                                      {
+                                        <FiberManualRecordIcon
+                                          sx={{
+                                            width: 6,
+                                            height: 6
+                                          }}
+                                          fontSize={'medium'}
+                                        />
+                                      }
+                                    </ListItemIcon>
+
+                                    <ListItemText primary={<Typography variant="body2">Mode Facturation</Typography>} />
+                                  </ListItemButton>
+                                </Link>
+                                {/* <Link
+                                  to={'/settings/marque-pac'}
+                                  style={{
+                                    textDecorationLine: 'none'
+                                  }}
+                                >
+                                  <ListItemButton sx={{ borderRadius: `${borderRadius}px` }} selected={selectedIndex === 4}>
+                                    <ListItemIcon sx={{ my: 'auto', minWidth: 36 }}>
+                                      {
+                                        <FiberManualRecordIcon
+                                          sx={{
+                                            width: 6,
+                                            height: 6
+                                          }}
+                                          fontSize={'medium'}
+                                        />
+                                      }
+                                    </ListItemIcon>
+
+                                    <ListItemText primary={<Typography variant="body2">Marque Pac</Typography>} />
+                                  </ListItemButton>
+                                </Link> */}
+                                <Link
                                   to={'/settings/calendrier'}
                                   style={{
                                     textDecorationLine: 'none'

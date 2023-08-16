@@ -95,6 +95,7 @@ const LeadsUpdatePage = () => {
 
   return (
     <MainCard
+      headerColor={true}
       title={`Modifier ${clientData?.type === 0 ? 'Leads' : 'Client'} ${clientData?.reference ? '- ' + clientData?.reference : ''}`}
       backButton
       goBackLink={-1}

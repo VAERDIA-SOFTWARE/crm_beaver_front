@@ -53,7 +53,7 @@ const AppCrmTechniciensDetails = Loadable(lazy(() => import('views/crm/technicie
 const AppCrmTechnicienCreate = Loadable(lazy(() => import('views/crm/techniciens/list/CreatePage')));
 
 const AppCrmClientsList = Loadable(lazy(() => import('views/crm/clients/list/index')));
-const AppCrmClientUpdate = Loadable(lazy(() => import('views/crm/leads/list/UpdatePage')));
+const AppCrmClientUpdate = Loadable(lazy(() => import('views/crm/clients/list/UpdatePage')));
 const AppCrmClientDetails = Loadable(lazy(() => import('views/crm/clients/list/DetailsPage')));
 const AppCrmClientCreate = Loadable(lazy(() => import('views/crm/clients/list/CreatePage')));
 const AppCrmClientImportChantiers = Loadable(lazy(() => import('views/crm/clients/list/UploadChantiersPage')));
@@ -73,6 +73,7 @@ const AppCrmContratDetails = Loadable(lazy(() => import('views/crm/contrats/Deta
 const AppCrmContratUpdate = Loadable(lazy(() => import('views/crm/contrats/UpdatePage')));
 const AppCrmContratCreate = Loadable(lazy(() => import('views/crm/contrats/FormStepper/index')));
 const AppCrmContratsList = Loadable(lazy(() => import('views/crm/contrats/index')));
+const AppCrmContratsEchouerList = Loadable(lazy(() => import('views/crm/contrats/ListEchouer')));
 
 const AppCrmLotLeadsList = Loadable(lazy(() => import('views/crm/lot-leads/index')));
 const AppCrmLotLeadsDetails = Loadable(lazy(() => import('views/crm/lot-leads/DetailsPage')));
@@ -124,6 +125,12 @@ const AppCrmCategorieClientsList = Loadable(lazy(() => import('views/crm/prefere
 const AppCrmCategorieClientsCreate = Loadable(lazy(() => import('views/crm/preferences/categories-clients/CreatePage')));
 const AppCrmCategorieClientsDetails = Loadable(lazy(() => import('views/crm/preferences/categories-clients/DetailsPage')));
 const AppCrmCategorieClientsUpdate = Loadable(lazy(() => import('views/crm/preferences/categories-clients/UpdatePage')));
+const AppCrmModeFacturationList = Loadable(lazy(() => import('views/crm/mode-facturation/list/index')));
+const AppCrmModeFacturationCreate = Loadable(lazy(() => import('views/crm/mode-facturation/list/CreatePage')));
+const AppCrmModeFacturationUpdate = Loadable(lazy(() => import('views/crm/mode-facturation/list/UpdatePage')));
+const AppCrmMarquePacList = Loadable(lazy(() => import('views/crm/marque-pac/list/index')));
+const AppCrmMarquePacCreate = Loadable(lazy(() => import('views/crm/marque-pac/list/CreatePage')));
+const AppCrmMarquePacUpdate = Loadable(lazy(() => import('views/crm/marque-pac/list/UpdatePage')));
 
 const AppCrmPreferencesUpdate = Loadable(lazy(() => import('views/crm/preferences/SettingsPreferencesPage')));
 
@@ -638,12 +645,12 @@ const MainRoutes = {
   children: [
     {
       // path: '/dashboard/default',
-      element: <DashboardDefault />,
+      element: <DashboardCollaborateur />,
       index: true
     },
     {
       path: '/dashboard/default',
-      element: <DashboardDefault />
+      element: <DashboardCollaborateur />
     },
 
     {
@@ -667,7 +674,7 @@ const MainRoutes = {
       element: <AppCrmClientDetails />
     },
     {
-      path: '/clients/:leadsId/update',
+      path: '/clients/:clientId/update',
       element: <AppCrmClientUpdate />
     },
     {
@@ -721,6 +728,10 @@ const MainRoutes = {
     {
       path: '/contrats/list',
       element: <AppCrmContratsList />
+    },
+    {
+      path: '/contrats/list-echouer',
+      element: <AppCrmContratsEchouerList />
     },
     {
       path: '/contrats/create',
@@ -956,6 +967,30 @@ const MainRoutes = {
     {
       path: '/settings/jour-ferie/:jourFerieId/update',
       element: <AppCrmJourFerieUpdate />
+    },
+    {
+      path: '/settings/mode-facturation',
+      element: <AppCrmModeFacturationList />
+    },
+    {
+      path: '/settings/mode-facturation/create',
+      element: <AppCrmModeFacturationCreate />
+    },
+    {
+      path: '/settings/mode-facturation/:modeFacturationId/update',
+      element: <AppCrmModeFacturationUpdate />
+    },
+    {
+      path: '/settings/marque-pac',
+      element: <AppCrmMarquePacList />
+    },
+    {
+      path: '/settings/marque-pac/create',
+      element: <AppCrmMarquePacCreate />
+    },
+    {
+      path: '/settings/marque-pac/:marquePacId/update',
+      element: <AppCrmMarquePacUpdate />
     },
 
     {

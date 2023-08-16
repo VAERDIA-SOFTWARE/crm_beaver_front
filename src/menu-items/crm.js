@@ -27,18 +27,9 @@ const crm = {
       children: [
         {
           parentResource: 'lots',
-          permission: 'create',
-          id: 'lots-create',
-          title: 'Importer Lot-Leads',
-          type: 'item',
-          url: '/lot-leads/create',
-          breadcrumbs: false
-        },
-        {
-          parentResource: 'lots',
           permission: 'view',
-          id: 'lots-view',
-          title: 'Lot-Leads',
+          id: 'lots-create',
+          title: 'Importer Leads',
           type: 'item',
           url: '/lot-leads/list',
           breadcrumbs: false
@@ -56,7 +47,7 @@ const crm = {
           parentResource: 'clients',
           permission: 'view',
           id: 'lead-view',
-          title: 'List Leads',
+          title: 'List des Leads',
           type: 'item',
           url: '/leads/list',
           breadcrumbs: false
@@ -65,20 +56,11 @@ const crm = {
     },
     {
       id: 'operations',
-      title: 'Articles',
+      title: 'Strecture',
       type: 'collapse',
       icon: GroupOutlinedIcon,
       breadcrumbs: false,
       children: [
-        {
-          parentResource: 'operations',
-          permission: 'create',
-          id: 'operations-create',
-          title: 'Ajouter Article',
-          type: 'item',
-          url: '/articles/create',
-          breadcrumbs: false
-        },
         {
           parentResource: 'operations',
           permission: 'view',
@@ -87,34 +69,52 @@ const crm = {
           type: 'item',
           url: '/articles/list',
           breadcrumbs: false
-        }
-      ]
-    },
-    {
-      id: 'clients',
-      title: 'Clients',
-      type: 'collapse',
-      icon: GroupOutlinedIcon,
-      breadcrumbs: false,
-      children: [
-        {
-          parentResource: 'clients',
-          permission: 'create',
-          id: 'clients-create',
-          title: 'Ajouter Client',
-          type: 'item',
-          url: '/clients/create',
-          breadcrumbs: false
         },
         {
           parentResource: 'clients',
           permission: 'view',
           id: 'clients-view',
-          title: 'Clients',
+          title: 'List des clients',
           type: 'item',
           url: '/clients/list',
           breadcrumbs: false
         },
+        {
+          parentResource: 'collaborators',
+          permission: 'view',
+          id: 'collaborators-view',
+          title: 'List des collab',
+          type: 'item',
+          url: '/techniciens/list',
+          breadcrumbs: false
+        }
+      ]
+    },
+    {
+      id: 'contrats',
+      title: 'Contrats',
+      type: 'collapse',
+      icon: GroupOutlinedIcon,
+      breadcrumbs: false,
+      children: [
+        // {
+        //   parentResource: 'clients',
+        //   permission: 'create',
+        //   id: 'clients-create',
+        //   title: 'Ajouter Client',
+        //   type: 'item',
+        //   url: '/clients/create',
+        //   breadcrumbs: false
+        // },
+        // {
+        //   parentResource: 'clients',
+        //   permission: 'view',
+        //   id: 'clients-view',
+        //   title: 'Clients',
+        //   type: 'item',
+        //   url: '/clients/list',
+        //   breadcrumbs: false
+        // },
         {
           parentResource: 'contrats',
           permission: 'create',
@@ -128,54 +128,63 @@ const crm = {
           parentResource: 'contrats',
           permission: 'view',
           id: 'contrats-view',
-          title: 'Contrats',
+          title: 'List des Contrats',
           type: 'item',
           url: '/contrats/list',
           breadcrumbs: false
-        }
-      ]
-    },
-    {
-      id: 'collaborators',
-      title: 'Collaborateurs',
-      type: 'collapse',
-      icon: EngineeringOutlinedIcon,
-      breadcrumbs: false,
-      children: [
-        {
-          parentResource: 'collaborators',
-          permission: 'create',
-          id: 'collaborators-create',
-          title: 'Ajouter Collaborateur',
-          type: 'item',
-          url: '/techniciens/create',
-          breadcrumbs: false
         },
         {
-          parentResource: 'collaborators',
+          parentResource: 'contrats',
           permission: 'view',
-          id: 'collaborators-view',
-          title: 'Collaborateurs',
+          id: 'contrats-view-echouer',
+          title: 'List des Contrats échouer',
           type: 'item',
-          url: '/techniciens/list',
+          url: '/contrats/list-echouer',
           breadcrumbs: false
         }
-        // {
-        //   id: 'list-pointage',
-        //   title: 'Historique Pointage',
-        //   type: 'item',
-        //   url: '/pointage/list',
-        //   breadcrumbs: false
-        // },
-        // {
-        //   id: 'maps',
-        //   title: 'Maps',
-        //   type: 'item',
-        //   url: '/maps',
-        //   breadcrumbs: false
-        // }
       ]
     },
+    // {
+    //   id: 'collaborators',
+    //   title: 'Collaborateurs',
+    //   type: 'collapse',
+    //   icon: EngineeringOutlinedIcon,
+    //   breadcrumbs: false,
+    //   children: [
+    //     {
+    //       parentResource: 'collaborators',
+    //       permission: 'create',
+    //       id: 'collaborators-create',
+    //       title: 'Ajouter Collaborateur',
+    //       type: 'item',
+    //       url: '/techniciens/create',
+    //       breadcrumbs: false
+    //     },
+    //     {
+    //       parentResource: 'collaborators',
+    //       permission: 'view',
+    //       id: 'collaborators-view',
+    //       title: 'Collaborateurs',
+    //       type: 'item',
+    //       url: '/techniciens/list',
+    //       breadcrumbs: false
+    //     }
+    //     // {
+    //     //   id: 'list-pointage',
+    //     //   title: 'Historique Pointage',
+    //     //   type: 'item',
+    //     //   url: '/pointage/list',
+    //     //   breadcrumbs: false
+    //     // },
+    //     // {
+    //     //   id: 'maps',
+    //     //   title: 'Maps',
+    //     //   type: 'item',
+    //     //   url: '/maps',
+    //     //   breadcrumbs: false
+    //     // }
+    //   ]
+    // },
     {
       id: 'interventions',
       title: 'Intervention',
@@ -184,10 +193,19 @@ const crm = {
       breadcrumbs: false,
       children: [
         {
+          parentResource: 'calendrier',
+          permission: 'view',
+          id: 'calendrier-view',
+          title: 'Calendrier',
+          type: 'item',
+          url: '/interventions/calendar',
+          breadcrumbs: false
+        },
+        {
           parentResource: 'interventions-proposer',
           permission: 'view',
           id: 'interventions-proposer-view',
-          title: 'Propositions',
+          title: 'List des Propositions',
           type: 'item',
           url: '/propositions/list',
           breadcrumbs: false
@@ -196,82 +214,37 @@ const crm = {
           parentResource: 'interventions',
           permission: 'view',
           id: 'interventions-view',
-          title: 'Interventions',
+          title: 'List des Interventions',
           type: 'item',
           url: '/interventions/list',
-          breadcrumbs: false
-        },
-        {
-          parentResource: 'calendrier',
-          permission: 'view',
-          id: 'calendrier-view',
-          title: 'Calendrier',
-          type: 'item',
-          url: '/interventions/calendar',
           breadcrumbs: false
         }
       ]
     },
 
     {
-      id: 'invoices',
-      title: 'Facturations',
+      id: 'commercial',
+      title: 'Commercial',
       type: 'collapse',
       icon: ReceiptOutlinedIcon,
       breadcrumbs: false,
       children: [
         {
           parentResource: 'invoices',
-          permission: 'create',
-          id: 'devis-create',
-          title: 'Nouveau Devis',
-          type: 'item',
-          url: '/devis/create',
-          breadcrumbs: false
-        },
-        {
-          parentResource: 'invoices',
           permission: 'view',
           id: 'devis-view',
-          title: 'Devis',
+          title: 'List des Devis',
           type: 'item',
           url: '/devis/list',
           breadcrumbs: false
         },
         {
           parentResource: 'invoices',
-          permission: 'create',
-          id: 'invoices-create',
-          title: 'Nouvelle Facture',
-          type: 'item',
-          url: '/factures/create',
-          breadcrumbs: false
-        },
-        {
-          parentResource: 'invoices',
           permission: 'view',
           id: 'invoices-view',
-          title: 'Factures',
+          title: 'List des Factures',
           type: 'item',
           url: '/factures/list',
-          breadcrumbs: false
-        }
-      ]
-    },
-    {
-      id: 'regulations',
-      title: 'Reglements ',
-      type: 'collapse',
-      icon: ReceiptOutlinedIcon,
-      breadcrumbs: false,
-      children: [
-        {
-          parentResource: 'regulations',
-          permission: 'create',
-          id: 'regulations-create',
-          title: 'Ajouter Reglements',
-          type: 'item',
-          url: '/reglement/create',
           breadcrumbs: false
         },
         {
@@ -285,6 +258,33 @@ const crm = {
         }
       ]
     }
+    // {
+    //   id: 'regulations',
+    //   title: 'Reglements ',
+    //   type: 'collapse',
+    //   icon: ReceiptOutlinedIcon,
+    //   breadcrumbs: false,
+    //   children: [
+    //     {
+    //       parentResource: 'regulations',
+    //       permission: 'create',
+    //       id: 'regulations-create',
+    //       title: 'Ajouter Reglements',
+    //       type: 'item',
+    //       url: '/reglement/create',
+    //       breadcrumbs: false
+    //     },
+    //     {
+    //       parentResource: 'regulations',
+    //       permission: 'view',
+    //       id: 'regulations-view',
+    //       title: 'Liste des Reglements',
+    //       type: 'item',
+    //       url: '/reglements/list',
+    //       breadcrumbs: false
+    //     }
+    //   ]
+    // }
   ]
 };
 

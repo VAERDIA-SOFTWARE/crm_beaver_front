@@ -177,26 +177,31 @@ const ClientUpdatePage = () => {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <Autocomplete
-                  onChange={(event, newValue) => {
-                    setSelectedCategory(newValue);
+                {clientData && Array.isArray(categoryData) ? (
+                  <Autocomplete
+                    onChange={(event, newValue) => {
+                      setSelectedCategory(newValue);
 
-                    setFormInput((formData) => {
-                      return { ...formData, p_category_client_id: newValue?.id };
-                    });
-                  }}
-                  options={categoryData || []}
-                  getOptionLabel={(option) => option.intitule}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="standard"
-                      label="Catégorie*"
-                      error={!!formErrors?.data?.p_category_client_id}
-                      helperText={renderArrayMultiline(formErrors?.data?.p_category_client_id)}
-                    />
-                  )}
-                />
+                      setFormInput((formData) => {
+                        return { ...formData, p_category_client_id: newValue?.id };
+                      });
+                    }}
+                    options={categoryData || []}
+                    getOptionLabel={(option) => option.intitule}
+                    defaultValue={categoryData?.find((e) => clientData?.p_category_client_id === e?.id)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Catégorie*"
+                        error={!!formErrors?.data?.p_category_client_id}
+                        helperText={renderArrayMultiline(formErrors?.data?.p_category_client_id)}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Skeleton variant="rounded" width={'100%'} height={50} />
+                )}
               </Grid>
               {/* <Grid item xs={12} md={6}>
                 <Autocomplete

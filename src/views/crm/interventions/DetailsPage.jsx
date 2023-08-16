@@ -32,7 +32,7 @@ import { useGetStateByModel } from 'services/state.service';
 const InspectionDetailsPage = () => {
   const { interventionId } = useParams();
 
-  const getInspectionFormulaireQuery = useGetInspectionFormulaire({ interventionId });
+  const getInspectionFormulaireQuery = useGetInspectionFormulaire({ inspectionId: interventionId, web: 'sdssd' });
   const inspectionFormulaireData = getInspectionFormulaireQuery.data;
 
   const getInspectionQuery = useGetInspection(interventionId);
@@ -89,9 +89,9 @@ const InspectionDetailsPage = () => {
             gap: 5
           }}
         >
-          {inspectionData?.etat !== 0 ? (
+          {inspectionData?.etat !== 0 && inspectionData?.etat !== 1 ? (
             <>
-              {inspectionData?.etat === 1 && (
+              {inspectionData?.etat === 2 && (
                 <>
                   {user?.role.includes('admin') && (
                     <LoadingButton
@@ -120,7 +120,7 @@ const InspectionDetailsPage = () => {
                 </Tooltip> */}
                 </>
               )}
-              {inspectionData?.etat === 2 && (
+              {inspectionData?.etat === 3 && (
                 <Tooltip title="Télécharger rapport">
                   <a
                     style={{

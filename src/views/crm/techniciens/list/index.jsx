@@ -30,7 +30,7 @@ const TechniciensList = () => {
   const [page, setPage] = React.useState(1);
   const [searchFilter, setSearchFilter] = React.useState('');
 
-  const getTechniciensQuery = useGetUsers({ role: 'technicien', page, searchFilter });
+  const getTechniciensQuery = useGetUsers({ role: 'collaborator', page, searchFilter });
 
   const navigate = useNavigate();
 

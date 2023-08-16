@@ -10,21 +10,11 @@ import { useTheme } from '@mui/material/styles';
 import MainCard from 'ui-component/cards/MainCard';
 
 // assets
-import {
-  DataGrid,
-  frFR,
-  GridToolbar,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarDensitySelector,
-  GridToolbarExport,
-  GridToolbarQuickFilter
-} from '@mui/x-data-grid';
+import { DataGrid, frFR, GridToolbarContainer, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteInspection, useGenererInspectionsRapport, useGetInspections, useValidateInspections } from 'services/inspections.service';
-import EtatStaus from 'ui-component/cards/EtatStatus';
-import InfoIcon from '@mui/icons-material/Info';
+
 import useAuth from 'hooks/useAuth';
 import { useGetSettingsPreferences } from 'services/settings.service';
 import { useGetStateByModel } from 'services/state.service';
@@ -45,16 +35,16 @@ const InspectionsList = ({ title, userId = '', overrideData, disableAdresse, dis
   // const getInspectionsProposesQuery = useGetInspectionsProposes({ searchFilter, userId, page });
   // const inspectionsProposesEtatData = getInspectionsProposesQuery.data?.etats;
 
-  React.useEffect(() => {
-    // if (user?.role.includes('admin')) {
-    //   setTabValue(2);
-    //   setEtat(1);
-    // }
-    // if (user?.role.includes('technicien')) {
-    //   setTabValue(1);
-    //   setEtat(0);
-    // }
-  }, [user]);
+  // React.useEffect(() => {
+  //   if (user?.role.includes('admin')) {
+  //     setTabValue(2);
+  //     setEtat(1);
+  //   }
+  //   if (user?.role.includes('technicien')) {
+  //     setTabValue(1);
+  //     setEtat(0);
+  //   }
+  // }, [user]);
 
   return (
     <MainCard headerColor={true} title={title ?? 'Liste des Interventions'} content={false}>

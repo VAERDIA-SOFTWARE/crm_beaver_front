@@ -120,12 +120,12 @@ const InspectionUpdatePage = () => {
                       helperText={renderArrayMultiline(formErrors?.data?.debut)}
                     />
                   )}
-                  inputFormat="dd/MM/yyyy"
+                  inputFormat="dd/MM/yyyy HH:mm"
                   label="Date début"
-                  value={moment(formInput?.debut).format('YYYY-MM-DD HH:mm:ss')}
+                  value={moment(formInput?.debut).utc().format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
-                      const formattedDate = format(v, 'yyyy-MM-dd hh:mm');
+                      const formattedDate = moment(v).utc().format('YYYY-MM-DD HH:mm:ss');
                       setFormInput((f) => {
                         return { ...f, debut: formattedDate };
                       });
@@ -142,7 +142,7 @@ const InspectionUpdatePage = () => {
                 localeText={frFR.components.MuiLocalizationProvider.defaultProps.localeText}
               >
                 <DatePicker
-                  inputFormat="dd/MM/yyyy"
+                  inputFormat="dd/MM/yyyy HH:mm"
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -152,10 +152,10 @@ const InspectionUpdatePage = () => {
                     />
                   )}
                   label="Date fin"
-                  value={moment(formInput?.fin).format('YYYY-MM-DD HH:mm:ss')}
+                  value={moment(formInput?.fin).utc().format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
-                      const formattedDate = format(v, 'yyyy-MM-dd hh:mm');
+                      const formattedDate = moment(v).utc().format('YYYY-MM-DD HH:mm:ss');
                       setFormInput((f) => {
                         return { ...f, fin: formattedDate };
                       });

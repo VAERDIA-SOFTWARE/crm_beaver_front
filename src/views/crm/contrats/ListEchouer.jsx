@@ -39,32 +39,12 @@ const Contract = () => {
   const [searchFilter, setSearchFilter] = React.useState('');
 
   const navigate = useNavigate();
-  const getContratQuery = useGetContrats({ page: page, searchFilter: searchFilter, paginated: true, state: etat });
+  const getContratQuery = useGetContrats({ page: page, searchFilter: searchFilter, paginated: true, state: '4,2' });
   const contratsData = getContratQuery?.data;
   const getStatusQuery = useGetStateByModel('DContrat');
   const statusData = getStatusQuery?.data;
   return (
-    <MainCard
-      headerColor={true}
-      title="Liste des contrats"
-      content={false}
-      secondary={
-        <Grid item xs={12} sm={12} sx={{ textAlign: 'start' }}>
-          <Tooltip title="Ajouter Un Contrat">
-            <Fab
-              color="primary"
-              size="small"
-              onClick={(e) => {
-                navigate(`/contrats/create`);
-              }}
-              sx={{ boxShadow: 'none', ml: 1, width: 32, height: 32, minHeight: 32 }}
-            >
-              <AddIcon fontSize="small" />
-            </Fab>
-          </Tooltip>
-        </Grid>
-      }
-    >
+    <MainCard headerColor={true} title="Liste des contrats échouer" content={false}>
       <TableDataGrid
         etat={etat}
         setEtat={setEtat}
@@ -297,14 +277,14 @@ function CustomToolbar({ setEtat, states, etat }) {
         }}
       >
         <GridToolbarQuickFilter />
-        {states && (
+        {/* {states && (
           <Autocomplete
             onChange={(event, newValue) => {
               setEtat(newValue?.etat);
             }}
             options={[{ id: '', nom: 'Tous' }, ...states] || []}
             getOptionLabel={(option) => option.nom}
-            defaultValue={[{ id: '', nom: 'Tous' }, ...states]?.find((item) => item?.etat == etat)}
+            defaultValue={[{ id: '', nom: 'Tous' }, ...states]?.find((item) => item?.etat === etat)}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -316,7 +296,7 @@ function CustomToolbar({ setEtat, states, etat }) {
               />
             )}
           />
-        )}
+        )} */}
         {/* <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <GridToolbarExport />
           <GridToolbarFilterButton />

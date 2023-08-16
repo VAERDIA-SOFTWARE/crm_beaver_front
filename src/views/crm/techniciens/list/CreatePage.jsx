@@ -182,7 +182,7 @@ const TechnicienCreatePage = () => {
                 helperText={renderArrayMultiline(formErrors?.data?.fax)}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <Autocomplete
                 onChange={(event, newValue) => {
                   const arr = newValue.map((e) => e?.id);
@@ -229,7 +229,7 @@ const TechnicienCreatePage = () => {
                   />
                 )}
               />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} md={6}>
               <FormControl error={!!!!formErrors?.data?.password} sx={{ width: '100%' }} variant="standard">
@@ -294,7 +294,7 @@ const TechnicienCreatePage = () => {
                 </p>
               </div>
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <FormProvider {...methods}>
                 <Box component="form" noValidate autoComplete="off" onSubmit={methods.handleSubmit(onSubmitHandler)}>
                   <CustomFileUpload
@@ -327,7 +327,7 @@ const TechnicienCreatePage = () => {
                   )}
                 </Box>
               </FormProvider>
-            </Grid>
+            </Grid> */}
             <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
               <LoadingButton
                 loadingPosition="end"

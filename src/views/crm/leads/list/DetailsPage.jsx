@@ -45,7 +45,7 @@ const LeadsDetailsPage = () => {
           }}
         >
           <IconButton
-            color="secondary"
+            color="text"
             size="large"
             onClick={(e) => {
               // handleOpenEditDialog(e);
@@ -65,6 +65,7 @@ const LeadsDetailsPage = () => {
             <DeleteOutline sx={{ fontSize: '1.3rem' }} />
           </IconButton> */}
           <LoadingButton
+            color="success"
             sx={{ marginX: '1rem' }}
             variant="contained"
             endIcon={<SendIcon />}

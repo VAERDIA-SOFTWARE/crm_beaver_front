@@ -24,13 +24,12 @@ import FormulaireCard from './FormulaireCard';
 import FormulaireCardUpdate from './FormulaireCardUpdate';
 
 const Formulaire = () => {
-  const { inspectionId } = useParams();
-  const getInspectionQuery = useGetInspection(inspectionId);
-  const inspectionData = getInspectionQuery.data?.inspection;
-  const getInspectionFormulaireQuery = useGetInspectionFormulaire({ inspectionId });
+  const { interventionId } = useParams();
+  const getInspectionQuery = useGetInspection(interventionId);
+  const inspectionData = getInspectionQuery?.data;
+  const getInspectionFormulaireQuery = useGetInspectionFormulaire({ inspectionId: interventionId });
   const inspectionFormulaireData = getInspectionFormulaireQuery.data;
 
-  const updateInspectionMutation = useUpdateInspection();
   const navigate = useNavigate();
 
   const [formErrors, setFormErrors] = useState({});
@@ -41,11 +40,11 @@ const Formulaire = () => {
   });
 
   useEffect(() => {
-    if (inspectionData?.etat !== 0) {
-      navigate(`/inspections/list`);
-      return;
-    }
     if (getInspectionQuery.isSuccess) {
+      // if (inspectionData?.etat !== 0 && inspectionData?.etat !== 1) {
+      //   navigate(`/interventions/list`);
+      //   return;
+      // }
       setFormInput((f) => {
         return {
           ...f,
@@ -55,18 +54,22 @@ const Formulaire = () => {
         };
       });
     }
-  }, [getInspectionQuery.isSuccess, inspectionData?.debut, inspectionData?.fin, inspectionData?.technicien?.id]);
+  }, [getInspectionQuery.isSuccess, inspectionData?.etat, inspectionData?.debut, inspectionData?.fin, inspectionData?.technicien?.id]);
 
-  // console.log(inspectionId);
   return (
     <MainCard
       title={`Interventions ${inspectionData?.reference ? '- ' + inspectionData?.reference : ''}`}
       backButton
-      goBackLink={`/inspections/${inspectionId}/details`}
+      goBackLink={`/interventions/${interventionId}/details`}
     >
       <div>
         <Grid xs={12}>
-          <FormulaireCardUpdate title="Formulaire" data={inspectionFormulaireData} inspectionId={inspectionId} />
+          <FormulaireCardUpdate
+            title="Formulaire"
+            interventionData={inspectionData}
+            data={inspectionFormulaireData}
+            inspectionId={interventionId}
+          />
         </Grid>
         {/* <Divider
           style={{

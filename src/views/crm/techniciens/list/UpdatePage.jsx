@@ -40,6 +40,7 @@ const TechnicienUpdatePage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     default_pagination: '',
+    name: '',
     email: '',
     fax: '',
     address: '',
@@ -91,6 +92,7 @@ const TechnicienUpdatePage = () => {
         formData.append(key, formInput[key]);
       }
       await updateTechnicienMutation.mutateAsync(formData);
+      navigate('/techniciens/list');
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -186,7 +188,7 @@ const TechnicienUpdatePage = () => {
                   helperText={renderArrayMultiline(formErrors?.data?.fax)}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              {/* <Grid item xs={12} md={6}>
                 {technicienData && Array.isArray(zonesVillesData) ? (
                   <Autocomplete
                     onChange={(event, newValue) => {
@@ -214,9 +216,9 @@ const TechnicienUpdatePage = () => {
                 ) : (
                   <Skeleton variant="rounded" width={'100%'} height={40} />
                 )}
-              </Grid>
+              </Grid> */}
 
-              <Grid item xs={12} md={6}>
+              {/* <Grid item xs={12} md={6}>
                 {technicienData && Array.isArray(operationsData) ? (
                   <Autocomplete
                     onChange={(event, newValue) => {
@@ -242,7 +244,7 @@ const TechnicienUpdatePage = () => {
                 ) : (
                   <Skeleton variant="rounded" width={'100%'} height={40} />
                 )}
-              </Grid>
+              </Grid> */}
 
               <Grid item xs={12} md={6}>
                 <div
@@ -279,10 +281,10 @@ const TechnicienUpdatePage = () => {
                   </p>
                 </div>
               </Grid>
-              <Grid item xs={12} md={7}>
+              {/* <Grid item xs={12} md={7}>
                 <TextField variant="standard" fullWidth label="Nom fichier" value={formInput?.nom_fichier || ''} disabled />
-              </Grid>
-              <Grid item xs={12}>
+              </Grid> */}
+              {/* <Grid item xs={12}>
                 <FormProvider {...methods}>
                   <Box component="form" noValidate autoComplete="off" onSubmit={methods.handleSubmit(onSubmitHandler)}>
                     <CustomFileUpload
@@ -315,7 +317,7 @@ const TechnicienUpdatePage = () => {
                     )}
                   </Box>
                 </FormProvider>
-              </Grid>
+              </Grid> */}
               <Grid item sx={{ display: 'flex', justifyContent: 'flex-end' }} xs={12}>
                 <LoadingButton
                   disabled={getTechnicienQuery.isLoading}

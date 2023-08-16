@@ -38,8 +38,6 @@ const LeadsCreatePage = () => {
   const getCategoryClient = useGetSettingsCategoryClient();
   const categoryData = getCategoryClient?.data;
 
-  const LotId = localStorage.getItem('LotId');
-
   const [formErrors, setFormErrors] = useState({});
   const [formInput, setFormInput] = useState({
     name: '',
@@ -57,7 +55,7 @@ const LeadsCreatePage = () => {
     p_category_client_id: '',
     identifient_fiscal: '',
     identifient_tva: '',
-    d_lot_id: LotId,
+    d_lot_id: '',
     societe: null
   });
 
@@ -85,7 +83,7 @@ const LeadsCreatePage = () => {
     try {
       await createClientMutation.mutateAsync(formInput);
 
-      navigate(`/lot-leads/${LotId}/details`);
+      navigate(`/leads/list`);
     } catch (error) {
       const errorsObject = error?.response?.data;
       setFormErrors(errorsObject);
@@ -95,7 +93,7 @@ const LeadsCreatePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   return (
-    <MainCard headerColor={true} title={`Ajouter Leads Manuellement`} backButton goBackLink={`/lot-leads/${LotId}/details`}>
+    <MainCard headerColor={true} title={`Ajouter Leads Manuellement`} backButton goBackLink={`/leads/list`}>
       <div>
         <>
           <form onSubmit={handleSubmit}>

@@ -15,8 +15,11 @@ import renderArrayMultiline from 'utilities/utilities';
 import { DateTimePicker, frFR, LocalizationProvider } from '@mui/x-date-pickers';
 import { format } from 'date-fns';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import moment from 'moment/moment';
+import { useEffect } from 'react';
+import CustomFileUpload from 'ui-component/UploadFiles';
 
-const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
+const FormulaireCardUpdate = ({ title, data = [], style, inspectionId, interventionData }) => {
   const [localData, setLocalData] = React.useState([]);
   const postFormMutation = usePostForm();
   const storeImageMutation = useStoreImage();
@@ -27,8 +30,8 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
   // const [endDate, setEndDate] = React.useState(null);
   const [images, setImages] = React.useState([
     {
-      ligne: '',
-      image: ''
+      line: '',
+      images: []
     }
   ]);
 
@@ -45,27 +48,14 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
     latitude: '',
     longitude: ''
   });
-  const navigate = useNavigate();
 
   // React.useEffect(() => {}, [cordinates]);
-  React.useEffect(() => {
+  useEffect(() => {
     setLocalData(cloneDeep(data));
-  }, [data]);
-
-  const handleLocationChange = (e) => {
-    setLocations({
-      ...locations,
-      [e.target.name]: e.target.value
+    setDate((prev) => {
+      return { ...prev, start: interventionData?.deb_calendar, end: interventionData?.fin_calendar };
     });
-  };
-
-  const handelstartDatesChange = (e) => {
-    setDate({
-      ...date,
-      [e.target.name]: e.target.value
-    });
-  };
-  console.log(cordinates);
+  }, [data, interventionData]);
   const handleChange = (event, blocIndex, ligneIndex, fieldIndex) => {
     let newPermissions = cloneDeep(localData);
     // newPermissions.blocs[blocIndex].lignes[ligneIndex] = 0;
@@ -93,20 +83,28 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
   };
   const handleImage = async (event, blocIndex, ligneIndex, fieldIndex) => {
     // event.target.files[0];
+    // console.log(event.target.files);
     let newPermissions = cloneDeep(localData);
     let ligne = newPermissions.blocs[blocIndex].lignes[ligneIndex].id;
     const formData = new FormData();
-    formData.append('file', event.target.files[0]);
-    formData.append('ligne_id', ligne);
-    const imageIndex = images.findIndex((item) => item.ligne === ligne);
+    formData.append('line_id', ligne);
+    const array = [...event.target.files];
+    for (let index = 0; index < array.length; index++) {
+      formData.append(`file[${index}]`, array[index]);
+    }
+    const imageIndex = images.findIndex((item) => item.line === ligne);
+    let cloneImages = [...images];
     if (imageIndex !== -1) {
-      let cloneImages = [...images];
-      cloneImages[imageIndex] = { ...cloneImages[imageIndex], ligne: ligne, image: URL.createObjectURL(event.target.files[0]) };
+      cloneImages[imageIndex] = {
+        ...cloneImages[imageIndex],
+        line: ligne,
+        images: [...cloneImages[imageIndex]?.images, array.map((item) => URL.createObjectURL(item))]
+      };
       setImages(cloneImages);
     } else {
-      setImages([...images, { ligne: ligne, image: URL.createObjectURL(event.target.files[0]) }]);
+      console.log(array.map((item) => URL.createObjectURL(item)));
+      // setImages([...images, { line: ligne, images: [...cloneImages[imageIndex]?.images, array.map((item) => URL.createObjectURL(item))] }]);
     }
-    console.log(images);
     await storeImageMutation.mutateAsync({
       id: inspectionId,
       values: formData
@@ -169,18 +167,17 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
       id: inspectionId,
       values: {
         formulaire: localData,
-        coordinates: {
-          location: test
-            ? { ...test, longitude: locations.longitude, latitude: locations.latitude }
-            : { longitude: locations.longitude, latitude: locations.latitude },
-          date: {
-            start: date.start,
-            end: date.end
-          }
+
+        location: test
+          ? { ...test, longitude: locations.longitude, latitude: locations.latitude }
+          : { longitude: locations.longitude, latitude: locations.latitude },
+        dates: {
+          start: date.start,
+          end: date.end
         }
       }
     });
-    navigate(`/inspections/${inspectionId}/details`);
+    // navigate(`/interventions/${inspectionId}/details`);
   };
   return (
     <MainCard
@@ -206,7 +203,7 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
           flexDirection: 'column'
         }}
       >
-        <div style={{ display: 'flex', columnGap: '2rem', flexDirection: 'column' }}>
+        {/* <div style={{ display: 'flex', columnGap: '2rem', flexDirection: 'column' }}>
           <h4>Localisation</h4>
           <div style={{ display: 'flex', columnGap: '2rem' }}>
             <Grid item xs={12} md={6}>
@@ -232,7 +229,7 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
               />
             </Grid>
           </div>
-        </div>
+        </div> */}
         <div style={{ display: 'flex', columnGap: '2rem', flexDirection: 'column' }}>
           <h4>Date</h4>
           <div style={{ display: 'flex', columnGap: '2rem' }}>
@@ -252,11 +249,13 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
                       helperText={renderArrayMultiline(formErrors?.data?.start)}
                     />
                   )}
+                  inputFormat="dd/MM/yyyy HH:mm"
                   label="Date début"
-                  value={date?.start}
+                  value={moment(date?.start).utc().format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
-                      const formattedDate = format(v, 'yyyy-MM-dd kk:mm');
+                      const formattedDate = moment(v).utc().format('YYYY-MM-DD HH:mm:ss');
+
                       setDate((f) => {
                         return { ...f, start: formattedDate };
                       });
@@ -273,6 +272,7 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
               >
                 <DateTimePicker
                   ampm={false}
+                  inputFormat="dd/MM/yyyy HH:mm"
                   renderInput={(params) => (
                     <TextField
                       variant="standard"
@@ -282,10 +282,11 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
                     />
                   )}
                   label="Date fin"
-                  value={date?.end}
+                  value={moment(date?.end).utc().format('YYYY-MM-DD HH:mm:ss')}
                   onChange={(v) => {
                     try {
-                      const formattedDate = format(v, 'yyyy-MM-dd kk:mm');
+                      const formattedDate = moment(v).utc().format('YYYY-MM-DD HH:mm:ss');
+
                       setDate((f) => {
                         return { ...f, end: formattedDate };
                       });
@@ -380,7 +381,16 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
                             return (
                               <div key={field?.id}>
                                 <>
+                                  {/* <CustomFileUpload
+                                    fileTypes={['png', 'jpg', 'jpeg']}
+                                    handleFilesChange={(event) => handleImage(event, blocIndex, ligneIndex, fieldIndex)}
+                                    onFileDelete={() => {}}
+                                    files={[]}
+                                    endpoint=""
+                                    error={formErrors}
+                                  /> */}
                                   <input
+                                    multiple
                                     accept="image/*"
                                     type="file"
                                     id={'select-image-' + ligne?.id}
@@ -389,29 +399,29 @@ const FormulaireCardUpdate = ({ title, data = [], style, inspectionId }) => {
                                   />
                                   <label htmlFor={'select-image-' + ligne?.id}>
                                     <LoadingButton variant="contained" color="primary" component="span">
-                                      Selectionner Image
+                                      Selectionner des Images
                                     </LoadingButton>
                                   </label>
                                   {field?.value ||
-                                    (images.find((item) => item.ligne === ligne?.id) && (
+                                    (images.find((item) => item.line === ligne?.id) && (
                                       <Box mt={2} textAlign="center">
-                                        <div>Image Preview:</div>
-                                        <img
-                                          id={'image-' + ligne?.id}
-                                          // src={
-                                          //   `${process.env.REACT_APP_API_URL}image/${field?.value}`
-                                          //     ? `${process.env.REACT_APP_API_URL}image/${field?.value}`
-                                          //     :
-                                          // }
-                                          // onChange={images.find((item) => console.log(item))}
-                                          src={
-                                            images.find((item) => item.ligne === ligne?.id)
-                                              ? images.find((item) => item.ligne === ligne?.id)?.image
-                                              : `${process.env.REACT_APP_API_URL}image/${field?.value}`
-                                          }
-                                          height="100px"
-                                          alt=""
-                                        />
+                                        <div>Aperçu des images:</div>
+                                        {images
+                                          .find((item) => item.line === ligne?.id)
+                                          ?.map((item, index) => (
+                                            <img
+                                              id={'image-' + ligne?.id + '-' + index}
+                                              // src={
+                                              //   `${process.env.REACT_APP_API_URL}image/${field?.value}`
+                                              //     ? `${process.env.REACT_APP_API_URL}image/${field?.value}`
+                                              //     :
+                                              // }
+                                              // onChange={images.find((item) => console.log(item))}
+                                              src={item}
+                                              height="100px"
+                                              alt=""
+                                            />
+                                          ))}
                                       </Box>
                                     ))}
                                 </>

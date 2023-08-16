@@ -69,10 +69,14 @@ export default function ClientDataCard({ clientData, title }) {
               <Typography variant="h4">Informations résidentielles</Typography>
               <Stack>
                 {clientData?.address && (
-                  <Stack direction="row" spacing={1}>
-                    <Typography variant="subtitle1">Addresse :</Typography>
-                    <Typography variant="body2">{clientData?.address}</Typography>
-                  </Stack>
+                  <>
+                    <Stack direction="row" spacing={1}>
+                      <Typography variant="subtitle1">Addresse :</Typography>
+                      <Typography sx={{ textAlign: 'center', maxWidth: 250 }} variant="body2">
+                        {clientData?.address}
+                      </Typography>
+                    </Stack>
+                  </>
                 )}
                 {clientData?.ville && (
                   <Stack direction="row" spacing={1}>

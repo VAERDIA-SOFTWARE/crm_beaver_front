@@ -202,8 +202,8 @@ export function useValidateInspections() {
   );
 }
 
-export const useGetInspectionFormulaire = ({ inspectionId = '' }) => {
-  return useQuery(['inspections', 'formulaire', inspectionId], () =>
-    axiosClient.get(`inspections/${inspectionId}/formulaire`).then((res) => res.data)
+export const useGetInspectionFormulaire = ({ inspectionId = '', web = false }) => {
+  return useQuery(['intervention', 'formulaire', inspectionId], () =>
+    axiosClient.get(`formulaire-intervention/${inspectionId}/${web ? 'web' : ''}`).then((res) => res.data)
   );
 };

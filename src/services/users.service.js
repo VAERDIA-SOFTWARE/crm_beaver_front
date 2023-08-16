@@ -70,7 +70,7 @@ export function useChangeLeadToClient(userId) {
 export function useUpdateUser(id = '') {
   return useMutation(
     async (values) => {
-      const res = await axiosClient.put(`users/${id}`, values);
+      const res = await axiosClient.post(`users/${id}?_method=PUT`, values);
       return res.data;
     },
     {

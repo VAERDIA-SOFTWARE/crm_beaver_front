@@ -7,7 +7,7 @@ export function usePostForm() {
 
   return useMutation(
     async ({ id = '', values }) => {
-      const res = await axiosClient.post(`formulaire-inspection/${id}`, values);
+      const res = await axiosClient.post(`formulaire-intervention/${id}`, values);
       return res.data;
     },
     {
@@ -23,7 +23,7 @@ export function useStoreImage() {
 
   return useMutation(
     async ({ id = '', values }) => {
-      const res = await axiosClient.post(`formulaire-inspection/${id}/store-image`, values);
+      const res = await axiosClient.post(`formulaire-intervention/${id}/store-image`, values);
       return res.data;
     },
     {

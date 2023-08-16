@@ -152,39 +152,9 @@ const UserDetailsCard = ({ user }) => {
           <Typography align="left" variant="subtitle1">
             {user.name}
           </Typography>
-          <Typography align="left" variant="subtitle2">
-            {user.role}
-          </Typography>
         </Grid>
       </Grid>
-      <List component="nav" aria-label="main mailbox folders">
-        <ListItemButton>
-          <ListItemText primary={<Typography variant="subtitle1">Emplacement</Typography>} />
-          <ListItemSecondaryAction>
-            <Typography variant="subtitle2" align="right">
-              {user.marker.emplacement}
-            </Typography>
-          </ListItemSecondaryAction>
-        </ListItemButton>
-        <Divider />
-        <ListItemButton>
-          <ListItemText primary={<Typography variant="subtitle1">Nom Client</Typography>} />
-          <ListItemSecondaryAction>
-            <Typography variant="subtitle2" align="right">
-              {user.nomClient}
-            </Typography>
-          </ListItemSecondaryAction>
-        </ListItemButton>
-        <Divider />
-        <ListItemButton>
-          <ListItemText primary={<Typography variant="subtitle1">Nom du fichier</Typography>} />
-          <ListItemSecondaryAction>
-            <Typography variant="subtitle2" align="right">
-              {user.fiche_name}
-            </Typography>
-          </ListItemSecondaryAction>
-        </ListItemButton>
-      </List>
+
       <CardContent></CardContent>
     </Grid>
   );
